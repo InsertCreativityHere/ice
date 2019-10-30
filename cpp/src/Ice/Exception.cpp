@@ -771,13 +771,6 @@ Ice::PluginInitializationException::ice_print(ostream& out) const
 }
 
 void
-Ice::CollocationOptimizationException::ice_print(ostream& out) const
-{
-    Exception::ice_print(out);
-    out << ":\nrequested feature not available with collocation optimization";
-}
-
-void
 Ice::AlreadyRegisteredException::ice_print(ostream& out) const
 {
     Exception::ice_print(out);

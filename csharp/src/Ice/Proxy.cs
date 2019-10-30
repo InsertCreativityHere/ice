@@ -714,11 +714,10 @@ namespace Ice
 
         /// <summary>
         /// Returns the Connection for this proxy. If the proxy does not yet have an established connection,
-        /// it first attempts to create a connection.
+        /// it first attempts to create a connection. If the proxy denotes a collocated object and collocation
+        /// optimization is enabled, this returns null.
         /// </summary>
         /// <returns>The Connection for this proxy.</returns>
-        /// <exception name="CollocationOptimizationException">If the proxy uses collocation optimization and denotes a
-        /// collocated object.</exception>
         Connection ice_getConnection();
 
         /// <summary>
@@ -753,12 +752,11 @@ namespace Ice
 
         /// <summary>
         /// Returns the cached Connection for this proxy. If the proxy does not yet have an established
-        /// connection, it does not attempt to create a connection.
+        /// connection, it does not attempt to create a connection. If the proxy denotes a collocated object
+        /// and collocation optimization is enabled, this returns null.
         /// </summary>
         /// <returns>The cached Connection for this proxy (null if the proxy does not have
         /// an established connection).</returns>
-        /// <exception name="CollocationOptimizationException">If the proxy uses collocation optimization and denotes a
-        /// collocated object.</exception>
         Connection ice_getCachedConnection();
 
         /// <summary>
@@ -2255,11 +2253,10 @@ namespace Ice
 
         /// <summary>
         /// Returns the Connection for this proxy. If the proxy does not yet have an established connection,
-        /// it first attempts to create a connection.
+        /// it first attempts to create a connection. If the proxy denotes a collocated object and collocation
+        /// optimization is enabled, this returns null.
         /// </summary>
         /// <returns>The Connection for this proxy.</returns>
-        /// <exception name="CollocationOptimizationException">If the proxy uses collocation optimization and denotes a
-        /// collocated object.</exception>
         public Connection ice_getConnection()
         {
             try
@@ -2320,12 +2317,11 @@ namespace Ice
 
         /// <summary>
         /// Returns the cached Connection for this proxy. If the proxy does not yet have an established
-        /// connection, it does not attempt to create a connection.
+        /// connection, it does not attempt to create a connection. If the proxy denotes a collocated object
+        /// and collocation optimization is enabled, this returns null.
         /// </summary>
         /// <returns>The cached Connection for this proxy (null if the proxy does not have
         /// an established connection).</returns>
-        /// <exception name="CollocationOptimizationException">If the proxy uses collocation optimization and denotes a
-        /// collocated object.</exception>
         public Connection ice_getCachedConnection()
         {
             RequestHandler handler;

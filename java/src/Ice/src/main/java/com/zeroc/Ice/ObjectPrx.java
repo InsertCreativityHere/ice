@@ -651,10 +651,10 @@ public interface ObjectPrx
 
     /**
      * Returns the {@link Connection} for this proxy. If the proxy does not yet have an established connection,
-     * it first attempts to create a connection.
+     * it first attempts to create a connection. If the proxy denotes a collocated object and collocation
+     * optimization is enabled, this returns null.
      *
      * @return The {@link Connection} for this proxy.
-     * @throws CollocationOptimizationException If the proxy uses collocation optimization and denotes a
      * collocated object.
      *
      * @see Connection
@@ -680,12 +680,11 @@ public interface ObjectPrx
 
     /**
      * Returns the cached {@link Connection} for this proxy. If the proxy does not yet have an established
-     * connection, it does not attempt to create a connection.
+     * connection, it does not attempt to create a connection.  If the proxy denotes a collocated object and
+     * collocation optimization is enabled, this returns null.
      *
      * @return The cached {@link Connection} for this proxy (<code>null</code> if the proxy does not have
      * an established connection).
-     * @throws CollocationOptimizationException If the proxy uses collocation optimization and denotes a
-     * collocated object.
      *
      * @see Connection
      **/

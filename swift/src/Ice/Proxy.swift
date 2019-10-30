@@ -293,13 +293,11 @@ public protocol ObjectPrx: CustomStringConvertible, AnyObject {
     func ice_isFixed() -> Bool
 
     /// Returns the cached Connection for this proxy. If the proxy does not yet have an established
-    /// connection, it does not attempt to create a connection.
+    /// connection, it does not attempt to create a connection. If the proxy denotes a collocated object
+    /// and collocation optimization is enabled, this returns nil.
     ///
     /// - returns: `Ice.Connection?` - The cached Connection for this proxy (nil if the proxy does not have
     ///   an established connection).
-    ///
-    /// - throws: `CollocationOptimizationException` - If the proxy uses collocation optimization and denotes a
-    ///   collocated object.
     func ice_getCachedConnection() -> Connection?
 
     /// Returns the stringified form of this proxy.
@@ -669,12 +667,10 @@ public extension ObjectPrx {
     }
 
     /// Returns the connection for this proxy. If the proxy does not yet have an established connection,
-    /// it first attempts to create a connection.
+    /// it first attempts to create a connection. If the proxy denotes a collocated object and collocation
+    /// optimization is enabled, this returns nil.
     ///
     /// - returns: `Ice.Connection?` - The Connection for this proxy.
-    ///
-    /// - throws: `Ice.CollocationOptimizationException` - If the proxy uses collocation optimization and denotes a
-    ///   collocated object.
     func ice_getConnection() throws -> Connection? {
         return try autoreleasepool {
             //
@@ -688,13 +684,11 @@ public extension ObjectPrx {
     }
 
     /// Returns the connection for this proxy. If the proxy does not yet have an established connection,
-    /// it first attempts to create a connection.
+    /// it first attempts to create a connection. If the proxy denotes a collocated object and collocation
+    /// optimization is enabled, the promise this returns will be resolved to nil.
     ///
     /// - returns: `PromiseKit.Promise<Ice.Connection?>` - A promise object that will be resolved with
     ///   the result of the invocation.
-    ///
-    /// - throws: `Ice.CollocationOptimizationException` - If the proxy uses collocation optimization and denotes a
-    ///   collocated object.
     func ice_getConnectionAsync() -> Promise<Connection?> {
         return Promise<Connection?> { seal in
             self._impl.handle.ice_getConnectionAsync({ conn in

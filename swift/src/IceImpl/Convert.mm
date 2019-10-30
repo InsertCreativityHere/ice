@@ -42,10 +42,6 @@ convertException(const std::exception& exc)
         {
             return [factory pluginInitializationException:toNSString(e.reason) file:toNSString(e.ice_file()) line:e.ice_line()];
         }
-        catch(const Ice::CollocationOptimizationException& e)
-        {
-            return [factory collocationOptimizationException:toNSString(e.ice_file()) line:e.ice_line()];
-        }
         catch(const Ice::AlreadyRegisteredException& e)
         {
             return [factory alreadyRegisteredException:toNSString(e.kindOfObject) id:toNSString(e.id) file:toNSString(e.ice_file()) line:e.ice_line()];

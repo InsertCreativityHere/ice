@@ -249,13 +249,6 @@ localExceptionToString(const Ice::LocalException& ex)
 }
 @end
 
-@implementation ICECollocationOptimizationException (ICEInternal)
--(void) rethrowCxx
-{
-    throw Ice::CollocationOptimizationException(file, line);
-}
-@end
-
 @implementation ICEAlreadyRegisteredException (ICEInternal)
 -(id)initWithLocalException:(const Ice::LocalException&)ex
 {
