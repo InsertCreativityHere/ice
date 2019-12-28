@@ -544,7 +544,7 @@ Slice::resultTuple(const OperationPtr& op, const string& scope, bool dispatch)
 
     if(outParams.empty())
     {
-        return op->returnType() == 0 ? "" : CsGenerator::typeToString(op->returnType(), scope, op->returnIsOptional());
+        return op->returnType() == 0 ? "" : CsGenerator::typeToString(op->returnType(), scope, op->returnIsTagged());
     }
 
     if(op->returnType() == 0 && outParams.size() == 1)
@@ -557,7 +557,7 @@ Slice::resultTuple(const OperationPtr& op, const string& scope, bool dispatch)
 
     if(op->returnType() != 0)
     {
-        os << CsGenerator::typeToString(op->returnType(), scope, op->returnIsOptional())
+        os << CsGenerator::typeToString(op->returnType(), scope, op->returnIsTagged())
            << " " << CsGenerator::fixId(returnValueName(outParams)) << ", ";
     }
 

@@ -215,7 +215,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
             param = paramPrefix + returnValueS;
         }
 
-        if(!op->returnIsOptional())
+        if(!op->returnIsTagged())
         {
             writeMarshalUnmarshalCode(_out, ret, ns, param, marshal, customStream);
         }
@@ -232,7 +232,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
     //
     // Handle optional parameters.
     //
-    bool checkReturnType = op && op->returnIsOptional();
+    bool checkReturnType = op && op->returnIsTagged();
     for(ParamDeclList::const_iterator pli = optionals.begin(); pli != optionals.end(); ++pli)
     {
         if(checkReturnType && op->returnTag() < (*pli)->tag())
@@ -694,7 +694,7 @@ Slice::CsVisitor::getOutParams(const OperationPtr& op, const string& ns, bool re
         TypePtr ret = op->returnType();
         if(ret)
         {
-            params.push_back(typeToString(ret, ns, op->returnIsOptional()) + " ret");
+            params.push_back(typeToString(ret, ns, op->returnIsTagged()) + " ret");
         }
     }
 
@@ -775,7 +775,7 @@ Slice::CsVisitor::getDispatchParams(const OperationPtr& op, string& retS, vector
         params = getParams(op, ns);
         args = getArgs(op);
         paramDecls = op->parameters();
-        retS = typeToString(op->returnType(), ns, op->returnIsOptional());
+        retS = typeToString(op->returnType(), ns, op->returnIsTagged());
     }
 
     string currentParamName = getEscapedParamName(op, "current");
@@ -3203,14 +3203,14 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
 
     string opName = p->name();
     TypePtr ret = p->returnType();
-    string retS = typeToString(ret, ns, p->returnIsOptional());
+    string retS = typeToString(ret, ns, p->returnIsTagged());
     string returnTypeS = resultTuple(p, ns);
 
     vector<string> inParams = getInParams(p, ns);
     ParamDeclList inParamsDecl = p->inParameters();
     ParamDeclList outParamsDecl = p->outParameters();
 
-    bool optionalReturn = (ret && outParamsDecl.empty() && p->returnIsOptional()) ||
+    bool optionalReturn = (ret && outParamsDecl.empty() && p->returnIsTagged()) ||
         (!ret && outParamsDecl.size() == 1 && outParamsDecl.front()->optional());
     bool nullableReturn = (ret && outParamsDecl.empty() && isReferenceType(ret)) ||
         (!ret && outParamsDecl.size() == 1 && isReferenceType(outParamsDecl.front()->type()));
@@ -3435,7 +3435,7 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
         if(outParamsDecl.empty())
         {
             _out << nl << returnTypeS;
-            if(!p->returnIsOptional() && isReferenceType(ret))
+            if(!p->returnIsTagged() && isReferenceType(ret))
             {
                 _out << "?";
             }
