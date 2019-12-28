@@ -3730,7 +3730,7 @@ Slice::ClassDef::createDataMember(const string& name, const TypePtr& type, bool 
         {
             if((*q)->optional() && tag == (*q)->tag())
             {
-                string msg = "tag for optional data member `" + name + "' is already in use";
+                string msg = "tag for data member `" + name + "' is already in use";
                 _unit->error(msg);
                 break;
             }
@@ -4266,7 +4266,7 @@ Slice::Exception::createDataMember(const string& name, const TypePtr& type, bool
         {
             if((*q)->optional() && tag == (*q)->tag())
             {
-                string msg = "tag for optional data member `" + name + "' is already in use";
+                string msg = "tag for data member `" + name + "' is already in use";
                 _unit->error(msg);
                 break;
             }
@@ -4574,7 +4574,7 @@ Slice::Struct::createDataMember(const string& name, const TypePtr& type, bool op
         {
             if((*q)->optional() && tag == (*q)->tag())
             {
-                string msg = "tag for optional data member `" + name + "' is already in use";
+                string msg = "tag for data member `" + name + "' is already in use";
                 _unit->error(msg);
                 break;
             }
@@ -5411,7 +5411,7 @@ Slice::Operation::createParamDecl(const string& name, const TypePtr& type, bool 
         //
         // Check for a duplicate tag.
         //
-        const string msg = "tag for optional parameter `" + name + "' is already in use";
+        const string msg = "tag for parameter `" + name + "' is already in use";
         if(_returnIsOptional && tag == _returnTag)
         {
             _unit->error(msg);
