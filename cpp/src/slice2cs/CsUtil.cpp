@@ -549,7 +549,7 @@ Slice::resultTuple(const OperationPtr& op, const string& scope, bool dispatch)
 
     if(op->returnType() == 0 && outParams.size() == 1)
     {
-        return CsGenerator::typeToString(outParams.front()->type(), scope, outParams.front()->optional());
+        return CsGenerator::typeToString(outParams.front()->type(), scope, outParams.front()->isTagged());
     }
 
     ostringstream os;
@@ -564,7 +564,7 @@ Slice::resultTuple(const OperationPtr& op, const string& scope, bool dispatch)
     for(ParamDeclList::const_iterator i = outParams.begin(); i != outParams.end();)
     {
         ParamDeclPtr p = *i;
-        os << CsGenerator::typeToString(p->type(), scope, p->optional()) << " " << CsGenerator::fixId(p->name());
+        os << CsGenerator::typeToString(p->type(), scope, p->isTagged()) << " " << CsGenerator::fixId(p->name());
         if(++i != outParams.end())
         {
             os << ", ";
