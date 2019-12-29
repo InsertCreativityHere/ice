@@ -159,7 +159,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
                                               bool publicNames,
                                               const string& customStream)
 {
-    ParamDeclList optionals;
+    ParamDeclList taggedParams;
 
     string paramPrefix = "";
     string returnValueS = "ret";
@@ -190,7 +190,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
 
         if((*pli)->isTagged())
         {
-            optionals.push_back(*pli);
+            taggedParams.push_back(*pli);
         }
         else
         {
@@ -224,7 +224,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
     //
     // Sort tagged parameters by tag.
     //
-    optionals.sort([](auto lhs, auto rhs)
+    taggedParams.sort([](auto lhs, auto rhs)
                    {
                        return lhs->tag() < rhs->tag();
                    });
@@ -233,7 +233,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
     // Handle tagged parameters.
     //
     bool checkReturnType = op && op->returnIsTagged();
-    for(ParamDeclList::const_iterator pli = optionals.begin(); pli != optionals.end(); ++pli)
+    for(ParamDeclList::const_iterator pli = taggedParams.begin(); pli != taggedParams.end(); ++pli)
     {
         if(checkReturnType && op->returnTag() < (*pli)->tag())
         {
@@ -249,7 +249,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
                 param = paramPrefix + returnValueS;
             }
 
-            writeOptionalMarshalUnmarshalCode(_out, ret, ns, param, op->returnTag(), marshal, customStream);
+            writeTaggedMarshalUnmarshalCode(_out, ret, ns, param, op->returnTag(), marshal, customStream);
             checkReturnType = false;
         }
 
@@ -266,7 +266,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
             param = paramPrefix + param;
         }
 
-        writeOptionalMarshalUnmarshalCode(_out, type, ns, param, (*pli)->tag(), marshal, customStream);
+        writeTaggedMarshalUnmarshalCode(_out, type, ns, param, (*pli)->tag(), marshal, customStream);
     }
 
     if(checkReturnType)
@@ -282,7 +282,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(const ParamDeclList& params,
         {
             param = paramPrefix + returnValueS;
         }
-        writeOptionalMarshalUnmarshalCode(_out, ret, ns, param, op->returnTag(), marshal, customStream);
+        writeTaggedMarshalUnmarshalCode(_out, ret, ns, param, op->returnTag(), marshal, customStream);
     }
 }
 
@@ -296,12 +296,12 @@ Slice::CsVisitor::writeMarshalDataMember(const DataMemberPtr& member, const stri
         StructPtr st = StructPtr::dynamicCast(member->type());
         if(st && isImmutableType(st))
         {
-            writeOptionalMarshalUnmarshalCode(_out, member->type(), ns, "this." + name, member->tag(), true,
+            writeTaggedMarshalUnmarshalCode(_out, member->type(), ns, "this." + name, member->tag(), true,
                                               "ostr_");
         }
         else
         {
-            writeOptionalMarshalUnmarshalCode(_out, member->type(), ns, "this." + name, member->tag(), true, "ostr_");
+            writeTaggedMarshalUnmarshalCode(_out, member->type(), ns, "this." + name, member->tag(), true, "ostr_");
         }
     }
     else
@@ -330,7 +330,7 @@ Slice::CsVisitor::writeUnmarshalDataMember(const DataMemberPtr& member, const st
     if(member->isTagged())
     {
         assert(!forStruct);
-        writeOptionalMarshalUnmarshalCode(_out, member->type(), ns, param, member->tag(), false, "istr_");
+        writeTaggedMarshalUnmarshalCode(_out, member->type(), ns, param, member->tag(), false, "istr_");
     }
     else
     {
@@ -527,7 +527,7 @@ Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
     //
     DataMemberList allClassMembers = p->allClassDataMembers();
     DataMemberList members = p->dataMembers();
-    DataMemberList optionalMembers = p->sortedTaggedDataMembers();
+    DataMemberList taggedMembers = p->sortedTaggedDataMembers();
     DataMemberList classMembers = p->classDataMembers();
     const bool basePreserved = p->inheritsMetaData("preserve-slice");
     const bool preserved = p->hasMetaData("preserve-slice");
@@ -591,7 +591,7 @@ Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
         }
     }
 
-    for(auto m : optionalMembers)
+    for(auto m : taggedMembers)
     {
         writeMarshalDataMember(m, fixId(m->name()), ns);
     }
@@ -617,7 +617,7 @@ Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
             writeUnmarshalDataMember(m, fixId(m->name()), ns);
         }
     }
-    for(auto m : optionalMembers)
+    for(auto m : taggedMembers)
     {
         writeUnmarshalDataMember(m, fixId(m->name()), ns);
     }
@@ -2197,7 +2197,6 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
     DataMemberList dataMembers = p->dataMembers();
     DataMemberList allClassMembers = p->allClassDataMembers();
     DataMemberList classMembers = p->classDataMembers();
-    DataMemberList optionalMembers = p->sortedTaggedDataMembers();
 
     vector<string> allParamDecl;
     for(DataMemberList::const_iterator q = allDataMembers.begin(); q != allDataMembers.end(); ++q)
@@ -2262,7 +2261,7 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
     _out << sb;
     if(!dataMembers.empty())
     {
-        bool optionals = false;
+        bool hasTaggedMembers = false;
         const char* builtinGetter[] =
             {
                 "GetByte",
@@ -2284,7 +2283,7 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
             DataMemberPtr m = *q;
             if(m->isTagged() && isValueType(m->type()))
             {
-                optionals = true;
+                hasTaggedMembers = true;
                 continue;
             }
             string getter;
@@ -2311,7 +2310,7 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
             _out << ")!;";
         }
 
-        if(optionals)
+        if(hasTaggedMembers)
         {
             _out << nl << "foreach (var entry in info)";
             _out << sb;
@@ -3210,7 +3209,7 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
     ParamDeclList inParamsDecl = p->inParameters();
     ParamDeclList outParamsDecl = p->outParameters();
 
-    bool optionalReturn = (ret && outParamsDecl.empty() && p->returnIsTagged()) ||
+    bool taggedReturn = (ret && outParamsDecl.empty() && p->returnIsTagged()) ||
         (!ret && outParamsDecl.size() == 1 && outParamsDecl.front()->isTagged());
     bool nullableReturn = (ret && outParamsDecl.empty() && isReferenceType(ret)) ||
         (!ret && outParamsDecl.size() == 1 && isReferenceType(outParamsDecl.front()->type()));
@@ -3373,7 +3372,7 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
 
     _out << nl << "var outAsync = getOutgoingAsync<" << (returnTypeS.empty() ? "object" : returnTypeS);
 
-    if(!optionalReturn && nullableReturn)
+    if(!taggedReturn && nullableReturn)
     {
         _out << "?";
     }

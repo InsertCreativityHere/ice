@@ -63,7 +63,7 @@ protected:
     static std::string getNamespacePrefix(const ContainedPtr&);
     static std::string getCustomTypeIdNamespace(const UnitPtr&);
 
-    static std::string getOptionalFormat(const TypePtr&, const std::string&);
+    static std::string getTagFormat(const TypePtr&, const std::string&);
     static std::string getStaticId(const TypePtr&);
 
     //
@@ -71,11 +71,11 @@ protected:
     //
     void writeMarshalUnmarshalCode(::IceUtilInternal::Output&, const TypePtr&, const std::string&, const std::string&,
                                    bool, const std::string& = "");
-    void writeOptionalMarshalUnmarshalCode(::IceUtilInternal::Output&, const TypePtr&, const std::string&,
+    void writeTaggedMarshalUnmarshalCode(::IceUtilInternal::Output&, const TypePtr&, const std::string&,
                                            const std::string&, int, bool, const std::string& = "");
     void writeSequenceMarshalUnmarshalCode(::IceUtilInternal::Output&, const SequencePtr&, const std::string&,
                                            const std::string&, bool, bool, const std::string& = "");
-    void writeOptionalSequenceMarshalUnmarshalCode(::IceUtilInternal::Output&, const SequencePtr&, const std::string&,
+    void writeTaggedSequenceMarshalUnmarshalCode(::IceUtilInternal::Output&, const SequencePtr&, const std::string&,
                                                    const std::string&, int, bool, const std::string& = "");
 private:
 
