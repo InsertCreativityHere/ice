@@ -52,7 +52,7 @@ const StreamHelperCategory StreamHelperCategoryUserException = 9;
  * isn't known to the receiver.
  */
 #ifdef ICE_CPP11_MAPPING
-enum class OptionalFormat : unsigned char
+enum class TagFormat : unsigned char
 {
     /** Fixed 1-byte encoding. */
     F1 = 0,
@@ -75,27 +75,27 @@ enum class OptionalFormat : unsigned char
     Class = 7
 };
 #else
-enum OptionalFormat
+enum TagFormat
 {
     /** Fixed 1-byte encoding. */
-    OptionalFormatF1 = 0,
+    TagFormatF1 = 0,
     /** Fixed 2-byte encoding. */
-    OptionalFormatF2 = 1,
+    TagFormatF2 = 1,
     /** Fixed 4-byte encoding. */
-    OptionalFormatF4 = 2,
+    TagFormatF4 = 2,
     /** Fixed 8-byte encoding. */
-    OptionalFormatF8 = 3,
+    TagFormatF8 = 3,
     /** "Size encoding" using 1 to 5 bytes, e.g., enum, class identifier. */
-    OptionalFormatSize = 4,
+    TagFormatSize = 4,
     /**
      * "Size encoding" using 1 to 5 bytes followed by data, e.g., string, fixed size
      * struct, or containers whose size can be computed prior to marshaling.
      */
-    OptionalFormatVSize = 5,
+    TagFormatVSize = 5,
     /** Fixed size using 4 bytes followed by data, e.g., variable-size struct, container. */
-    OptionalFormatFSize = 6,
+    TagFormatFSize = 6,
     /** Class instance. */
-    OptionalFormatClass = 7
+    TagFormatClass = 7
 };
 #endif
 
@@ -768,26 +768,26 @@ struct StreamHelper<T, StreamHelperCategoryClass>
 //
 
 //
-// Extract / compute the optionalFormat
+// Extract / compute the tagFormat
 // This is used _only_ for the base StreamOptionalHelper below
 // /!\ Do not use in StreamOptionalHelper specializations, and do
 // not provide specialization not handled by the base StreamOptionalHelper
 //
 /**
- * Extract / compute the optionalFormat.
+ * Extract / compute the tagFormat.
  * \headerfile Ice/Ice.h
  */
 template<StreamHelperCategory st, int minWireSize, bool fixedLength>
-struct GetOptionalFormat;
+struct GetTagFormat;
 
 /**
  * Specialization for 1-byte built-in fixed-length types.
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryBuiltin, 1, true>
+struct GetTagFormat<StreamHelperCategoryBuiltin, 1, true>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, F1);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, F1);
 };
 
 /**
@@ -795,9 +795,9 @@ struct GetOptionalFormat<StreamHelperCategoryBuiltin, 1, true>
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryBuiltin, 2, true>
+struct GetTagFormat<StreamHelperCategoryBuiltin, 2, true>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, F2);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, F2);
 };
 
 /**
@@ -805,9 +805,9 @@ struct GetOptionalFormat<StreamHelperCategoryBuiltin, 2, true>
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryBuiltin, 4, true>
+struct GetTagFormat<StreamHelperCategoryBuiltin, 4, true>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, F4);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, F4);
 };
 
 /**
@@ -815,9 +815,9 @@ struct GetOptionalFormat<StreamHelperCategoryBuiltin, 4, true>
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryBuiltin, 8, true>
+struct GetTagFormat<StreamHelperCategoryBuiltin, 8, true>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, F8);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, F8);
 };
 
 /**
@@ -825,9 +825,9 @@ struct GetOptionalFormat<StreamHelperCategoryBuiltin, 8, true>
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryBuiltin, 1, false>
+struct GetTagFormat<StreamHelperCategoryBuiltin, 1, false>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, VSize);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, VSize);
 };
 
 /**
@@ -835,9 +835,9 @@ struct GetOptionalFormat<StreamHelperCategoryBuiltin, 1, false>
  * \headerfile Ice/Ice.h
  */
 template<>
-struct GetOptionalFormat<StreamHelperCategoryClass, 1, false>
+struct GetTagFormat<StreamHelperCategoryClass, 1, false>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, Class);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, Class);
 };
 
 /**
@@ -845,9 +845,9 @@ struct GetOptionalFormat<StreamHelperCategoryClass, 1, false>
  * \headerfile Ice/Ice.h
  */
 template<int minWireSize>
-struct GetOptionalFormat<StreamHelperCategoryEnum, minWireSize, false>
+struct GetTagFormat<StreamHelperCategoryEnum, minWireSize, false>
 {
-    static const OptionalFormat value = ICE_SCOPED_ENUM(OptionalFormat, Size);
+    static const TagFormat value = ICE_SCOPED_ENUM(TagFormat, Size);
 };
 
 /**
@@ -859,12 +859,12 @@ struct StreamOptionalHelper
 {
     typedef StreamableTraits<T> Traits;
 
-    // If this optionalFormat fails to compile, you must either define your specialization
-    // for GetOptionalFormat (in which case the optional data will be marshaled/unmarshaled
+    // If this tagFormat fails to compile, you must either define your specialization
+    // for GetTagFormat (in which case the optional data will be marshaled/unmarshaled
     // with straight calls to write/read on the stream), or define your own
     // StreamOptionalHelper specialization (which gives you more control over marshaling)
     //
-    static const OptionalFormat optionalFormat = GetOptionalFormat<st, Traits::minWireSize, fixedLength>::value;
+    static const TagFormat tagFormat = GetTagFormat<st, Traits::minWireSize, fixedLength>::value;
 
     template<class S> static inline void
     write(S* stream, const T& v)
@@ -886,7 +886,7 @@ struct StreamOptionalHelper
 template<typename T>
 struct StreamOptionalHelper<T, StreamHelperCategoryStruct, true>
 {
-    static const OptionalFormat optionalFormat = ICE_SCOPED_ENUM(OptionalFormat, VSize);
+    static const TagFormat tagFormat = ICE_SCOPED_ENUM(TagFormat, VSize);
 
     template<class S> static inline void
     write(S* stream, const T& v)
@@ -910,7 +910,7 @@ struct StreamOptionalHelper<T, StreamHelperCategoryStruct, true>
 template<typename T>
 struct StreamOptionalHelper<T, StreamHelperCategoryStruct, false>
 {
-    static const OptionalFormat optionalFormat = ICE_SCOPED_ENUM(OptionalFormat, FSize);
+    static const TagFormat tagFormat = ICE_SCOPED_ENUM(TagFormat, FSize);
 
     template<class S> static inline void
     write(S* stream, const T& v)
@@ -963,7 +963,7 @@ struct StreamOptionalContainerHelper;
 template<typename T, int sz>
 struct StreamOptionalContainerHelper<T, false, sz>
 {
-    static const OptionalFormat optionalFormat = ICE_SCOPED_ENUM(OptionalFormat, FSize);
+    static const TagFormat tagFormat = ICE_SCOPED_ENUM(TagFormat, FSize);
 
     template<class S> static inline void
     write(S* stream, const T& v, Int)
@@ -987,7 +987,7 @@ struct StreamOptionalContainerHelper<T, false, sz>
 template<typename T, int sz>
 struct StreamOptionalContainerHelper<T, true, sz>
 {
-    static const OptionalFormat optionalFormat = ICE_SCOPED_ENUM(OptionalFormat, VSize);
+    static const TagFormat tagFormat = ICE_SCOPED_ENUM(TagFormat, VSize);
 
     template<class S> static inline void
     write(S* stream, const T& v, Int n)
@@ -1019,7 +1019,7 @@ struct StreamOptionalContainerHelper<T, true, sz>
 template<typename T>
 struct StreamOptionalContainerHelper<T, true, 1>
 {
-    static const OptionalFormat optionalFormat = ICE_SCOPED_ENUM(OptionalFormat, VSize);
+    static const TagFormat tagFormat = ICE_SCOPED_ENUM(TagFormat, VSize);
 
     template<class S> static inline void
     write(S* stream, const T& v, Int)
@@ -1048,7 +1048,7 @@ struct StreamOptionalHelper<T, StreamHelperCategorySequence, false>
 
     // The optional type of a sequence depends on whether or not elements are fixed
     // or variable size elements and their size.
-    static const OptionalFormat optionalFormat = StreamOptionalContainerHelper<T, fixedLength, size>::optionalFormat;
+    static const TagFormat tagFormat = StreamOptionalContainerHelper<T, fixedLength, size>::tagFormat;
 
     template<class S> static inline void
     write(S* stream, const T& v)
@@ -1077,7 +1077,7 @@ struct StreamOptionalHelper<std::pair<const T*, const T*>, StreamHelperCategoryS
 
     // The optional type of a sequence depends on whether or not elements are fixed
     // or variable size elements and their size.
-    static const OptionalFormat optionalFormat = StreamOptionalContainerHelper<P, fixedLength, size>::optionalFormat;
+    static const TagFormat tagFormat = StreamOptionalContainerHelper<P, fixedLength, size>::tagFormat;
 
     template<class S> static inline void
     write(S* stream, const P& v)
@@ -1109,7 +1109,7 @@ struct StreamOptionalHelper<std::pair<T, T>, StreamHelperCategorySequence, false
 
     // The optional type of a sequence depends on whether or not elements are fixed
     // or variable size elements and their size.
-    static const OptionalFormat optionalFormat = StreamOptionalContainerHelper<P, fixedLength, size>::optionalFormat;
+    static const TagFormat tagFormat = StreamOptionalContainerHelper<P, fixedLength, size>::tagFormat;
 
     template<class S> static inline void
     write(S* stream, const P& v)
@@ -1140,7 +1140,7 @@ struct StreamOptionalHelper<std::pair<IceUtil::ScopedArray<T>, std::pair<const T
 
     // The optional type of a sequence depends on whether or not elements are fixed
     // or variable size elements and their size.
-    static const OptionalFormat optionalFormat = StreamOptionalContainerHelper<P, fixedLength, size>::optionalFormat;
+    static const TagFormat tagFormat = StreamOptionalContainerHelper<P, fixedLength, size>::tagFormat;
 
     template<class S> static inline void
     read(S* stream, P& v)
@@ -1168,7 +1168,7 @@ struct StreamOptionalHelper<T, StreamHelperCategoryDictionary, false>
 
     // The optional type of a dictionary depends on whether or not elements are fixed
     // or variable size elements.
-    static const OptionalFormat optionalFormat = StreamOptionalContainerHelper<T, fixedLength, size>::optionalFormat;
+    static const TagFormat tagFormat = StreamOptionalContainerHelper<T, fixedLength, size>::tagFormat;
 
     template<class S> static inline void
     write(S* stream, const T& v)

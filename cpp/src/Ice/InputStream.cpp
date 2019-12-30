@@ -1395,7 +1395,7 @@ Ice::InputStream::throwException(ICE_IN(ICE_DELEGATE(UserExceptionFactory)) fact
 }
 
 bool
-Ice::InputStream::readOptImpl(Int readTag, OptionalFormat expectedFormat)
+Ice::InputStream::readOptImpl(Int readTag, TagFormat expectedFormat)
 {
     if(getEncoding() == Encoding_1_0)
     {
@@ -1417,7 +1417,7 @@ Ice::InputStream::readOptImpl(Int readTag, OptionalFormat expectedFormat)
             return false;
         }
 
-        OptionalFormat format = static_cast<OptionalFormat>(v & 0x07); // First 3 bits.
+        TagFormat format = static_cast<TagFormat>(v & 0x07); // First 3 bits.
         Int tag = static_cast<Int>(v >> 3);
         if(tag == 30)
         {
@@ -1448,41 +1448,41 @@ Ice::InputStream::readOptImpl(Int readTag, OptionalFormat expectedFormat)
 }
 
 void
-Ice::InputStream::skipOptional(OptionalFormat type)
+Ice::InputStream::skipOptional(TagFormat type)
 {
     switch(type)
     {
-        case ICE_SCOPED_ENUM(OptionalFormat, F1):
+        case ICE_SCOPED_ENUM(TagFormat, F1):
         {
             skip(1);
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, F2):
+        case ICE_SCOPED_ENUM(TagFormat, F2):
         {
             skip(2);
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, F4):
+        case ICE_SCOPED_ENUM(TagFormat, F4):
         {
             skip(4);
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, F8):
+        case ICE_SCOPED_ENUM(TagFormat, F8):
         {
             skip(8);
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, Size):
+        case ICE_SCOPED_ENUM(TagFormat, Size):
         {
             skipSize();
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, VSize):
+        case ICE_SCOPED_ENUM(TagFormat, VSize):
         {
             skip(static_cast<size_t>(readSize()));
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, FSize):
+        case ICE_SCOPED_ENUM(TagFormat, FSize):
         {
             Int sz;
             read(sz);
@@ -1493,7 +1493,7 @@ Ice::InputStream::skipOptional(OptionalFormat type)
             skip(static_cast<size_t>(sz));
             break;
         }
-        case ICE_SCOPED_ENUM(OptionalFormat, Class):
+        case ICE_SCOPED_ENUM(TagFormat, Class):
         {
             read(0, 0);
             break;
@@ -1521,7 +1521,7 @@ Ice::InputStream::skipOptionals()
             return;
         }
 
-        OptionalFormat format = static_cast<OptionalFormat>(v & 0x07); // Read first 3 bits.
+        TagFormat format = static_cast<TagFormat>(v & 0x07); // Read first 3 bits.
         if(static_cast<Int>(v >> 3) == 30)
         {
             skipSize();
@@ -2555,7 +2555,7 @@ Ice::InputStream::EncapsDecoder11::skipSlice()
 }
 
 bool
-Ice::InputStream::EncapsDecoder11::readOptional(Ice::Int readTag, Ice::OptionalFormat expectedFormat)
+Ice::InputStream::EncapsDecoder11::readOptional(Ice::Int readTag, Ice::TagFormat expectedFormat)
 {
     if(!_current)
     {

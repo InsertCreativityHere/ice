@@ -658,7 +658,7 @@ public:
     {
         if(readOptional(tag, StreamOptionalHelper<T,
                                              StreamableTraits<T>::helper,
-                                             StreamableTraits<T>::fixedLength>::optionalFormat))
+                                             StreamableTraits<T>::fixedLength>::tagFormat))
         {
 #ifdef ICE_CPP11_MAPPING
             v.emplace();
@@ -741,10 +741,10 @@ public:
      * Determine if an optional value is available for reading.
      *
      * @param tag The tag associated with the value.
-     * @param expectedFormat The optional format for the value.
+     * @param expectedFormat The tag format for the value.
      * @return True if the value is present, false otherwise.
      */
-    bool readOptional(Int tag, OptionalFormat expectedFormat)
+    bool readOptional(Int tag, TagFormat expectedFormat)
     {
         assert(_currentEncaps);
         if(_currentEncaps->decoder)
@@ -1135,7 +1135,7 @@ public:
      * Skips one optional value with the given format.
      * @param format The expected format of the optional, if present.
      */
-    void skipOptional(OptionalFormat format);
+    void skipOptional(TagFormat format);
 
     /**
      * Skips all remaining optional values.
@@ -1192,7 +1192,7 @@ public:
 
     void initialize(IceInternal::Instance*, const EncodingVersion&);
 
-    bool readOptImpl(Int, OptionalFormat);
+    bool readOptImpl(Int, TagFormat);
     /// \endcond
 
 private:
@@ -1249,7 +1249,7 @@ private:
         virtual void endSlice() = 0;
         virtual void skipSlice() = 0;
 
-        virtual bool readOptional(Int, OptionalFormat)
+        virtual bool readOptional(Int, TagFormat)
         {
             return false;
         }
@@ -1359,7 +1359,7 @@ private:
         virtual void endSlice();
         virtual void skipSlice();
 
-        virtual bool readOptional(Int, OptionalFormat);
+        virtual bool readOptional(Int, TagFormat);
 
     private:
 

@@ -410,7 +410,7 @@ public:
 
         if(writeOptional(tag, StreamOptionalHelper<T,
                                               StreamableTraits<T>::helper,
-                                              StreamableTraits<T>::fixedLength>::optionalFormat))
+                                              StreamableTraits<T>::fixedLength>::tagFormat))
         {
             StreamOptionalHelper<T,
                                  StreamableTraits<T>::helper,
@@ -513,11 +513,11 @@ public:
     /**
      * Writes the tag and format of an optional value.
      * @param tag The optional tag ID.
-     * @param format The optional format.
+     * @param format The tag format.
      * @return True if the current encoding version supports optional values, false otherwise.
      * If true, the data associated with the optional value must be written next.
      */
-    bool writeOptional(Int tag, OptionalFormat format)
+    bool writeOptional(Int tag, TagFormat format)
     {
         assert(_currentEncaps);
         if(_currentEncaps->encoder)
@@ -861,7 +861,7 @@ public:
     void initialize(IceInternal::Instance*, const EncodingVersion&);
 
     // Optionals
-    bool writeOptImpl(Int, OptionalFormat);
+    bool writeOptImpl(Int, TagFormat);
     /// \endcond
 
 private:
@@ -909,7 +909,7 @@ private:
         virtual void startSlice(const std::string&, int, bool) = 0;
         virtual void endSlice() = 0;
 
-        virtual bool writeOptional(Int, OptionalFormat)
+        virtual bool writeOptional(Int, TagFormat)
         {
             return false;
         }
@@ -993,7 +993,7 @@ private:
         virtual void startSlice(const std::string&, int, bool);
         virtual void endSlice();
 
-        virtual bool writeOptional(Int, OptionalFormat);
+        virtual bool writeOptional(Int, TagFormat);
 
     private:
 

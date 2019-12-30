@@ -809,7 +809,7 @@ Ice::OutputStream::writeException(const UserException& e)
 }
 
 bool
-Ice::OutputStream::writeOptImpl(Int tag, OptionalFormat type)
+Ice::OutputStream::writeOptImpl(Int tag, TagFormat type)
 {
     if(getEncoding() == Encoding_1_0)
     {
@@ -1267,7 +1267,7 @@ Ice::OutputStream::EncapsEncoder11::endSlice()
 }
 
 bool
-Ice::OutputStream::EncapsEncoder11::writeOptional(Ice::Int tag, Ice::OptionalFormat format)
+Ice::OutputStream::EncapsEncoder11::writeOptional(Ice::Int tag, Ice::TagFormat format)
 {
     if(!_current)
     {
