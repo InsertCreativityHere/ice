@@ -23,7 +23,7 @@ def allTests(helper, communicator):
     test(initial == base)
     print("ok")
 
-    sys.stdout.write("testing optional data members... ")
+    sys.stdout.write("testing tagged data members... ")
     sys.stdout.flush()
 
     oo1 = Test.OneOptional()
@@ -206,7 +206,7 @@ def allTests(helper, communicator):
 
     test(mo5.bos == mo1.bos)
 
-    # Clear the first half of the optional members
+    # Clear the first half of the tagged members
     mo6 = Test.MultiOptional()
     mo6.b = mo5.b
     mo6.d = mo5.d
@@ -260,7 +260,7 @@ def allTests(helper, communicator):
 
     test(mo7.bos == [False, True, False])
 
-    # Clear the second half of the optional members
+    # Clear the second half of the tagged members
     mo8 = Test.MultiOptional()
     mo8.a = mo5.a
     mo8.c = mo5.c
@@ -315,7 +315,7 @@ def allTests(helper, communicator):
     test(mo9.bos is Ice.Unset)
 
     #
-    # Use the 1.0 encoding with operations whose only class parameters are optional.
+    # Use the 1.0 encoding with operations whose only class parameters are tagged.
     #
     initial.sendOptionalClass(True, Test.OneOptional(53))
     initial.ice_encodingVersion(Ice.Encoding_1_0).sendOptionalClass(True, Test.OneOptional(53))
@@ -399,7 +399,7 @@ def allTests(helper, communicator):
 
     print("ok")
 
-    sys.stdout.write("testing marshalling of objects with optional objects...")
+    sys.stdout.write("testing marshalling of objects with tagged objects...")
     sys.stdout.flush()
 
     f = Test.F()
@@ -412,7 +412,7 @@ def allTests(helper, communicator):
 
     print("ok")
 
-    sys.stdout.write("testing optional with default values... ")
+    sys.stdout.write("testing tagged members with default values... ")
     sys.stdout.flush()
 
     wd = initial.pingPong(Test.WD())
@@ -443,7 +443,7 @@ def allTests(helper, communicator):
 
         print("ok")
 
-        sys.stdout.write("testing optionals with unknown classes... ")
+        sys.stdout.write("testing tagged unknown classes... ")
         sys.stdout.flush()
 
         initial2 = Test.Initial2Prx.uncheckedCast(base)
@@ -457,7 +457,7 @@ def allTests(helper, communicator):
 
         print("ok")
 
-    sys.stdout.write("testing optional parameters... ")
+    sys.stdout.write("testing tagged parameters... ")
     sys.stdout.flush()
 
     (p2, p3) = initial.opByte(Ice.Unset)
@@ -740,7 +740,7 @@ def allTests(helper, communicator):
 
     print("ok")
 
-    sys.stdout.write("testing exception optionals... ")
+    sys.stdout.write("testing exception with tagged members... ")
     sys.stdout.flush()
 
     try:
@@ -759,7 +759,7 @@ def allTests(helper, communicator):
 
     try:
         #
-        # Use the 1.0 encoding with an exception whose only class members are optional.
+        # Use the 1.0 encoding with an exception whose only class members are tagged.
         #
         initial.ice_encodingVersion(Ice.Encoding_1_0).opOptionalException(30, "test", Test.OneOptional(53))
     except Test.OptionalException as ex:
@@ -805,7 +805,7 @@ def allTests(helper, communicator):
 
     print("ok")
 
-    sys.stdout.write("testing optionals with marshaled results... ")
+    sys.stdout.write("testing tagged values with marshaled results... ")
     sys.stdout.flush()
 
     test(initial.opMStruct1() != Ice.Unset);

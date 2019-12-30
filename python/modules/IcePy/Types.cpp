@@ -572,10 +572,10 @@ IcePy::StreamUtil::setSlicedDataMember(PyObject* obj, const Ice::SlicedDataPtr& 
         }
 
         //
-        // hasOptionalMembers
+        // hasTaggedMembers
         //
-        PyObject* hasOptionalMembers = (*p)->hasOptionalMembers ? getTrue() : getFalse();
-        if(PyObject_SetAttrString(slice.get(), STRCAST("hasOptionalMembers"), hasOptionalMembers) < 0)
+        PyObject* hasTaggedMembers = (*p)->hasTaggedMembers ? getTrue() : getFalse();
+        if(PyObject_SetAttrString(slice.get(), STRCAST("hasTaggedMembers"), hasTaggedMembers) < 0)
         {
             assert(PyErr_Occurred());
             throw AbortMarshaling();
@@ -678,9 +678,9 @@ IcePy::StreamUtil::getSlicedDataMember(PyObject* obj, ObjectMap* objectMap)
                     info->instances.push_back(writer);
                 }
 
-                PyObjectHandle hasOptionalMembers = getAttr(s.get(), "hasOptionalMembers", false);
-                assert(hasOptionalMembers.get());
-                info->hasOptionalMembers = PyObject_IsTrue(hasOptionalMembers.get()) ? true : false;
+                PyObjectHandle hasTaggedMembers = getAttr(s.get(), "hasTaggedMembers", false);
+                assert(hasTaggedMembers.get());
+                info->hasTaggedMembers = PyObject_IsTrue(hasTaggedMembers.get()) ? true : false;
 
                 PyObjectHandle isLastSlice = getAttr(s.get(), "isLastSlice", false);
                 assert(isLastSlice.get());
@@ -922,30 +922,30 @@ IcePy::PrimitiveInfo::wireSize() const
     return 0;
 }
 
-Ice::OptionalFormat
-IcePy::PrimitiveInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::PrimitiveInfo::tagFormat() const
 {
     switch(kind)
     {
     case KindBool:
     case KindByte:
-        return Ice::OptionalFormatF1;
+        return Ice::TagFormatF1;
     case KindShort:
-        return Ice::OptionalFormatF2;
+        return Ice::TagFormatF2;
     case KindInt:
-        return Ice::OptionalFormatF4;
+        return Ice::TagFormatF4;
     case KindLong:
-        return Ice::OptionalFormatF8;
+        return Ice::TagFormatF8;
     case KindFloat:
-        return Ice::OptionalFormatF4;
+        return Ice::TagFormatF4;
     case KindDouble:
-        return Ice::OptionalFormatF8;
+        return Ice::TagFormatF8;
     case KindString:
-        return Ice::OptionalFormatVSize;
+        return Ice::TagFormatVSize;
     }
 
     assert(false);
-    return Ice::OptionalFormatF1;
+    return Ice::TagFormatF1;
 }
 
 void
@@ -1185,14 +1185,14 @@ IcePy::EnumInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::EnumInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::EnumInfo::tagFormat() const
 {
-    return Ice::OptionalFormatSize;
+    return Ice::TagFormatSize;
 }
 
 void
-IcePy::EnumInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool /*optional*/, const Ice::StringSeq*)
+IcePy::EnumInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool /*isTagged*/, const Ice::StringSeq*)
 {
     //
     // Validate value.
@@ -1305,16 +1305,16 @@ IcePy::DataMember::unmarshaled(PyObject* val, PyObject* target, void*)
 }
 
 static void
-convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList& optMembers, bool allowOptional)
+convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList& taggedMembers, bool allowTagged)
 {
-    list<DataMemberPtr> optList;
+    list<DataMemberPtr> taggedList;
 
     Py_ssize_t sz = PyTuple_GET_SIZE(members);
     for(Py_ssize_t i = 0; i < sz; ++i)
     {
         PyObject* m = PyTuple_GET_ITEM(members, i);
         assert(PyTuple_Check(m));
-        assert(PyTuple_GET_SIZE(m) == (allowOptional ? 5 : 3));
+        assert(PyTuple_GET_SIZE(m) == (allowTagged ? 5 : 3));
 
         PyObject* name = PyTuple_GET_ITEM(m, 0); // Member name.
         assert(checkString(name));
@@ -1322,11 +1322,11 @@ convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList
         assert(PyTuple_Check(meta));
         PyObject* t = PyTuple_GET_ITEM(m, 2); // Member type.
 
-        PyObject* opt = 0;
+        PyObject* isTagged = 0;
         PyObject* tag = 0;
-        if(allowOptional)
+        if(allowTagged)
         {
-            opt = PyTuple_GET_ITEM(m, 3); // Optional?
+            isTagged = PyTuple_GET_ITEM(m, 3);
             tag = PyTuple_GET_ITEM(m, 4);
 #if PY_VERSION_HEX < 0x03000000
             assert(PyInt_Check(tag));
@@ -1343,20 +1343,20 @@ convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList
         tupleToStringSeq(meta, member->metaData);
         assert(b);
         member->type = getType(t);
-        if(allowOptional)
+        if(allowTagged)
         {
-            member->optional = PyObject_IsTrue(opt) == 1;
+            member->isTagged = PyObject_IsTrue(isTagged) == 1;
             member->tag = static_cast<int>(PyLong_AsLong(tag));
         }
         else
         {
-            member->optional = false;
+            member->isTagged = false;
             member->tag = 0;
         }
 
-        if(member->optional)
+        if(member->isTagged)
         {
-            optList.push_back(member);
+            taggedList.push_back(member);
         }
         else
         {
@@ -1364,7 +1364,7 @@ convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList
         }
     }
 
-    if(allowOptional)
+    if(allowTagged)
     {
         class SortFn
         {
@@ -1375,8 +1375,8 @@ convertDataMembers(PyObject* members, DataMemberList& reqMembers, DataMemberList
             }
         };
 
-        optList.sort(SortFn::compare);
-        copy(optList.begin(), optList.end(), back_inserter(optMembers));
+        taggedList.sort(SortFn::compare);
+        copy(taggedList.begin(), taggedList.end(), back_inserter(taggedMembers));
     }
 }
 
@@ -1389,9 +1389,9 @@ IcePy::StructInfo::StructInfo(const string& ident, PyObject* t, PyObject* m) :
     assert(PyType_Check(t));
     assert(PyTuple_Check(m));
 
-    DataMemberList opt;
-    convertDataMembers(m, const_cast<DataMemberList&>(members), opt, false);
-    assert(opt.empty());
+    DataMemberList taggedMembers;
+    convertDataMembers(m, const_cast<DataMemberList&>(members), taggedMembers, false);
+    assert(taggedMembers.empty());
 
     _variableLength = false;
     _wireSize = 0;
@@ -1429,10 +1429,10 @@ IcePy::StructInfo::wireSize() const
     return _wireSize;
 }
 
-Ice::OptionalFormat
-IcePy::StructInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::StructInfo::tagFormat() const
 {
-    return _variableLength ? Ice::OptionalFormatFSize : Ice::OptionalFormatVSize;
+    return _variableLength ? Ice::TagFormatFSize : Ice::TagFormatVSize;
 }
 
 bool
@@ -1450,7 +1450,7 @@ IcePy::StructInfo::usesClasses() const
 }
 
 void
-IcePy::StructInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool optional,
+IcePy::StructInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool isTagged,
                            const Ice::StringSeq*)
 {
     assert(p == Py_None || PyObject_IsInstance(p, pythonType) == 1); // validate() should have caught this.
@@ -1468,7 +1468,7 @@ IcePy::StructInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* object
     }
 
     Ice::OutputStream::size_type sizePos = 0;
-    if(optional)
+    if(isTagged)
     {
         if(_variableLength)
         {
@@ -1500,7 +1500,7 @@ IcePy::StructInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* object
         member->type->marshal(attr.get(), os, objectMap, false, &member->metaData);
     }
 
-    if(optional && _variableLength)
+    if(isTagged && _variableLength)
     {
         os->endSize(sizePos);
     }
@@ -1508,7 +1508,7 @@ IcePy::StructInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* object
 
 void
 IcePy::StructInfo::unmarshal(Ice::InputStream* is, const UnmarshalCallbackPtr& cb, PyObject* target,
-                             void* closure, bool optional, const Ice::StringSeq*)
+                             void* closure, bool isTagged, const Ice::StringSeq*)
 {
     PyObjectHandle p = instantiate(pythonType);
     if(!p.get())
@@ -1517,7 +1517,7 @@ IcePy::StructInfo::unmarshal(Ice::InputStream* is, const UnmarshalCallbackPtr& c
         throw AbortMarshaling();
     }
 
-    if(optional)
+    if(isTagged)
     {
         if(_variableLength)
         {
@@ -1631,10 +1631,10 @@ IcePy::SequenceInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::SequenceInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::SequenceInfo::tagFormat() const
 {
-    return elementType->variableLength() ? Ice::OptionalFormatFSize : Ice::OptionalFormatVSize;
+    return elementType->variableLength() ? Ice::TagFormatFSize : Ice::TagFormatVSize;
 }
 
 bool
@@ -1644,13 +1644,13 @@ IcePy::SequenceInfo::usesClasses() const
 }
 
 void
-IcePy::SequenceInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool optional,
+IcePy::SequenceInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool isTagged,
                              const Ice::StringSeq* /*metaData*/)
 {
     PrimitiveInfoPtr pi = PrimitiveInfoPtr::dynamicCast(elementType);
 
     Ice::OutputStream::size_type sizePos = 0;
-    if(optional)
+    if(isTagged)
     {
         if(elementType->variableLength())
         {
@@ -1736,7 +1736,7 @@ IcePy::SequenceInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* obje
         }
     }
 
-    if(optional && elementType->variableLength())
+    if(isTagged && elementType->variableLength())
     {
         os->endSize(sizePos);
     }
@@ -1744,9 +1744,9 @@ IcePy::SequenceInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* obje
 
 void
 IcePy::SequenceInfo::unmarshal(Ice::InputStream* is, const UnmarshalCallbackPtr& cb, PyObject* target,
-                               void* closure, bool optional, const Ice::StringSeq* metaData)
+                               void* closure, bool isTagged, const Ice::StringSeq* metaData)
 {
-    if(optional)
+    if(isTagged)
     {
         if(elementType->variableLength())
         {
@@ -2886,10 +2886,10 @@ IcePy::CustomInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::CustomInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::CustomInfo::tagFormat() const
 {
-    return Ice::OptionalFormatVSize;
+    return Ice::TagFormatVSize;
 }
 
 bool
@@ -3053,10 +3053,10 @@ IcePy::DictionaryInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::DictionaryInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::DictionaryInfo::tagFormat() const
 {
-    return _variableLength ? Ice::OptionalFormatFSize : Ice::OptionalFormatVSize;
+    return _variableLength ? Ice::TagFormatFSize : Ice::TagFormatVSize;
 }
 
 bool
@@ -3066,7 +3066,7 @@ IcePy::DictionaryInfo::usesClasses() const
 }
 
 void
-IcePy::DictionaryInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool optional,
+IcePy::DictionaryInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* objectMap, bool isTagged,
                                const Ice::StringSeq*)
 {
     if(p != Py_None && !PyDict_Check(p))
@@ -3078,7 +3078,7 @@ IcePy::DictionaryInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* ob
     const Ice::Int sz = p == Py_None ? 0 : static_cast<Ice::Int>(PyDict_Size(p));
 
     Ice::OutputStream::size_type sizePos = 0;
-    if(optional)
+    if(isTagged)
     {
         if(_variableLength)
         {
@@ -3119,7 +3119,7 @@ IcePy::DictionaryInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* ob
         }
     }
 
-    if(optional && _variableLength)
+    if(isTagged && _variableLength)
     {
         os->endSize(sizePos);
     }
@@ -3127,9 +3127,9 @@ IcePy::DictionaryInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* ob
 
 void
 IcePy::DictionaryInfo::unmarshal(Ice::InputStream* is, const UnmarshalCallbackPtr& cb, PyObject* target,
-                                 void* closure, bool optional, const Ice::StringSeq*)
+                                 void* closure, bool isTagged, const Ice::StringSeq*)
 {
-    if(optional)
+    if(isTagged)
     {
         if(_variableLength)
         {
@@ -3309,10 +3309,10 @@ IcePy::ClassInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::ClassInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::ClassInfo::tagFormat() const
 {
-    return Ice::OptionalFormatClass;
+    return Ice::TagFormatClass;
 }
 
 bool
@@ -3414,7 +3414,7 @@ IcePy::ValueInfo::define(PyObject* t, int compact, bool pres, bool intf, PyObjec
         assert(base);
     }
 
-    convertDataMembers(m, const_cast<DataMemberList&>(members), const_cast<DataMemberList&>(optionalMembers), true);
+    convertDataMembers(m, const_cast<DataMemberList&>(members), const_cast<DataMemberList&>(taggedMembers), true);
 
     pythonType = t;
 
@@ -3445,10 +3445,10 @@ IcePy::ValueInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::ValueInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::ValueInfo::tagFormat() const
 {
-    return Ice::OptionalFormatClass;
+    return Ice::TagFormatClass;
 }
 
 bool
@@ -3620,7 +3620,7 @@ IcePy::ValueInfo::printMembers(PyObject* value, IceUtilInternal::Output& out, Pr
         }
     }
 
-    for(q = optionalMembers.begin(); q != optionalMembers.end(); ++q)
+    for(q = taggedMembers.begin(); q != taggedMembers.end(); ++q)
     {
         DataMemberPtr member = *q;
         PyObjectHandle attr = getAttr(value, member->name, true);
@@ -3679,17 +3679,17 @@ IcePy::ProxyInfo::wireSize() const
     return 1;
 }
 
-Ice::OptionalFormat
-IcePy::ProxyInfo::optionalFormat() const
+Ice::TagFormat
+IcePy::ProxyInfo::tagFormat() const
 {
-    return Ice::OptionalFormatFSize;
+    return Ice::TagFormatFSize;
 }
 
 void
-IcePy::ProxyInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool optional, const Ice::StringSeq*)
+IcePy::ProxyInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool isTagged, const Ice::StringSeq*)
 {
     Ice::OutputStream::size_type sizePos = 0;
-    if(optional)
+    if(isTagged)
     {
         sizePos = os->startSize();
     }
@@ -3707,7 +3707,7 @@ IcePy::ProxyInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool o
         assert(false); // validate() should have caught this.
     }
 
-    if(optional)
+    if(isTagged)
     {
         os->endSize(sizePos);
     }
@@ -3715,9 +3715,9 @@ IcePy::ProxyInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap*, bool o
 
 void
 IcePy::ProxyInfo::unmarshal(Ice::InputStream* is, const UnmarshalCallbackPtr& cb, PyObject* target,
-                            void* closure, bool optional, const Ice::StringSeq*)
+                            void* closure, bool isTagged, const Ice::StringSeq*)
 {
-    if(optional)
+    if(isTagged)
     {
         is->skip(4);
     }
@@ -3842,7 +3842,7 @@ IcePy::ObjectWriter::_iceWrite(Ice::OutputStream* os) const
                 os->startSlice(info->id, info->compactId, !info->base);
 
                 writeMembers(os, info->members);
-                writeMembers(os, info->optionalMembers); // The optional members have already been sorted by tag.
+                writeMembers(os, info->taggedMembers); // The tagged members have already been sorted by tag.
 
                 os->endSlice();
 
@@ -3872,7 +3872,7 @@ IcePy::ObjectWriter::writeMembers(Ice::OutputStream* os, const DataMemberList& m
         PyObjectHandle val = getAttr(_object, member->name, true);
         if(!val.get())
         {
-            if(member->optional)
+            if(member->isTagged)
             {
                 PyErr_Clear();
                 continue;
@@ -3884,8 +3884,8 @@ IcePy::ObjectWriter::writeMembers(Ice::OutputStream* os, const DataMemberList& m
                 throw AbortMarshaling();
             }
         }
-        else if(member->optional &&
-                (val.get() == Unset || !os->writeOptional(member->tag, member->type->optionalFormat())))
+        else if(member->isTagged &&
+                (val.get() == Unset || !os->writeTag(member->tag, member->type->tagFormat())))
         {
             continue;
         }
@@ -3897,7 +3897,7 @@ IcePy::ObjectWriter::writeMembers(Ice::OutputStream* os, const DataMemberList& m
             throw AbortMarshaling();
         }
 
-        member->type->marshal(val.get(), os, _map, member->optional, &member->metaData);
+        member->type->marshal(val.get(), os, _map, member->isTagged, &member->metaData);
     }
 }
 
@@ -3961,12 +3961,12 @@ IcePy::ObjectReader::_iceRead(Ice::InputStream* is)
             }
 
             //
-            // The optional members have already been sorted by tag.
+            // The tagged members have already been sorted by tag.
             //
-            for(p = info->optionalMembers.begin(); p != info->optionalMembers.end(); ++p)
+            for(p = info->taggedMembers.begin(); p != info->taggedMembers.end(); ++p)
             {
                 DataMemberPtr member = *p;
-                if(is->readOptional(member->tag, member->type->optionalFormat()))
+                if(is->readTag(member->tag, member->type->tagFormat()))
                 {
                     member->type->unmarshal(is, member, _object, 0, true, &member->metaData);
                 }
@@ -4100,7 +4100,7 @@ IcePy::ExceptionInfo::marshal(PyObject* p, Ice::OutputStream* os, ObjectMap* obj
         os->startSlice(info->id, -1, !info->base);
 
         writeMembers(p, os, info->members, objectMap);
-        writeMembers(p, os, info->optionalMembers, objectMap); // The optional members have already been sorted by tag.
+        writeMembers(p, os, info->taggedMembers, objectMap); // The tagged members have already been sorted by tag.
 
         os->endSlice();
 
@@ -4123,7 +4123,7 @@ IcePy::ExceptionInfo::writeMembers(PyObject* p, Ice::OutputStream* os, const Dat
         PyObjectHandle val = getAttr(p, member->name, true);
         if(!val.get())
         {
-            if(member->optional)
+            if(member->isTagged)
             {
                 PyErr_Clear();
                 continue;
@@ -4135,8 +4135,8 @@ IcePy::ExceptionInfo::writeMembers(PyObject* p, Ice::OutputStream* os, const Dat
                 throw AbortMarshaling();
             }
         }
-        else if(member->optional &&
-                (val.get() == Unset || !os->writeOptional(member->tag, member->type->optionalFormat())))
+        else if(member->isTagged &&
+                (val.get() == Unset || !os->writeTag(member->tag, member->type->tagFormat())))
         {
             continue;
         }
@@ -4148,7 +4148,7 @@ IcePy::ExceptionInfo::writeMembers(PyObject* p, Ice::OutputStream* os, const Dat
             throw AbortMarshaling();
         }
 
-        member->type->marshal(val.get(), os, objectMap, member->optional, &member->metaData);
+        member->type->marshal(val.get(), os, objectMap, member->isTagged, &member->metaData);
     }
 }
 
@@ -4176,12 +4176,12 @@ IcePy::ExceptionInfo::unmarshal(Ice::InputStream* is)
         }
 
         //
-        // The optional members have already been sorted by tag.
+        // The tagged members have already been sorted by tag.
         //
-        for(q = info->optionalMembers.begin(); q != info->optionalMembers.end(); ++q)
+        for(q = info->taggedMembers.begin(); q != info->taggedMembers.end(); ++q)
         {
             DataMemberPtr member = *q;
-            if(is->readOptional(member->tag, member->type->optionalFormat()))
+            if(is->readTag(member->tag, member->type->tagFormat()))
             {
                 member->type->unmarshal(is, member, p.get(), 0, true, &member->metaData);
             }
@@ -4243,7 +4243,7 @@ IcePy::ExceptionInfo::printMembers(PyObject* value, IceUtilInternal::Output& out
         }
     }
 
-    for(q = optionalMembers.begin(); q != optionalMembers.end(); ++q)
+    for(q = taggedMembers.begin(); q != taggedMembers.end(); ++q)
     {
         DataMemberPtr member = *q;
         PyObjectHandle attr = getAttr(value, member->name, true);
@@ -5175,7 +5175,7 @@ IcePy_defineException(PyObject*, PyObject* args)
         assert(info->base);
     }
 
-    convertDataMembers(members, info->members, info->optionalMembers, true);
+    convertDataMembers(members, info->members, info->taggedMembers, true);
 
     info->usesClasses = false;
 

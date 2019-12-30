@@ -40,7 +40,7 @@ public:
 
     Ice::StringSeq metaData;
     TypeInfoPtr type;
-    bool optional;
+    bool isTagged;
     int tag;
     Py_ssize_t pos;
 };
@@ -67,9 +67,9 @@ public:
     Ice::FormatType format;
     Ice::StringSeq metaData;
     ParamInfoList inParams;
-    ParamInfoList optionalInParams;
+    ParamInfoList taggedInParams;
     ParamInfoList outParams;
-    ParamInfoList optionalOutParams;
+    ParamInfoList taggedOutParams;
     ParamInfoPtr returnType;
     ExceptionInfoList exceptions;
     string dispatchName;
@@ -1286,7 +1286,7 @@ IcePy::Operation::Operation(const char* n, PyObject* m, PyObject* sm, int amdFla
     if(ret != Py_None)
     {
         returnType = convertParam(ret, 0);
-        if(!returnType->optional)
+        if(!returnType->isTagged)
         {
             returnsClasses = returnType->type->usesClasses();
         }
@@ -1313,30 +1313,30 @@ IcePy::Operation::Operation(const char* n, PyObject* m, PyObject* sm, int amdFla
 
         static bool isRequired(const ParamInfoPtr& i)
         {
-            return !i->optional;
+            return !i->isTagged;
         }
     };
 
     //
     // The inParams list represents the parameters in the order of declaration.
-    // We also need a sorted list of optional parameters.
+    // We also need a sorted list of tagged parameters.
     //
     ParamInfoList l = inParams;
-    copy(l.begin(), remove_if(l.begin(), l.end(), SortFn::isRequired), back_inserter(optionalInParams));
-    optionalInParams.sort(SortFn::compare);
+    copy(l.begin(), remove_if(l.begin(), l.end(), SortFn::isRequired), back_inserter(taggedInParams));
+    taggedInParams.sort(SortFn::compare);
 
     //
     // The outParams list represents the parameters in the order of declaration.
-    // We also need a sorted list of optional parameters. If the return value is
-    // optional, we must include it in this list.
+    // We also need a sorted list of tagged parameters. If the return value is
+    // tagged, we must include it in this list.
     //
     l = outParams;
-    copy(l.begin(), remove_if(l.begin(), l.end(), SortFn::isRequired), back_inserter(optionalOutParams));
-    if(returnType && returnType->optional)
+    copy(l.begin(), remove_if(l.begin(), l.end(), SortFn::isRequired), back_inserter(taggedOutParams));
+    if(returnType && returnType->isTagged)
     {
-        optionalOutParams.push_back(returnType);
+        taggedOutParams.push_back(returnType);
     }
-    optionalOutParams.sort(SortFn::compare);
+    taggedOutParams.sort(SortFn::compare);
 
     //
     // exceptions
@@ -1403,7 +1403,7 @@ Operation::marshalResult(Ice::OutputStream& os, PyObject* result)
     {
         ParamInfoPtr info = *p;
         PyObject* arg = PyTuple_GET_ITEM(t.get(), info->pos);
-        if((!info->optional || arg != Unset) && !info->type->validate(arg))
+        if((!info->isTagged || arg != Unset) && !info->type->validate(arg))
         {
             try
             {
@@ -1422,7 +1422,7 @@ Operation::marshalResult(Ice::OutputStream& os, PyObject* result)
     if(returnType)
     {
         PyObject* res = PyTuple_GET_ITEM(t.get(), 0);
-        if((!returnType->optional || res != Unset) && !returnType->type->validate(res))
+        if((!returnType->isTagged || res != Unset) && !returnType->type->validate(res))
         {
             try
             {
@@ -1443,7 +1443,7 @@ Operation::marshalResult(Ice::OutputStream& os, PyObject* result)
     for(p = outParams.begin(); p != outParams.end(); ++p)
     {
         ParamInfoPtr info = *p;
-        if(!info->optional)
+        if(!info->isTagged)
         {
             PyObject* arg = PyTuple_GET_ITEM(t.get(), info->pos);
             info->type->marshal(arg, &os, &objectMap, false, &info->metaData);
@@ -1453,20 +1453,20 @@ Operation::marshalResult(Ice::OutputStream& os, PyObject* result)
     //
     // Marshal the required return value, if any.
     //
-    if(returnType && !returnType->optional)
+    if(returnType && !returnType->isTagged)
     {
         PyObject* res = PyTuple_GET_ITEM(t.get(), 0);
         returnType->type->marshal(res, &os, &objectMap, false, &metaData);
     }
 
     //
-    // Marshal the optional results.
+    // Marshal the tagged results.
     //
-    for(p = optionalOutParams.begin(); p != optionalOutParams.end(); ++p)
+    for(p = taggedOutParams.begin(); p != taggedOutParams.end(); ++p)
     {
         ParamInfoPtr info = *p;
         PyObject* arg = PyTuple_GET_ITEM(t.get(), info->pos);
-        if(arg != Unset && os.writeOptional(info->tag, info->type->optionalFormat()))
+        if(arg != Unset && os.writeTag(info->tag, info->type->tagFormat()))
         {
             info->type->marshal(arg, &os, &objectMap, true, &info->metaData);
         }
@@ -1500,7 +1500,7 @@ IcePy::Operation::convertParams(PyObject* p, ParamInfoList& params, Py_ssize_t p
         PyObject* item = PyTuple_GET_ITEM(p, i);
         ParamInfoPtr param = convertParam(item, i + posOffset);
         params.push_back(param);
-        if(!param->optional && !usesClasses)
+        if(!param->isTagged && !usesClasses)
         {
             usesClasses = param->type->usesClasses();
         }
@@ -1536,9 +1536,9 @@ IcePy::Operation::convertParam(PyObject* p, Py_ssize_t pos)
     }
 
     //
-    // optional
+    // tagged
     //
-    param->optional = PyObject_IsTrue(PyTuple_GET_ITEM(p, 2)) == 1;
+    param->isTagged = PyObject_IsTrue(PyTuple_GET_ITEM(p, 2)) == 1;
 
     //
     // tag
@@ -1968,7 +1968,7 @@ IcePy::Invocation::prepareRequest(const OperationPtr& op, PyObject* args, Mappin
             {
                 ParamInfoPtr info = *p;
                 PyObject* arg = PyTuple_GET_ITEM(args, info->pos);
-                if((!info->optional || arg != Unset) && !info->type->validate(arg))
+                if((!info->isTagged || arg != Unset) && !info->type->validate(arg))
                 {
                     string name;
                     if(mapping == NewAsyncMapping)
@@ -1995,7 +1995,7 @@ IcePy::Invocation::prepareRequest(const OperationPtr& op, PyObject* args, Mappin
             for(p = op->inParams.begin(); p != op->inParams.end(); ++p)
             {
                 ParamInfoPtr info = *p;
-                if(!info->optional)
+                if(!info->isTagged)
                 {
                     PyObject* arg = PyTuple_GET_ITEM(args, info->pos);
                     info->type->marshal(arg, os, &objectMap, false, &info->metaData);
@@ -2003,13 +2003,13 @@ IcePy::Invocation::prepareRequest(const OperationPtr& op, PyObject* args, Mappin
             }
 
             //
-            // Marshal the optional parameters.
+            // Marshal the tagged parameters.
             //
-            for(p = op->optionalInParams.begin(); p != op->optionalInParams.end(); ++p)
+            for(p = op->taggedInParams.begin(); p != op->taggedInParams.end(); ++p)
             {
                 ParamInfoPtr info = *p;
                 PyObject* arg = PyTuple_GET_ITEM(args, info->pos);
-                if(arg != Unset && os->writeOptional(info->tag, info->type->optionalFormat()))
+                if(arg != Unset && os->writeTag(info->tag, info->type->tagFormat()))
                 {
                     info->type->marshal(arg, os, &objectMap, true, &info->metaData);
                 }
@@ -2070,7 +2070,7 @@ IcePy::Invocation::unmarshalResults(const OperationPtr& op, const pair<const Ice
         for(p = op->outParams.begin(); p != op->outParams.end(); ++p)
         {
             ParamInfoPtr info = *p;
-            if(!info->optional)
+            if(!info->isTagged)
             {
                 void* closure = reinterpret_cast<void*>(info->pos);
                 info->type->unmarshal(&is, info, results.get(), closure, false, &info->metaData);
@@ -2080,7 +2080,7 @@ IcePy::Invocation::unmarshalResults(const OperationPtr& op, const pair<const Ice
         //
         // Unmarshal the required return value, if any.
         //
-        if(op->returnType && !op->returnType->optional)
+        if(op->returnType && !op->returnType->isTagged)
         {
             assert(op->returnType->pos == 0);
             void* closure = reinterpret_cast<void*>(op->returnType->pos);
@@ -2088,12 +2088,12 @@ IcePy::Invocation::unmarshalResults(const OperationPtr& op, const pair<const Ice
         }
 
         //
-        // Unmarshal the optional results. This includes an optional return value.
+        // Unmarshal the tagged results. This includes a tagged return value.
         //
-        for(p = op->optionalOutParams.begin(); p != op->optionalOutParams.end(); ++p)
+        for(p = op->taggedOutParams.begin(); p != op->taggedOutParams.end(); ++p)
         {
             ParamInfoPtr info = *p;
-            if(is.readOptional(info->tag, info->type->optionalFormat()))
+            if(is.readTag(info->tag, info->type->tagFormat()))
             {
                 void* closure = reinterpret_cast<void*>(info->pos);
                 info->type->unmarshal(&is, info, results.get(), closure, true, &info->metaData);
@@ -3888,7 +3888,7 @@ IcePy::TypedUpcall::dispatch(PyObject* servant, const pair<const Ice::Byte*, con
             for(p = _op->inParams.begin(); p != _op->inParams.end(); ++p)
             {
                 ParamInfoPtr info = *p;
-                if(!info->optional)
+                if(!info->isTagged)
                 {
                     void* closure = reinterpret_cast<void*>(info->pos);
                     info->type->unmarshal(&is, info, args.get(), closure, false, &info->metaData);
@@ -3896,12 +3896,12 @@ IcePy::TypedUpcall::dispatch(PyObject* servant, const pair<const Ice::Byte*, con
             }
 
             //
-            // Unmarshal the optional parameters.
+            // Unmarshal the tagged parameters.
             //
-            for(p = _op->optionalInParams.begin(); p != _op->optionalInParams.end(); ++p)
+            for(p = _op->taggedInParams.begin(); p != _op->taggedInParams.end(); ++p)
             {
                 ParamInfoPtr info = *p;
-                if(is.readOptional(info->tag, info->type->optionalFormat()))
+                if(is.readTag(info->tag, info->type->tagFormat()))
                 {
                     void* closure = reinterpret_cast<void*>(info->pos);
                     info->type->unmarshal(&is, info, args.get(), closure, true, &info->metaData);

@@ -144,7 +144,7 @@ public:
 
     virtual bool variableLength() const = 0;
     virtual int wireSize() const = 0;
-    virtual Ice::OptionalFormat optionalFormat() const = 0;
+    virtual Ice::TagFormat tagFormat() const = 0;
 
     virtual bool usesClasses() const; // Default implementation returns false.
 
@@ -197,7 +197,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual void marshal(PyObject*, Ice::OutputStream*, ObjectMap*, bool, const Ice::StringSeq* = 0);
     virtual void unmarshal(Ice::InputStream*, const UnmarshalCallbackPtr&, PyObject*, void*, bool,
@@ -226,7 +226,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual void marshal(PyObject*, Ice::OutputStream*, ObjectMap*, bool, const Ice::StringSeq* = 0);
     virtual void unmarshal(Ice::InputStream*, const UnmarshalCallbackPtr&, PyObject*, void*, bool,
@@ -255,7 +255,7 @@ public:
     std::string name;
     std::vector<std::string> metaData;
     TypeInfoPtr type;
-    bool optional;
+    bool isTagged;
     int tag;
 };
 typedef IceUtil::Handle<DataMember> DataMemberPtr;
@@ -276,7 +276,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -317,7 +317,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -410,7 +410,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -440,7 +440,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -490,7 +490,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -528,7 +528,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual bool usesClasses() const;
 
@@ -548,7 +548,7 @@ public:
     const bool interface;
     const ValueInfoPtr base;
     const DataMemberList members;
-    const DataMemberList optionalMembers;
+    const DataMemberList taggedMembers;
     PyObject* pythonType; // Borrowed reference - the enclosing Python module owns the reference.
     PyObject* typeObj; // Borrowed reference - the "_t_XXX" variable owns the reference.
     const bool defined;
@@ -571,7 +571,7 @@ public:
 
     virtual bool variableLength() const;
     virtual int wireSize() const;
-    virtual Ice::OptionalFormat optionalFormat() const;
+    virtual Ice::TagFormat tagFormat() const;
 
     virtual void marshal(PyObject*, Ice::OutputStream*, ObjectMap*, bool, const Ice::StringSeq* = 0);
     virtual void unmarshal(Ice::InputStream*, const UnmarshalCallbackPtr&, PyObject*, void*, bool,
@@ -602,7 +602,7 @@ public:
     bool preserve;
     ExceptionInfoPtr base;
     DataMemberList members;
-    DataMemberList optionalMembers;
+    DataMemberList taggedMembers;
     bool usesClasses;
     PyObject* pythonType; // Borrowed reference - the enclosing Python module owns the reference.
 
