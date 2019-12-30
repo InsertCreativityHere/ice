@@ -37,8 +37,8 @@ classdef ProtocolVersion
             r.major = is.readByte();
             r.minor = is.readByte();
         end
-        function r = ice_readOpt(is, tag)
-            if is.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = ice_readTag(is, tag)
+            if is.readTag(tag, Ice.TagFormat.VSize)
                 is.skipSize();
                 r = Ice.ProtocolVersion.ice_read(is);
             else
@@ -52,8 +52,8 @@ classdef ProtocolVersion
             os.writeByte(v.major);
             os.writeByte(v.minor);
         end
-        function ice_writeOpt(os, tag, v)
-            if v ~= Ice.Unset && os.writeOptional(tag, Ice.OptionalFormat.VSize)
+        function ice_writeTag(os, tag, v)
+            if v ~= Ice.Unset && os.writeTag(tag, Ice.TagFormat.VSize)
                 os.writeSize(2);
                 Ice.ProtocolVersion.ice_write(os, v);
             end

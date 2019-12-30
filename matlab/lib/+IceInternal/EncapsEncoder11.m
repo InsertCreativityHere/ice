@@ -118,12 +118,12 @@ classdef EncapsEncoder11 < IceInternal.EncapsEncoder
         function endSlice(obj)
             import IceInternal.Protocol;
             %
-            % Write the optional member end marker if some optional members
-            % were encoded. Note that the optional members are encoded before
+            % Write the tagged member end marker if some tagged members
+            % were encoded. Note that the tagged members are encoded before
             % the indirection table and are included in the slice size.
             %
-            if bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS)
-                obj.os.writeByte(Protocol.OPTIONAL_END_MARKER);
+            if bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS)
+                obj.os.writeByte(Protocol.TAGGED_END_MARKER);
             end
 
             %
@@ -158,13 +158,13 @@ classdef EncapsEncoder11 < IceInternal.EncapsEncoder
             obj.os.rewriteByte(obj.current.sliceFlags, obj.current.sliceFlagsPos);
         end
 
-        function r = writeOptional(obj, tag, format)
+        function r = writeTag(obj, tag, format)
             import IceInternal.Protocol;
             if isempty(obj.current)
-                r = obj.os.writeOptionalImpl(tag, format);
+                r = obj.os.writeTagImpl(tag, format);
             else
-                if obj.os.writeOptionalImpl(tag, format)
-                    obj.current.sliceFlags = bitor(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS);
+                if obj.os.writeTagImpl(tag, format)
+                    obj.current.sliceFlags = bitor(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS);
                     r = true;
                 else
                     r = false;
@@ -197,8 +197,8 @@ classdef EncapsEncoder11 < IceInternal.EncapsEncoder
                 %
                 obj.os.writeBlob(info.bytes);
 
-                if info.hasOptionalMembers
-                    obj.current.sliceFlags = bitor(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS);
+                if info.hasTaggedMembers
+                    obj.current.sliceFlags = bitor(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS);
                 end
 
                 %

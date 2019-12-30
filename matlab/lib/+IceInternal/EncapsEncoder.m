@@ -11,7 +11,7 @@ classdef (Abstract) EncapsEncoder < handle
             obj.typeIdIndex = 0;
         end
 
-        function r = writeOptional(~, ~, ~)
+        function r = writeTag(~, ~, ~)
             r = false;
         end
 

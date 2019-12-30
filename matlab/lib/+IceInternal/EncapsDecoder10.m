@@ -189,7 +189,7 @@ classdef EncapsDecoder10 < IceInternal.EncapsDecoder
             obj.is.skip(obj.sliceSize - 4);
         end
 
-        function r = readOptional(~, ~, ~)
+        function r = readTag(~, ~, ~)
             r = false;
         end
     end

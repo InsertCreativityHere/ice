@@ -20,7 +20,7 @@ classdef (Abstract) EncapsDecoder < handle
             obj.delayedPostUnmarshal = {};
         end
 
-        function r = readOptional(~, ~, ~)
+        function r = readTag(~, ~, ~)
             r = false;
         end
 

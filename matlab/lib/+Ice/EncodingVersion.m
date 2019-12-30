@@ -37,8 +37,8 @@ classdef EncodingVersion
             r.major = is.readByte();
             r.minor = is.readByte();
         end
-        function r = ice_readOpt(is, tag)
-            if is.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = ice_readTag(is, tag)
+            if is.readTag(tag, Ice.TagFormat.VSize)
                 is.skipSize();
                 r = Ice.EncodingVersion.ice_read(is);
             else
@@ -52,8 +52,8 @@ classdef EncodingVersion
             os.writeByte(v.major);
             os.writeByte(v.minor);
         end
-        function ice_writeOpt(os, tag, v)
-            if v ~= Ice.Unset && os.writeOptional(tag, Ice.OptionalFormat.VSize)
+        function ice_writeTag(os, tag, v)
+            if v ~= Ice.Unset && os.writeTag(tag, Ice.TagFormat.VSize)
                 os.writeSize(2);
                 Ice.EncodingVersion.ice_write(os, v);
             end

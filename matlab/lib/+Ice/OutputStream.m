@@ -37,8 +37,8 @@ classdef OutputStream < handle
                 obj.buf.pushByte(uint8(v));
             end
         end
-        function writeBoolOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F1)
+        function writeTaggedBool(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F1)
                 obj.buf.pushByte(uint8(v));
             end
         end
@@ -49,8 +49,8 @@ classdef OutputStream < handle
                 obj.buf.push(v);
             end
         end
-        function writeBoolSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.VSize)
+        function writeTaggedBoolSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.VSize)
                 obj.writeBoolSeq(v);
             end
         end
@@ -64,8 +64,8 @@ classdef OutputStream < handle
                 obj.buf.pushByte(uint8(v));
             end
         end
-        function writeByteOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F1)
+        function writeTaggedByte(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F1)
                 obj.buf.pushByte(v);
             end
         end
@@ -76,8 +76,8 @@ classdef OutputStream < handle
                 obj.buf.push(v);
             end
         end
-        function writeByteSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.VSize)
+        function writeTaggedByteSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.VSize)
                 obj.writeByteSeq(v);
             end
         end
@@ -91,8 +91,8 @@ classdef OutputStream < handle
             end
             obj.buf.buf(sz + 1:newSz) = typecast(int16(v), 'uint8');
         end
-        function writeShortOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F2)
+        function writeTaggedShort(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F2)
                 obj.writeShort(v);
             end
         end
@@ -106,8 +106,8 @@ classdef OutputStream < handle
                 obj.buf.buf(sz + 1:sz + nbytes) = typecast(int16(v), 'uint8');
             end
         end
-        function writeShortSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptionalVSize(tag, length(v), 2)
+        function writeTaggedShortSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTagVSize(tag, length(v), 2)
                 obj.writeShortSeq(v);
             end
         end
@@ -121,8 +121,8 @@ classdef OutputStream < handle
             end
             obj.buf.buf(sz + 1:newSz) = typecast(int32(v), 'uint8');
         end
-        function writeIntOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F4)
+        function writeTaggedInt(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F4)
                 obj.writeInt(v);
             end
         end
@@ -136,8 +136,8 @@ classdef OutputStream < handle
                 obj.buf.buf(sz + 1:sz + nbytes) = typecast(int32(v), 'uint8');
             end
         end
-        function writeIntSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptionalVSize(tag, length(v), 4)
+        function writeTaggedIntSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTagVSize(tag, length(v), 4)
                 obj.writeIntSeq(v);
             end
         end
@@ -151,8 +151,8 @@ classdef OutputStream < handle
             end
             obj.buf.buf(sz + 1:newSz) = typecast(int64(v), 'uint8');
         end
-        function writeLongOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F8)
+        function writeTaggedLong(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F8)
                 obj.writeLong(v);
             end
         end
@@ -166,8 +166,8 @@ classdef OutputStream < handle
                 obj.buf.buf(sz + 1:sz + nbytes) = typecast(int64(v), 'uint8');
             end
         end
-        function writeLongSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptionalVSize(tag, length(v), 8)
+        function writeTaggedLongSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTagVSize(tag, length(v), 8)
                 obj.writeLongSeq(v);
             end
         end
@@ -181,8 +181,8 @@ classdef OutputStream < handle
             end
             obj.buf.buf(sz + 1:newSz) = typecast(single(v), 'uint8');
         end
-        function writeFloatOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F4)
+        function writeTaggedFloat(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F4)
                 obj.writeFloat(v);
             end
         end
@@ -196,8 +196,8 @@ classdef OutputStream < handle
                 obj.buf.buf(sz + 1:sz + nbytes) = typecast(single(v), 'uint8');
             end
         end
-        function writeFloatSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptionalVSize(tag, length(v), 4)
+        function writeTaggedFloatSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTagVSize(tag, length(v), 4)
                 obj.writeFloatSeq(v);
             end
         end
@@ -211,8 +211,8 @@ classdef OutputStream < handle
             end
             obj.buf.buf(sz + 1:newSz) = typecast(double(v), 'uint8');
         end
-        function writeDoubleOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.F8)
+        function writeTaggedDouble(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.F8)
                 obj.writeDouble(v);
             end
         end
@@ -226,8 +226,8 @@ classdef OutputStream < handle
                 obj.buf.buf(sz + 1:sz + nbytes) = typecast(double(v), 'uint8');
             end
         end
-        function writeDoubleSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptionalVSize(tag, length(v), 8)
+        function writeTaggedDoubleSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTagVSize(tag, length(v), 8)
                 obj.writeDoubleSeq(v);
             end
         end
@@ -248,8 +248,8 @@ classdef OutputStream < handle
                 obj.buf.push(bytes);
             end
         end
-        function writeStringOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.VSize)
+        function writeTaggedString(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.VSize)
                 obj.writeString(v);
             end
         end
@@ -260,8 +260,8 @@ classdef OutputStream < handle
                 obj.writeString(v{i});
             end
         end
-        function writeStringSeqOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.FSize)
+        function writeTaggedStringSeq(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.FSize)
                 pos = obj.startSize();
                 obj.writeStringSeq(v);
                 obj.endSize(pos);
@@ -299,8 +299,8 @@ classdef OutputStream < handle
                 v.iceWrite(obj, obj.getEncoding());
             end
         end
-        function writeProxyOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.FSize)
+        function writeTaggedProxy(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.FSize)
                 pos = obj.startSize();
                 obj.writeProxy(v);
                 obj.endSize(pos);
@@ -332,8 +332,8 @@ classdef OutputStream < handle
             obj.initEncaps();
             obj.encapsStack.encoder.writeValue(v);
         end
-        function writeValueOpt(obj, tag, v)
-            if v ~= Ice.Unset && obj.writeOptional(tag, Ice.OptionalFormat.Class)
+        function writeTaggedValue(obj, tag, v)
+            if v ~= Ice.Unset && obj.writeTag(tag, Ice.TagFormat.Class)
                 obj.writeValue(v);
             end
         end
@@ -442,21 +442,21 @@ classdef OutputStream < handle
                 obj.writeSize(0);
             end
         end
-        function r = writeOptional(obj, tag, format)
+        function r = writeTag(obj, tag, format)
             assert(~isempty(obj.encapsStack));
             if ~isempty(obj.encapsStack.encoder)
-                r = obj.encapsStack.encoder.writeOptional(tag, format);
+                r = obj.encapsStack.encoder.writeTag(tag, format);
             else
-                r = obj.writeOptionalImpl(tag, format);
+                r = obj.writeTagImpl(tag, format);
             end
         end
-        function r = writeOptionalImpl(obj, tag, format)
+        function r = writeTagImpl(obj, tag, format)
             if obj.encoding_1_0
-                r = false; % Optional members aren't supported with the 1.0 encoding.
+                r = false; % Tagged members aren't supported with the 1.0 encoding.
                 return;
             end
 
-            v = uint8(format); % One of Ice.OptionalFormat...
+            v = uint8(format); % One of Ice.TagFormat...
             if tag < 30
                 v = bitor(v, bitshift(tag, 3));
                 obj.writeByte(v);
@@ -520,9 +520,9 @@ classdef OutputStream < handle
                 end
             end
         end
-        function r = writeOptionalVSize(obj, tag, len, elemSize)
+        function r = writeTagVSize(obj, tag, len, elemSize)
             r = false;
-            if obj.writeOptional(tag, Ice.OptionalFormat.VSize)
+            if obj.writeTag(tag, Ice.TagFormat.VSize)
                 if len == 0
                     obj.writeSize(1);
                     obj.writeSize(0);

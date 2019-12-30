@@ -2900,9 +2900,9 @@ CodeVisitor::visitStructStart(const StructPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function r = ice_readOpt(is, tag)";
+    out << nl << "function r = ice_readTagged(is, tag)";
     out.inc();
-    out << nl << "if is.readOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if is.readTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(p->isVariableLength())
     {
@@ -2936,9 +2936,9 @@ CodeVisitor::visitStructStart(const StructPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function ice_writeOpt(os, tag, v)";
+    out << nl << "function ice_writeTagged(os, tag, v)";
     out.inc();
-    out << nl << "if v ~= Ice.Unset && os.writeOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if v ~= Ice.Unset && os.writeTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(p->isVariableLength())
     {
@@ -3042,9 +3042,9 @@ CodeVisitor::visitSequence(const SequencePtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function writeOpt(os, tag, seq)";
+    out << nl << "function writeTagged(os, tag, seq)";
     out.inc();
-    out << nl << "if seq ~= Ice.Unset && os.writeOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if seq ~= Ice.Unset && os.writeTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(p->type()->isVariableLength())
     {
@@ -3167,9 +3167,9 @@ CodeVisitor::visitSequence(const SequencePtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function r = readOpt(is, tag)";
+    out << nl << "function r = readTagged(is, tag)";
     out.inc();
-    out << nl << "if is.readOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if is.readTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(p->type()->isVariableLength())
     {
@@ -3328,9 +3328,9 @@ CodeVisitor::visitDictionary(const DictionaryPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function writeOpt(os, tag, d)";
+    out << nl << "function writeTagged(os, tag, d)";
     out.inc();
-    out << nl << "if d ~= Ice.Unset && os.writeOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if d ~= Ice.Unset && os.writeTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(key->isVariableLength() || value->isVariableLength())
     {
@@ -3414,9 +3414,9 @@ CodeVisitor::visitDictionary(const DictionaryPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function r = readOpt(is, tag)";
+    out << nl << "function r = readTagged(is, tag)";
     out.inc();
-    out << nl << "if is.readOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if is.readTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     if(key->isVariableLength() || value->isVariableLength())
     {
@@ -3552,9 +3552,9 @@ CodeVisitor::visitEnum(const EnumPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function ice_writeOpt(os, tag, v)";
+    out << nl << "function ice_writeTagged(os, tag, v)";
     out.inc();
-    out << nl << "if v ~= Ice.Unset && os.writeOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if v ~= Ice.Unset && os.writeTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     out << nl << abs << ".ice_write(os, v);";
     out.dec();
@@ -3569,9 +3569,9 @@ CodeVisitor::visitEnum(const EnumPtr& p)
     out.dec();
     out << nl << "end";
 
-    out << nl << "function r = ice_readOpt(is, tag)";
+    out << nl << "function r = ice_readTagged(is, tag)";
     out.inc();
-    out << nl << "if is.readOptional(tag, " << getTagFormat(p) << ")";
+    out << nl << "if is.readTag(tag, " << getTagFormat(p) << ")";
     out.inc();
     out << nl << "r = " << abs << ".ice_read(is);";
     out.dec();
@@ -3831,73 +3831,73 @@ CodeVisitor::getTagFormat(const TypePtr& type)
         case Builtin::KindByte:
         case Builtin::KindBool:
         {
-            return "Ice.OptionalFormat.F1";
+            return "Ice.TagFormat.F1";
         }
         case Builtin::KindShort:
         {
-            return "Ice.OptionalFormat.F2";
+            return "Ice.TagFormat.F2";
         }
         case Builtin::KindInt:
         case Builtin::KindFloat:
         {
-            return "Ice.OptionalFormat.F4";
+            return "Ice.TagFormat.F4";
         }
         case Builtin::KindLong:
         case Builtin::KindDouble:
         {
-            return "Ice.OptionalFormat.F8";
+            return "Ice.TagFormat.F8";
         }
         case Builtin::KindString:
         {
-            return "Ice.OptionalFormat.VSize";
+            return "Ice.TagFormat.VSize";
         }
         case Builtin::KindObject:
         {
-            return "Ice.OptionalFormat.Class";
+            return "Ice.TagFormat.Class";
         }
         case Builtin::KindObjectProxy:
         {
-            return "Ice.OptionalFormat.FSize";
+            return "Ice.TagFormat.FSize";
         }
         case Builtin::KindValue:
         {
-            return "Ice.OptionalFormat.Class";
+            return "Ice.TagFormat.Class";
         }
         }
     }
 
     if(EnumPtr::dynamicCast(type))
     {
-        return "Ice.OptionalFormat.Size";
+        return "Ice.TagFormat.Size";
     }
 
     SequencePtr seq = SequencePtr::dynamicCast(type);
     if(seq)
     {
-        return seq->type()->isVariableLength() ? "Ice.OptionalFormat.FSize" : "Ice.OptionalFormat.VSize";
+        return seq->type()->isVariableLength() ? "Ice.TagFormat.FSize" : "Ice.TagFormat.VSize";
     }
 
     DictionaryPtr d = DictionaryPtr::dynamicCast(type);
     if(d)
     {
         return (d->keyType()->isVariableLength() || d->valueType()->isVariableLength()) ?
-            "Ice.OptionalFormat.FSize" : "Ice.OptionalFormat.VSize";
+            "Ice.TagFormat.FSize" : "Ice.TagFormat.VSize";
     }
 
     StructPtr st = StructPtr::dynamicCast(type);
     if(st)
     {
-        return st->isVariableLength() ? "Ice.OptionalFormat.FSize" : "Ice.OptionalFormat.VSize";
+        return st->isVariableLength() ? "Ice.TagFormat.FSize" : "Ice.TagFormat.VSize";
     }
 
     if(ProxyPtr::dynamicCast(type))
     {
-        return "Ice.OptionalFormat.FSize";
+        return "Ice.TagFormat.FSize";
     }
 
     ClassDeclPtr cl = ClassDeclPtr::dynamicCast(type);
     assert(cl);
-    return "Ice.OptionalFormat.Class";
+    return "Ice.TagFormat.Class";
 }
 
 string
@@ -3931,7 +3931,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeByteOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedByte(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -3943,7 +3943,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeBoolOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedBool(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -3955,7 +3955,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeShortOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedShort(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -3967,7 +3967,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeIntOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedInt(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -3979,7 +3979,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeLongOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedLong(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -3991,7 +3991,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeFloatOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedFloat(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -4003,7 +4003,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeDoubleOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedDouble(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -4015,7 +4015,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeStringOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedString(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -4028,7 +4028,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeValueOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedValue(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -4040,7 +4040,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".writeProxyOpt(" << tag << ", " << v << ");";
+                    out << nl << stream << ".writeTaggedProxy(" << tag << ", " << v << ");";
                 }
                 else
                 {
@@ -4057,7 +4057,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
     {
         if(isTagged)
         {
-            out << nl << stream << ".writeProxyOpt(" << tag << ", " << v << ");";
+            out << nl << stream << ".writeTaggedProxy(" << tag << ", " << v << ");";
         }
         else
         {
@@ -4071,7 +4071,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
     {
         if(isTagged)
         {
-            out << nl << stream << ".writeValueOpt(" << tag << ", " << v << ");";
+            out << nl << stream << ".writeTaggedValue(" << tag << ", " << v << ");";
         }
         else
         {
@@ -4086,7 +4086,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
         const string typeS = getAbsolute(st);
         if(isTagged)
         {
-            out << nl << typeS << ".ice_writeOpt(" << stream << ", " << tag << ", " << v << ");";
+            out << nl << typeS << ".ice_writeTagged(" << stream << ", " << tag << ", " << v << ");";
         }
         else
         {
@@ -4101,7 +4101,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
         const string typeS = getAbsolute(en);
         if(isTagged)
         {
-            out << nl << typeS << ".ice_writeOpt(" << stream << ", " << tag << ", " << v << ");";
+            out << nl << typeS << ".ice_writeTagged(" << stream << ", " << tag << ", " << v << ");";
         }
         else
         {
@@ -4115,7 +4115,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
     {
         if(isTagged)
         {
-            out << nl << getAbsolute(dict) << ".writeOpt(" << stream << ", " << tag << ", " << v << ");";
+            out << nl << getAbsolute(dict) << ".writeTagged(" << stream << ", " << tag << ", " << v << ");";
         }
         else
         {
@@ -4152,7 +4152,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
             out << nl << stream << ".write" << builtinTable[b->kind()] << "Seq";
             if(isTagged)
             {
-                out << "Opt(" << tag << ", ";
+                out << "Tagged(" << tag << ", ";
             }
             else
             {
@@ -4164,7 +4164,7 @@ CodeVisitor::marshal(IceUtilInternal::Output& out, const string& stream, const s
 
         if(isTagged)
         {
-            out << nl << getAbsolute(seq) << ".writeOpt(" << stream << ", " << tag << ", " << v << ");";
+            out << nl << getAbsolute(seq) << ".writeTagged(" << stream << ", " << tag << ", " << v << ");";
         }
         else
         {
@@ -4189,7 +4189,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readByteOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedByte(" << tag << ");";
                 }
                 else
                 {
@@ -4201,7 +4201,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readBoolOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedBool(" << tag << ");";
                 }
                 else
                 {
@@ -4213,7 +4213,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readShortOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedShort(" << tag << ");";
                 }
                 else
                 {
@@ -4225,7 +4225,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readIntOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedInt(" << tag << ");";
                 }
                 else
                 {
@@ -4237,7 +4237,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readLongOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedLong(" << tag << ");";
                 }
                 else
                 {
@@ -4249,7 +4249,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readFloatOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedFloat(" << tag << ");";
                 }
                 else
                 {
@@ -4261,7 +4261,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readDoubleOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedDouble(" << tag << ");";
                 }
                 else
                 {
@@ -4273,7 +4273,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readStringOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedString(" << tag << ");";
                 }
                 else
                 {
@@ -4286,7 +4286,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << stream << ".readValueOpt(" << tag << ", " << v << ", 'Ice.Value');";
+                    out << nl << stream << ".readTaggedValue(" << tag << ", " << v << ", 'Ice.Value');";
                 }
                 else
                 {
@@ -4298,7 +4298,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             {
                 if(isTagged)
                 {
-                    out << nl << v << " = " << stream << ".readProxyOpt(" << tag << ");";
+                    out << nl << v << " = " << stream << ".readTaggedProxy(" << tag << ");";
                 }
                 else
                 {
@@ -4318,7 +4318,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             const string typeS = getAbsolute(prx->_class(), "", "Prx");
             if(isTagged)
             {
-                out << nl << "if " << stream << ".readOptional(" << tag << ", " << getTagFormat(type) << ")";
+                out << nl << "if " << stream << ".readTag(" << tag << ", " << getTagFormat(type) << ")";
                 out.inc();
                 out << nl << stream << ".skip(4);";
                 out << nl << v << " = " << typeS << ".ice_read(" << stream << ");";
@@ -4334,7 +4334,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
         {
             if(isTagged)
             {
-                out << nl << v << " = " << stream << ".readProxyOpt(" << tag << ");";
+                out << nl << v << " = " << stream << ".readTaggedProxy(" << tag << ");";
             }
             else
             {
@@ -4350,7 +4350,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
         const string cls = cl->isInterface() ? "Ice.Value" : getAbsolute(cl);
         if(isTagged)
         {
-            out << nl << stream << ".readValueOpt(" << tag << ", " << v << ", '" << cls << "');";
+            out << nl << stream << ".readTaggedValue(" << tag << ", " << v << ", '" << cls << "');";
         }
         else
         {
@@ -4365,7 +4365,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
         const string typeS = getAbsolute(st);
         if(isTagged)
         {
-            out << nl << v << " = " << typeS << ".ice_readOpt(" << stream << ", " << tag << ");";
+            out << nl << v << " = " << typeS << ".ice_readTag(" << stream << ", " << tag << ");";
         }
         else
         {
@@ -4380,7 +4380,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
         const string typeS = getAbsolute(en);
         if(isTagged)
         {
-            out << nl << v << " = " << typeS << ".ice_readOpt(" << stream << ", " << tag << ");";
+            out << nl << v << " = " << typeS << ".ice_readTag(" << stream << ", " << tag << ");";
         }
         else
         {
@@ -4394,7 +4394,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
     {
         if(isTagged)
         {
-            out << nl << v << " = " << getAbsolute(dict) << ".readOpt(" << stream << ", " << tag << ");";
+            out << nl << v << " = " << getAbsolute(dict) << ".readTag(" << stream << ", " << tag << ");";
         }
         else
         {
@@ -4431,7 +4431,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
             out << nl << v << " = " << stream << ".read" << builtinTable[b->kind()] << "Seq";
             if(isTagged)
             {
-                out << "Opt(" << tag << ");";
+                out << "Tag(" << tag << ");";
             }
             else
             {
@@ -4442,7 +4442,7 @@ CodeVisitor::unmarshal(IceUtilInternal::Output& out, const string& stream, const
 
         if(isTagged)
         {
-            out << nl << v << " = " << getAbsolute(seq) << ".readOpt(" << stream << ", " << tag << ");";
+            out << nl << v << " = " << getAbsolute(seq) << ".readTag(" << stream << ", " << tag << ");";
         }
         else
         {

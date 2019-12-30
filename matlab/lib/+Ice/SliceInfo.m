@@ -10,7 +10,7 @@ classdef SliceInfo < handle
     %   bytes - The encoded bytes for this slice, including the leading size
     %     integer.
     %   instances - The class instances referenced by this slice.
-    %   hasOptionalMembers - Whether or not the slice contains optional members.
+    %   hasTaggedMembers - Whether or not the slice contains tagged members.
     %   isLastSlice - Whether or not this is the last slice.
 
     % Copyright (c) ZeroC, Inc. All rights reserved.
@@ -33,9 +33,9 @@ classdef SliceInfo < handle
         %
         instances
         %
-        % Whether or not the slice contains optional members.
+        % Whether or not the slice contains tagged members.
         %
-        hasOptionalMembers
+        hasTaggedMembers
         %
         % Whether or not this is the last slice.
         %

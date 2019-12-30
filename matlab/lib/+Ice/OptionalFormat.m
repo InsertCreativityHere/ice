@@ -1,11 +1,11 @@
-classdef OptionalFormat < uint32
-    % OptionalFormat   Summary of OptionalFormat
+classdef TagFormat < uint32
+    % TagFormat   Summary of TagFormat
     %
-    % The optional type.
+    % The tag type.
     %
-    % An optional value is encoded with a specific optional format. This optional
+    % A tagged value is encoded with a specific tag format. This tag
     % format describes how the data is encoded and how it can be skipped by the
-    % unmarshaling code if the optional is not known to the receiver.
+    % unmarshaling code if the value is not known to the receiver.
 
     % Copyright (c) ZeroC, Inc. All rights reserved.
 

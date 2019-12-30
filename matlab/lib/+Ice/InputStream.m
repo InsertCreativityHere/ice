@@ -51,15 +51,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz;
             end
         end
-        function r = readBoolOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F1)
+        function r = readTaggedBool(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F1)
                 r = obj.readBool();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readBoolSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedBoolSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 r = obj.readBoolSeq();
             else
                 r = Ice.Unset;
@@ -84,15 +84,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz;
             end
         end
-        function r = readByteOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F1)
+        function r = readTaggedByte(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F1)
                 r = obj.readByte();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readByteSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedByteSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 r = obj.readByteSeq();
             else
                 r = Ice.Unset;
@@ -117,15 +117,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz * 2;
             end
         end
-        function r = readShortOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F2)
+        function r = readTaggedShort(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F2)
                 r = obj.readShort();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readShortSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedShortSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 obj.skipSize();
                 r = obj.readShortSeq();
             else
@@ -151,15 +151,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz * 4;
             end
         end
-        function r = readIntOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F4)
+        function r = readTaggedInt(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F4)
                 r = obj.readInt();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readIntSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedIntSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 obj.skipSize();
                 r = obj.readIntSeq();
             else
@@ -185,15 +185,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz * 8;
             end
         end
-        function r = readLongOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F8)
+        function r = readLong(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F8)
                 r = obj.readLong();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readLongSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedLongSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 obj.skipSize();
                 r = obj.readLongSeq();
             else
@@ -219,15 +219,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz * 4;
             end
         end
-        function r = readFloatOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F4)
+        function r = readTaggedFloat(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F4)
                 r = obj.readFloat();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readFloatSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedFloatSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 obj.skipSize();
                 r = obj.readFloatSeq();
             else
@@ -253,15 +253,15 @@ classdef InputStream < handle
                 obj.pos = obj.pos + sz * 8;
             end
         end
-        function r = readDoubleOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.F8)
+        function r = readTaggedDouble(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.F8)
                 r = obj.readDouble();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readDoubleSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedDoubleSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 obj.skipSize();
                 r = obj.readDoubleSeq();
             else
@@ -287,15 +287,15 @@ classdef InputStream < handle
                 r{i} = obj.readString();
             end
         end
-        function r = readStringOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.VSize)
+        function r = readTaggedString(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.VSize)
                 r = obj.readString();
             else
                 r = Ice.Unset;
             end
         end
-        function r = readStringSeqOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.FSize)
+        function r = readTaggedStringSeq(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.FSize)
                 obj.skip(4);
                 r = obj.readStringSeq();
             else
@@ -374,7 +374,7 @@ classdef InputStream < handle
             assert(~isempty(obj.encapsStack));
 
             if ~obj.encoding_1_0
-                obj.skipOptionals();
+                obj.skipRemainingTagged();
                 if obj.pos ~= obj.encapsStack.start + obj.encapsStack.sz
                     throw(Ice.EncapsulationException());
                 end
@@ -445,7 +445,7 @@ classdef InputStream < handle
                 end
             else
                 %
-                % Skip the optional content of the encapsulation if we are expecting an empty encapsulation.
+                % Skip the tagged content of the encapsulation if we are expecting an empty encapsulation.
                 %
                 % obj.skip(sz - 6);
                 %
@@ -501,25 +501,25 @@ classdef InputStream < handle
                 r = int32(b);
             end
         end
-        function r = readOptional(obj, tag, fmt)
+        function r = readTag(obj, tag, fmt)
             assert(~isempty(obj.encapsStack));
             if ~isempty(obj.encapsStack.decoder)
-                r = obj.encapsStack.decoder.readOptional(tag, fmt);
+                r = obj.encapsStack.decoder.readTag(tag, fmt);
             else
-                r = obj.readOptionalImpl(tag, fmt);
+                r = obj.readTagImpl(tag, fmt);
             end
         end
-        function skipOptionals(obj)
+        function skipRemainingTagged(obj)
             %
-            % Skip remaining unread optional members.
+            % Skip remaining unread tagged members.
             %
             while true
                 if obj.pos >= obj.encapsStack.start + obj.encapsStack.sz
-                    return; % End of encapsulation also indicates end of optionals.
+                    return; % End of encapsulation also indicates end of tagged members.
                 end
 
                 v = obj.readByte();
-                if v == IceInternal.Protocol.OPTIONAL_END_MARKER
+                if v == IceInternal.Protocol.TAGGED_END_MARKER
                     return;
                 end
 
@@ -527,30 +527,30 @@ classdef InputStream < handle
                 if bitshift(v, 3) == 30
                     obj.skipSize();
                 end
-                obj.skipOptional(format);
+                obj.skipTag(format);
             end
         end
-        function skipOptional(obj, format)
+        function skipTag(obj, format)
             switch format
-                case Ice.OptionalFormat.F1
+                case Ice.TagFormat.F1
                     obj.skip(1);
-                case Ice.OptionalFormat.F2
+                case Ice.TagFormat.F2
                     obj.skip(2);
-                case Ice.OptionalFormat.F4
+                case Ice.TagFormat.F4
                     obj.skip(4);
-                case Ice.OptionalFormat.F8
+                case Ice.TagFormat.F8
                     obj.skip(8);
-                case Ice.OptionalFormat.Size
+                case Ice.TagFormat.Size
                     obj.skipSize();
-                case Ice.OptionalFormat.VSize
+                case Ice.TagFormat.VSize
                     obj.skip(obj.readSize());
-                case Ice.OptionalFormat.FSize
+                case Ice.TagFormat.FSize
                     sz = obj.readInt();
                     if sz < 0
                         throw(Ice.UnmarshalOutOfBoundsException());
                     end
                     obj.skip(sz);
-                case Ice.OptionalFormat.Class
+                case Ice.TagFormat.Class
                     obj.readValue([], '');
             end
         end
@@ -609,8 +609,8 @@ classdef InputStream < handle
                 r = Ice.ObjectPrx(obj.communicator, obj.getEncoding(), [], bytes);
             end
         end
-        function r = readProxyOpt(obj, tag)
-            if obj.readOptional(tag, Ice.OptionalFormat.FSize)
+        function r = readTaggedProxy(obj, tag)
+            if obj.readTag(tag, Ice.TagFormat.FSize)
                 obj.skip(4);
                 r = obj.readProxy();
             else
@@ -645,8 +645,8 @@ classdef InputStream < handle
                 obj.encapsStack.decoder.readValue(@(v) check(v));
             end
         end
-        function readValueOpt(obj, tag, cb, formalType)
-            if obj.readOptional(tag, Ice.OptionalFormat.Class)
+        function readTaggedValue(obj, tag, cb, formalType)
+            if obj.readTag(tag, Ice.TagFormat.Class)
                 obj.readValue(cb, formalType);
             elseif ~isempty(cb)
                 cb(Ice.Unset);
@@ -689,21 +689,21 @@ classdef InputStream < handle
         function r = getSize(obj)
             r = obj.size;
         end
-        function r = readOptionalImpl(obj, readTag, expectedFormat)
+        function r = readTagImpl(obj, readTag, expectedFormat)
             if obj.encoding_1_0
-                r = false; % Optional members aren't supported with the 1.0 encoding.
+                r = false; % Tagged members aren't supported with the 1.0 encoding.
                 return;
             end
 
             while true
                 if obj.pos >= obj.encapsStack.start + obj.encapsStack.sz
-                    r = false; % End of encapsulation also indicates end of optionals.
+                    r = false; % End of encapsulation also indicates end of tagged members.
                     return;
                 end
 
                 b = obj.readByte();
                 v = b;
-                if v == IceInternal.Protocol.OPTIONAL_END_MARKER
+                if v == IceInternal.Protocol.TAGGED_END_MARKER
                     obj.pos = obj.pos - 1; % Rewind.
                     r = false;
                     return;
@@ -724,14 +724,14 @@ classdef InputStream < handle
                         offset = 6;
                     end
                     obj.pos = obj.pos - offset; % Rewind
-                    r = false; % No optional data members with the requested tag.
+                    r = false; % No tagged data members with the requested tag.
                     return;
                 elseif tag < readTag
-                    obj.skipOptional(format); % Skip optional data members
+                    obj.skipTag(format); % Skip tagged data members
                 else
                     if format ~= expectedFormat
                         throw(Ice.MarshalException('', '', ...
-                                sprintf('invalid optional data member ''%d'': unexpected format', tag)));
+                                sprintf('invalid tagged data member ''%d'': unexpected format', tag)));
                     end
                     r = true;
                     return;

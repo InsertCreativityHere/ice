@@ -181,8 +181,8 @@ classdef EncapsDecoder11 < IceInternal.EncapsDecoder
 
         function endSlice(obj)
             import IceInternal.Protocol;
-            if bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS)
-                obj.is.skipOptionals();
+            if bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS)
+                obj.is.skipRemainingTagged();
             end
 
             %
@@ -200,15 +200,15 @@ classdef EncapsDecoder11 < IceInternal.EncapsDecoder
                 end
 
                 %
-                % Sanity checks. If there are optional members, it's possible
+                % Sanity checks. If there are tagged members, it's possible
                 % that not all instance references were read if they are from
-                % unknown optional data members.
+                % unknown tagged data members.
                 %
                 if isempty(indirectionTable)
                     throw(Ice.MarshalException('', '', 'empty indirection table'));
                 end
                 if isempty(obj.current.indirectPatchList) && ...
-                   bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS) == 0
+                   bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS) == 0
                     throw(Ice.MarshalException('', '', 'no references to indirection table'));
                 end
 
@@ -254,11 +254,11 @@ classdef EncapsDecoder11 < IceInternal.EncapsDecoder
             info = Ice.SliceInfo();
             info.typeId = obj.current.typeId;
             info.compactId = obj.current.compactId;
-            info.hasOptionalMembers = bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS) > 0;
+            info.hasTaggedMembers = bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS) > 0;
             info.isLastSlice = bitand(obj.current.sliceFlags, Protocol.FLAG_IS_LAST_SLICE) > 0;
-            if info.hasOptionalMembers
+            if info.hasTaggedMembers
                 %
-                % Don't include the optional member end marker. It will be re-written by
+                % Don't include the tagged member end marker. It will be re-written by
                 % endSlice when the sliced data is re-written.
                 %
                 info.bytes = obj.is.getBytes(start, obj.is.getPos() - 2);
@@ -288,13 +288,13 @@ classdef EncapsDecoder11 < IceInternal.EncapsDecoder
             obj.current.slices{end + 1} = info;
         end
 
-        function r = readOptional(obj, readTag, expectedFormat)
+        function r = readTag(obj, readTag, expectedFormat)
             import IceInternal.Protocol;
             if isempty(obj.current)
-                r = obj.is.readOptionalImpl(readTag, expectedFormat);
+                r = obj.is.readTagImpl(readTag, expectedFormat);
                 return;
-            elseif bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_OPTIONAL_MEMBERS)
-                r = obj.is.readOptionalImpl(readTag, expectedFormat);
+            elseif bitand(obj.current.sliceFlags, Protocol.FLAG_HAS_TAGGED_MEMBERS)
+                r = obj.is.readTagImpl(readTag, expectedFormat);
                 return;
             end
             r = false;
