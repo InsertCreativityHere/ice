@@ -227,8 +227,6 @@ from IceStormUtil import *
 for m in filter(lambda x: os.path.isdir(os.path.join(toplevel, x)), os.listdir(toplevel)):
     if m == "cpp" or re.match("cpp-.*", m):
         Mapping.add(m, CppMapping(), component)
-    elif m == "cpp98" or re.match("cpp98-.*", m):
-        Mapping.add(m, Cpp98Mapping(), component)
     elif m == "java" or re.match("java-.*", m):
         Mapping.add(m, JavaMapping(), component)
 # TODO temporarily disabled testing of Python mapping
