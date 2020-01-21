@@ -893,18 +893,15 @@ IceServiceInstaller::getIceDLLPath(const string& imagePath) const
     //
     int majorVersion = (ICE_INT_VERSION / 10000);
     int minorVersion = (ICE_INT_VERSION / 100) - majorVersion * 100;
-    int patchVersion = ICE_INT_VERSION % 100;
 
     ostringstream os;
     os << majorVersion * 10 + minorVersion;
-    if(patchVersion >= 60)
-    {
-        os << 'b' << (patchVersion - 60);
-    }
-    else if(patchVersion >= 50)
-    {
-        os << 'a' << (patchVersion - 50);
-    }
+#  if defined(ICE_ALPHA_VERSION)
+            os << 'a' << ICE_ALPHA_VERSION;
+#  endif
+#  if defined(ICE_BETA_VERSION)
+            os << 'b' << ICE_BETA_VERSION;
+#  endif
 
     const string version = os.str();
 
