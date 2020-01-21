@@ -206,11 +206,11 @@ class Ice(Component):
             majorVersion = int(intVersion / 10000)
             minorVersion = int(intVersion / 100) - 100 * majorVersion
             patchVersion = intVersion % 100
-            if re.search("ICE_ALPHA_VERSION", content)
+            if re.search("ICE_ALPHA_VERSION", content):
                 return '%da%d' % (majorVersion * 10 + minorVersion, patchVersion)
-            elif re.search("ICE_BETA_VERSION", content)
+            elif re.search("ICE_BETA_VERSION", content):
                 return '%db%d' % (majorVersion * 10 + minorVersion, patchVersion)
-            else
+            else:
                 return '%d' % (majorVersion * 10 + minorVersion)
 
 component = Ice()
