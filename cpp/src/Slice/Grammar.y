@@ -277,30 +277,78 @@ opt_semicolon
 ;
 
 // ----------------------------------------------------------------------
+module_list
+// ----------------------------------------------------------------------
+: ICE_IDENTIFIER
+{
+    StringTokPtr ident = StringTokPtr::dynamicCast($1);
+    StringListTokPtr moduleList = new StringListTok;
+    moduleList->v.push_back(ident->v);
+    $$ = moduleList;
+}
+| ICE_SCOPED_IDENTIFIER
+{
+    string ident = StringTokPtr::dynamicCast($1)->v;
+    StringListTokPtr moduleList = new StringListTok;
+
+    size_t scopePos = ident.find("::");
+    assert(scopePos != string::npos);
+    if(scopePos == 0)
+    {
+        unit->error("module identifiers cannot start with a scope operator.");
+    }
+
+    while(scopePos != string::npos)
+    {
+        moduleList->v.push_back(ident.substr(0, scopePos));
+        ident = ident.substr(scopePos + 2);
+        scopePos = ident.find("::");
+    }
+
+    if(ident.length() == 0)
+    {
+        unit->error("module identifiers cannot end with a scope operator.");
+    }
+    moduleList->v.push_back(ident);
+
+    $$ = moduleList;
+}
+;
+
+// ----------------------------------------------------------------------
 module_def
 // ----------------------------------------------------------------------
-: ICE_MODULE ICE_IDENTIFIER
+: ICE_MODULE module_list
 {
     unit->setSeenDefinition();
-    StringTokPtr ident = StringTokPtr::dynamicCast($2);
-    ContainerPtr cont = unit->currentContainer();
-    ModulePtr module = cont->createModule(ident->v);
-    if(module)
+    StringListTokPtr moduleList = StringListTokPtr::dynamicCast($2);
+    for(auto it = moduleList->v.begin(); it != moduleList->v.end();)
     {
-        cont->checkIntroduced(ident->v, module);
-        unit->pushContainer(module);
-        $$ = module;
-    }
-    else
-    {
-        $$ = 0;
+        ContainerPtr cont = unit->currentContainer();
+        ModulePtr module = cont->createModule(*it);
+        if(module)
+        {
+            cont->checkIntroduced(*it, module);
+            unit->pushContainer(module);
+            it++;
+            $$ = module;
+        }
+        else
+        {
+            it = moduleList->v.erase(it);
+            $$ = 0;
+        }
     }
 }
 '{' definitions '}'
 {
     if($3)
     {
-        unit->popContainer();
+        StringListTokPtr moduleList = StringListTokPtr::dynamicCast($2);
+        for(auto s : moduleList->v)
+        {
+            unit->popContainer();
+        }
         $$ = $3;
     }
     else
