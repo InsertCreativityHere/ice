@@ -97,7 +97,7 @@ int checkIdentifier(string&);
 %option prefix="slice_"
 
     /* Disables the generation of functions we don't use for performance, and to reduce clutter. */
-%option noyypush_state noyy_pop_state noyy_top_state
+%option noyy_push_state noyy_pop_state noyy_top_state
 %option noyy_scan_buffer noyy_scan_bytes noyy_scan_string
 %option noyyget_extra noyyset_extra noyyget_leng noyyget_text
 %option noyyget_in noyyset_in noyyget_out noyyset_out
@@ -122,13 +122,9 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 
 %%
 
-^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]*$                                    |
 ^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]*\n                                   |
-^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$                    |
 ^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*\n                   |
-^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]*$                  |
 ^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]*\n                 |
-^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$  |
 ^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*\n {
     if(unit->scanPosition(yytext))
     {
