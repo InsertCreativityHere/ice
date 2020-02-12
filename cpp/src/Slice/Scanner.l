@@ -65,12 +65,14 @@ typedef std::map<std::string, int> StringTokenMap;
 static StringTokenMap keywordMap;
 
 void initScanner();
+void preAction();
 int checkKeyword(string&);
 int checkIdentifier(string&);
 
 }
 
 #define YY_USER_INIT initScanner();
+#define YY_USER_ACTION preAction();
 
 %}
 
@@ -82,7 +84,7 @@ int checkIdentifier(string&);
 %option align
     /* Enable batching for performance. */
 %option batch
-    /* Enables the use of flex's built-in state stack. */
+    /* Enables the use of flex's built in start-condition stack. */
 %option stack
     /* Ensures the scanner always stores scanned text as 'char *', instead of an array, for performance. */
 %option pointer
@@ -106,12 +108,11 @@ int checkIdentifier(string&);
     /* Instructs flex to not suppress any warnings while generating the scanner. */
 %option warn
 
-    /* List of states the scanner can be in. This lets the scanning be context-dependent, which is useful
-       since the grammar of comments, metadata, and slice are very different from one another. */
-%s BOMSCAN
-%s MAINSCAN
-    /* The scanner also has a default 'INITIAL' state, which is entry state. We use this solely
-       to check for and eat up any BOMs at the start of files. See Bug 3140. */
+    /* List of start-conditions the scanner can be in. This lets the scanning be context-dependent, which
+       is useful since the grammar of comments, metadata, and slice are very different from one another. */
+%s SLICE
+    /* The scanner also has a default 'INITIAL' start-condition, which is the entry state of the scanner.
+       We use this solely to check for and eat up any BOMs at the start of files. See Bug 3140. */
 
 identifier          ((::)?\\?[[:alpha:]_][[:alnum:]_]*)+
 integer_constant    (\+|-)?((0[0-7]+)|(0x[[:xdigit:]]+)|([[:digit:]]+))
@@ -121,42 +122,25 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 
 %%
 
-^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]*$ {
+^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]*$                                    |
+^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]*\n                                   |
+^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$                    |
+^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*\n                   |
+^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]*$                  |
+^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]*\n                 |
+^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$  |
+^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*\n {
     if(unit->scanPosition(yytext))
     {
-        BEGIN(BOMSCAN);
-    }
-}
-
-^"#"[[:blank:]]*[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$ {
-    if(unit->scanPosition(yytext))
-    {
-        BEGIN(BOMSCAN);
-    }
-}
-
-^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]*$ {
-    if(unit->scanPosition(yytext))
-    {
-        BEGIN(BOMSCAN);
-    }
-}
-
-^"#"[[:blank:]]*"line"[[:blank:]]+[[:digit:]]+[[:blank:]]+"\""[^\"]*"\"".*$ {
-    if(unit->scanPosition(yytext))
-    {
-        BEGIN(BOMSCAN);
+        BEGIN(INITIAL);
     }
 }
 
     /* Matches a C++ style comment, consuming all characters except newlines. */
-"//".+ {
-    BEGIN(MAINSCAN);
-}
+"//".+ {}
 
 "/*" {
     // C-style comment
-    BEGIN(MAINSCAN);
     string comment = yytext + 2;
     while(true)
     {
@@ -196,27 +180,22 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 "[" {
-    BEGIN(MAINSCAN);
     return ICE_METADATA_OPEN;
 }
 
 "]" {
-    BEGIN(MAINSCAN);
     return ICE_METADATA_CLOSE;
 }
 
 "[[" {
-    BEGIN(MAINSCAN);
     return ICE_GLOBAL_METADATA_OPEN;
 }
 
 "]]" {
-    BEGIN(MAINSCAN);
     return ICE_GLOBAL_METADATA_CLOSE;
 }
 
 {identifier}[[:space:]]*"(" {
-    BEGIN(MAINSCAN);
     StringTokPtr ident = new StringTok;
     ident->v = *yytext == '\\' ? yytext + 1 : yytext;
     ident->v.erase(ident->v.find_first_of(" \t\v\n\r\f("));
@@ -254,7 +233,6 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 {identifier} {
-    BEGIN(MAINSCAN);
     StringTokPtr ident = new StringTok;
     ident->v = *yytext == '\\' ? yytext + 1 : yytext;
     *yylvalp = ident;
@@ -262,7 +240,6 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 \" {
-    BEGIN(MAINSCAN);
     StringTokPtr str = new StringTok;
     str->literal = "\"";
     while(true)
@@ -459,7 +436,6 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 {integer_constant} {
-    BEGIN(MAINSCAN);
     IntegerTokPtr itp = new IntegerTok;
     itp->literal = string(yytext);
     *yylvalp = itp;
@@ -475,7 +451,6 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 {floating_literal} {
-    BEGIN(MAINSCAN);
     errno = 0;
     FloatingTokPtr ftp = new FloatingTok;
     *yylvalp = ftp;
@@ -506,24 +481,17 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 
 [[:space:]] {
     // Ignore white-space
-
-    if(unit->currentLine() != 0)
-    {
-        BEGIN(MAINSCAN);
-    }
     if(yytext[0] == '\n')
     {
         unit->nextLine();
     }
 }
 
-<BOMSCAN>^"\357\273\277" {
+<INITIAL>^"\357\273\277" {
     // Ignore UTF-8 BOM, rule only active when parsing start of a file.
-    BEGIN(MAINSCAN);
 }
 
 . {
-    BEGIN(MAINSCAN);
     if(yytext[0] < 32 || yytext[0] > 126)
     {
         stringstream s;
@@ -578,6 +546,18 @@ void initScanner()
     // But for 'tag' we require an optional (nullable) type. No inferencing is done.
     keywordMap["optional"] = ICE_OPTIONAL;
     keywordMap["Value"] = ICE_VALUE;
+}
+
+// This function is called whenever a match is made, directly before the match's action code is run.
+void preAction()
+{
+    // If the scanner is currently in the 'INITIAL' start-condition, set it to be in the 'SLICE' state.
+    // This function is only called after a match is made, and being in 'INITIAL' indicates it was the first
+    // match. We only use 'INITIAL' to find and eat BOMs which can only validly be the first match in a file.
+    if(YY_START == INITIAL)
+    {
+        BEGIN(SLICE);
+    }
 }
 
 // Check if an identifier looks like a keyword.
