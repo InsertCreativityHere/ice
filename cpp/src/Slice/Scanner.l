@@ -74,18 +74,50 @@ int checkIdentifier(string&);
 
 %}
 
-%option noyywrap
+    /* Makes all matches case-insensitive (the actual text has it's case conserved). */
+%option case-insensitive
+    /* Ensures the scanner supports reading 8-bit characters. */
+%option 8bit
+    /* Directs flex to generate lookup tables that are better aligned for access and computation, but likely larger. */
+%option align
+    /* Enable batching for performance. */
+%option batch
+    /* Enables the use of flex's built-in state stack. */
+%option stack
+    /* Ensures the scanner always stores scanned text as 'char *', instead of an array, for performance. */
+%option pointer
+    /* By default flex will 'default match' any text it encounters that doesn't match any of the specified rules.
+       This option disables default-matching (instead the scanner errors), to make it easier to find grammar holes. */
+%option nodefault
+    /* Disables the scanner's interactive features for performance. */
 %option never-interactive
+    /* Changes the default prefix of 'yy' to 'slice_' in the generated code. */
 %option prefix="slice_"
+
+    /* Disables the generation of functions we don't use for performance, and to reduce clutter. */
+%option noyypush_state noyy_pop_state noyy_top_state
+%option noyy_scan_buffer noyy_scan_bytes noyy_scan_string
+%option noyyget_extra noyyset_extra noyyget_leng noyyget_text
+%option noyyget_in noyyset_in noyyget_out noyyset_out
+%option noyyget_lineno noyyset_lineno noyyget_lloc noyyset_lloc
+%option noyyget_lval noyyset_lval noyyget_debug noyyset_debug
+%option noyywrap
+
+    /* Instructs flex to not suppress any warnings while generating the scanner. */
+%option warn
+
+    /* List of states the scanner can be in. This lets the scanning be context-dependent, which is useful
+       since the grammar of comments, metadata, and slice are very different from one another. */
+%s BOMSCAN
+%s MAINSCAN
+    /* The scanner also has a default 'INITIAL' state, which is entry state. We use this solely
+       to check for and eat up any BOMs at the start of files. See Bug 3140. */
 
 identifier          ((::)?\\?[[:alpha:]_][[:alnum:]_]*)+
 integer_constant    (\+|-)?((0[0-7]+)|(0x[[:xdigit:]]+)|([[:digit:]]+))
 fractional_constant (\+|-)?(([[:digit:]]*\.[[:digit:]]+)|([[:digit:]]+\.))
 exponent_part       (e|E)(\+|-)?[[:digit:]]+
 floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]+{exponent_part}))[fF]?
-
-%s BOMSCAN
-%s MAINSCAN
 
 %%
 
@@ -117,19 +149,9 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
     }
 }
 
-"//" {
-    // C++-style comment
+    /* Matches a C++ style comment, consuming all characters except newlines. */
+"//".+ {
     BEGIN(MAINSCAN);
-    int c;
-    do
-    {
-        c = yyinput();
-        if(c == '\n')
-        {
-            unit->nextLine();
-        }
-    }
-    while(c != '\n' && c != EOF);
 }
 
 "/*" {
@@ -496,8 +518,7 @@ floating_literal    (({fractional_constant}{exponent_part}?)|((\+|-)?[[:digit:]]
 }
 
 <BOMSCAN>^"\357\273\277" {
-    // Ignore UTF-8 BOM, rule only active when parsing start of file.
-
+    // Ignore UTF-8 BOM, rule only active when parsing start of a file.
     BEGIN(MAINSCAN);
 }
 
