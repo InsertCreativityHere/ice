@@ -61,39 +61,6 @@
 
 #endif
 
-#ifdef _MSC_VER
-
-#   ifdef _WIN64
-#      define ICE_64
-#   else
-#      define ICE_32
-#   endif
-
-#else
-
-    //
-    // Use system headers as preferred way to detect 32 or 64 bit mode and
-    // fallback to architecture based checks
-    //
-#   include <stdint.h>
-
-#   if defined(__WORDSIZE) && (__WORDSIZE == 64)
-#      define ICE_64
-#   elif defined(__WORDSIZE) && (__WORDSIZE == 32)
-#      define ICE_32
-#   elif defined(__sun) && (defined(__sparcv9) || defined(__x86_64))  || \
-         defined(__linux__) && defined(__x86_64)                      || \
-         defined(__APPLE__) && defined(__x86_64)                      || \
-         defined(__hppa) && defined(__LP64__)                         || \
-         defined(_ARCH_COM) && defined(__64BIT__)                     || \
-         defined(__alpha__)                                           || \
-         defined(_WIN64)
-#      define ICE_64
-#   else
-#      define ICE_32
-#   endif
-#endif
-
 #if defined(_MSVC_LANG)
 #   define ICE_CPLUSPLUS _MSVC_LANG
 #else
@@ -292,25 +259,6 @@ private:
 };
 
 typedef unsigned char Byte;
-
-//
-// Int64 typedef and ICE_INT64 macro for Int64 literal values
-//
-// Note that on Windows, long is always 32-bit
-//
-#if defined(_WIN32) && defined(_MSC_VER)
-typedef __int64 Int64;
-#    define ICE_INT64(n) n##i64
-#    define ICE_INT64_FORMAT "%lld"
-#elif defined(ICE_64) && !defined(_WIN32)
-typedef long Int64;
-#    define ICE_INT64(n) n##L
-#    define ICE_INT64_FORMAT "%ld"
-#else
-typedef long long Int64;
-#    define ICE_INT64(n) n##LL
-#    define ICE_INT64_FORMAT "%lld"
-#endif
 
 }
 

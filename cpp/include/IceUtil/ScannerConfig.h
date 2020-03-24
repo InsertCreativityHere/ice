@@ -23,23 +23,15 @@
 // unreferenced local function has been removed
 #   pragma warning(disable:4505)
 
-#   if defined(ICE_64)
 // '=' : conversion from 'size_t' to 'int', possible loss of data
 // The result of fread() is a size_t and gets inserted into an int
-#       pragma warning(disable:4267)
-#   endif
+#   pragma warning(disable:4267)
 #endif
 
 #if defined(__GNUC__)
 #   pragma GCC diagnostic ignored "-Wsign-compare"
 #   pragma GCC diagnostic ignored "-Wunused-function"
 #   pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#endif
-
-#ifdef __SUNPRO_CC
-#   ifdef ICE_64
-#       pragma error_messages(off,truncwarn)
-#   endif
 #endif
 
 #if defined(__clang__)
