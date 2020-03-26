@@ -7,10 +7,8 @@
 
 #include <Test.h>
 
-class HoldI : public Test::Hold, public IceUtil::Mutex, public IceUtil::TimerTask
-#ifdef ICE_CPP11_MAPPING
-    , public std::enable_shared_from_this<HoldI>
-#endif
+class HoldI : public Test::Hold, public IceUtil::Mutex, public IceUtil::TimerTask,
+              public std::enable_shared_from_this<HoldI>
 {
 public:
 

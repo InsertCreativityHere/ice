@@ -47,10 +47,6 @@ public:
      */
     IconvInitializationException(const char* file, int line, const std::string& reason);
 
-#ifndef ICE_CPP11_COMPILER
-    virtual ~IconvInitializationException() throw();
-#endif
-
     /**
      * Obtains the Slice type ID of this exception.
      * @return The fully-scoped type ID.
@@ -62,14 +58,6 @@ public:
      * @param str The output stream.
      */
     virtual void ice_print(std::ostream& str) const;
-
-#ifndef ICE_CPP11_MAPPING
-    /**
-     * Polymporphically clones this exception.
-     * @return A shallow copy of this exception.
-     */
-    virtual IconvInitializationException* ice_clone() const;
-#endif
 
     /**
      * Obtains the reason for the failure.

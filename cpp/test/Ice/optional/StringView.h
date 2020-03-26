@@ -156,14 +156,7 @@ struct StreamHelper<Util::string_view, StreamHelperCategoryBuiltin>
     template<class S> static inline void
     write(S* stream, const Util::string_view& v)
     {
-#ifdef ICE_CPP11_MAPPING
         stream->write(v.data(), v.size());
-#else
-        //
-        // In C++98, for consistency with the read, we don't string-convert
-        //
-        stream->write(v.data(), v.size(), false);
-#endif
     }
 
     template<class S> static inline void
@@ -172,9 +165,6 @@ struct StreamHelper<Util::string_view, StreamHelperCategoryBuiltin>
         const char* vdata = 0;
         size_t vsize = 0;
 
-        //
-        // In C++98, we ignore the string converter
-        //
         stream->read(vdata, vsize);
 
         if(vsize > 0)

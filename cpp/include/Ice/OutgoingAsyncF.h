@@ -16,7 +16,6 @@ class OutgoingAsync;
 class ProxyOutgoingAsyncBase;
 class CommunicatorFlushBatchAsync;
 
-#ifdef ICE_CPP11_MAPPING
 using OutgoingAsyncBasePtr = ::std::shared_ptr<OutgoingAsyncBase>;
 using OutgoingAsyncPtr = ::std::shared_ptr<OutgoingAsync>;
 using ProxyOutgoingAsyncBasePtr = ::std::shared_ptr<ProxyOutgoingAsyncBase>;
@@ -33,7 +32,7 @@ typedef IceInternal::Handle<ProxyOutgoingAsyncBase> ProxyOutgoingAsyncBasePtr;
 
 ICE_API IceUtil::Shared* upCast(CommunicatorFlushBatchAsync*);
 typedef IceInternal::Handle<CommunicatorFlushBatchAsync> CommunicatorFlushBatchAsyncPtr;
-#endif
+
 }
 
 #endif

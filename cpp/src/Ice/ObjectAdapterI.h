@@ -34,10 +34,8 @@ class ObjectAdapterI;
 ICE_DEFINE_PTR(ObjectAdapterIPtr, ObjectAdapterI);
 
 class ObjectAdapterI : public ObjectAdapter,
-                       public IceUtil::Monitor<IceUtil::RecMutex>
-#ifdef ICE_CPP11_MAPPING
-                     , public std::enable_shared_from_this<ObjectAdapterI>
-#endif
+                       public IceUtil::Monitor<IceUtil::RecMutex>,
+                       public std::enable_shared_from_this<ObjectAdapterI>
 
 {
 public:

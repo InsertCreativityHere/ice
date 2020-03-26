@@ -11,26 +11,42 @@ using namespace IceUtil;
 namespace IceUtilInternal
 {
 
-Int64
-strToInt64(const char* s, char** endptr, int base)
+bool
+stringToInt64(const string& str, int64_t& result)
 {
-#if defined(_WIN32) && defined(_MSC_VER)
-    return _strtoi64(s, endptr, base);
-#elif defined(ICE_64) && !defined(_WIN32)
-    return strtol(s, endptr, base);
-#else
-    return strtoll(s, endptr, base);
-#endif
+    size_t count = 0;
+    try
+    {
+        result = stoll(str, &count);
+        return count == str.length();
+    }
+    catch(const std::invalid_argument& e)
+    {
+        return false;
+    }
+    catch(const std::out_of_range& e)
+    {
+        return false;
+    }
 }
 
 bool
-stringToInt64(const string& s, Int64& result)
+stringToUInt64(const string& str, uint64_t result)
 {
-    const char* start = s.c_str();
-    char* end = 0;
-    errno = 0;
-    result = strToInt64(start, &end, 0);
-    return (errno == 0 && start != end);
+    size_t count = 0;
+    try
+    {
+        result = stoull(str, &count);
+        return count == str.length();
+    }
+    catch(const std::invalid_argument& e)
+    {
+        return false;
+    }
+    catch(const std::out_of_range& e)
+    {
+        return false;
+    }
 }
 
 }

@@ -12,13 +12,8 @@ namespace IceUtilInternal
 {
 
 //
-// Portable strtoll/_strtoi64
-//
-ICE_API IceUtil::Int64 strToInt64(const char*, char**, int);
-
-//
-// stringToInt64 converts a string into a signed 64-bit integer.
-// It's a simple wrapper around strToInt64.
+// Functions for converting strings into signed or unsigned 64-bit integers.
+// These are simple wrappers that handle exceptions and ensure the entire string was parsed.
 //
 // Semantics:
 //
@@ -31,11 +26,12 @@ ICE_API IceUtil::Int64 strToInt64(const char*, char**, int);
 // - Otherwise, parse as decimal
 //
 // - return value == true indicates a successful conversion and result contains the converted value
-// - return value == false indicates an unsuccessful conversion:
-//      - result == 0 indicates that no digits were available for conversion
-//      - result == "Int64 Min" or result == "Int64 Max" indicate underflow or overflow.
+// - return value == false indicates an unsuccessful conversion.
 //
-ICE_API  bool stringToInt64(const std::string&, IceUtil::Int64&);
+
+ICE_API bool stringToInt64(const std::string& str, int64_t& result);
+
+ICE_API bool stringToUInt64(const std::string& str, uint64_t& result)
 
 }
 

@@ -239,13 +239,8 @@ public:
     virtual bool verify(const IceSSL::CertificatePtr&) const;
     virtual string encode() const;
 
-#ifdef ICE_CPP11_MAPPING
     virtual chrono::system_clock::time_point getNotAfter() const;
     virtual chrono::system_clock::time_point getNotBefore() const;
-#else
-    virtual IceUtil::Time getNotAfter() const;
-    virtual IceUtil::Time getNotBefore() const;
-#endif
 
     virtual string getSerialNumber() const;
     virtual DistinguishedName getIssuerDN() const;
@@ -259,14 +254,12 @@ private:
 
     IceInternal::UniqueRef<SecCertificateRef> _cert;
 
-#ifdef ICE_USE_SECURE_TRANSPORT_IOS
     void initializeAttributes() const;
 
     mutable IceInternal::UniqueRef<CFDataRef> _subject;
     mutable IceInternal::UniqueRef<CFDataRef> _issuer;
     mutable std::string _serial;
     mutable int _version;
-#endif
 };
 
 #ifndef ICE_USE_SECURE_TRANSPORT_IOS
@@ -372,11 +365,7 @@ getX509AltName(SecCertificateRef cert, CFTypeRef key)
     return pairs;
 }
 
-#ifdef ICE_CPP11_MAPPING
 chrono::system_clock::time_point
-#else
-IceUtil::Time
-#endif
 getX509Date(SecCertificateRef cert, CFTypeRef key)
 {
     assert(key == kSecOIDX509V1ValidityNotAfter || key == kSecOIDX509V1ValidityNotBefore);
@@ -390,11 +379,7 @@ getX509Date(SecCertificateRef cert, CFTypeRef key)
 
     IceUtil::Time time = IceUtil::Time::secondsDouble(kCFAbsoluteTimeIntervalSince1970 + seconds);
 
-#ifdef ICE_CPP11_MAPPING
     return chrono::system_clock::time_point(chrono::microseconds(time.toMicroSeconds()));
-#else
-    return time;
-#endif
 }
 
 string
@@ -413,11 +398,7 @@ SecureTransportCertificateI::SecureTransportCertificateI(SecCertificateRef cert)
 {
     if(!_cert)
     {
-#ifdef ICE_CPP11_MAPPING
         throw invalid_argument("Invalid certificate reference");
-#else
-        throw IceUtil::IllegalArgumentException(__FILE__, __LINE__, "Invalid certificate reference");
-#endif
     }
 }
 
@@ -598,11 +579,7 @@ SecureTransportCertificateI::encode() const
 #endif
 }
 
-#ifdef ICE_CPP11_MAPPING
 chrono::system_clock::time_point
-#else
-IceUtil::Time
-#endif
 SecureTransportCertificateI::getNotAfter() const
 {
 #ifdef ICE_USE_SECURE_TRANSPORT_IOS
@@ -612,11 +589,7 @@ SecureTransportCertificateI::getNotAfter() const
 #endif
 }
 
-#ifdef ICE_CPP11_MAPPING
 chrono::system_clock::time_point
-#else
-IceUtil::Time
-#endif
 SecureTransportCertificateI::getNotBefore() const
 {
 #ifdef ICE_USE_SECURE_TRANSPORT_IOS
