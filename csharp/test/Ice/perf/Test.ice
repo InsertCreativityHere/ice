@@ -7,16 +7,14 @@
 ["cs:namespace:ZeroC.Ice.perf"]
 module Test
 {
+    sequence<byte> ByteSeq;
 
-sequence<byte> ByteSeq;
+    const int ByteSeqSize = 1024000; // 1MB
 
-const int ByteSeqSize = 1024000; // 1MB
-
-interface Performance
-{
-    void sendBytes(ByteSeq bytes);
-    ByteSeq receiveBytes(int size);
-    void shutdown();
-}
-
+    interface Performance
+    {
+        void sendBytes(ByteSeq bytes);
+        ByteSeq receiveBytes(int size);
+        void shutdown();
+    }
 }

@@ -7,23 +7,23 @@
 [cs:namespace:ZeroC.Ice.namespacemd]
 module WithNamespace
 {
-class C1
-{
-    int i;
-}
+    class C1
+    {
+        int i;
+    }
 
-class C2 : C1
-{
-    long l;
-}
+    class C2 : C1
+    {
+        long l;
+    }
 
-exception E1
-{
-    int i;
-}
+    exception E1
+    {
+        int i;
+    }
 
-exception E2 : E1
-{
-    long l;
-}
+    exception E2 : E1
+    {
+        long l;
+    }
 }

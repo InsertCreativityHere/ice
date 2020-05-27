@@ -7,22 +7,20 @@
 [cs:namespace:ZeroC.Ice.retry]
 module Test
 {
+    exception SystemFailure
+    {
+    }
 
-exception SystemFailure
-{
-}
+    interface Retry
+    {
+        void op(bool kill);
 
-interface Retry
-{
-    void op(bool kill);
+        idempotent int opIdempotent(int c);
+        void opNotIdempotent();
+        void opSystemException();
 
-    idempotent int opIdempotent(int c);
-    void opNotIdempotent();
-    void opSystemException();
+        idempotent void sleep(int delay);
 
-    idempotent void sleep(int delay);
-
-    idempotent void shutdown();
-}
-
+        idempotent void shutdown();
+    }
 }

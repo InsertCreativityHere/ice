@@ -7,15 +7,12 @@
 
 #include <Ice/PropertiesAdmin.ice>
 
-[[java:package:test.IceBox.admin]]
 module Test
 {
-
-interface TestFacet
-{
-    Ice::PropertyDict getChanges();
-}
-
+    interface TestFacet
+    {
+        Ice::PropertyDict getChanges();
+    }
 }
 
 #endif

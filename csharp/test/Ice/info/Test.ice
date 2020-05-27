@@ -9,14 +9,11 @@
 [cs:namespace:ZeroC.Ice.info]
 module Test
 {
+    interface TestIntf
+    {
+        void shutdown();
 
-interface TestIntf
-{
-    void shutdown();
-
-    Ice::Context getEndpointInfoAsContext();
-
-    Ice::Context getConnectionInfoAsContext();
-}
-
+        Ice::Context getEndpointInfoAsContext();
+        Ice::Context getConnectionInfoAsContext();
+    }
 }

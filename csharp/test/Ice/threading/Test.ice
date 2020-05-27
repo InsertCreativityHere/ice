@@ -4,22 +4,20 @@
 
 #pragma once
 
-["cs:namespace:ZeroC.Ice.threading"]
+[cs:namespace:ZeroC.Ice.threading]
 module Test
 {
+    exception TestFailedException
+    {
+        string reason;
+    }
 
-exception TestFailedException
-{
-    string reason;
-}
-
-interface TestIntf
-{
-    void pingSync();
-    ["amd"] void ping();
-    void concurrent(int level);
-    void reset();
-    void shutdown();
-}
-
+    interface TestIntf
+    {
+        void pingSync();
+        [amd] void ping();
+        void concurrent(int level);
+        void reset();
+        void shutdown();
+    }
 }

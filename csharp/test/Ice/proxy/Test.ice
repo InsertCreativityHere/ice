@@ -9,17 +9,14 @@
 [cs:namespace:ZeroC.Ice.proxy]
 module Test
 {
+    interface MyClass
+    {
+        void shutdown();
+        Ice::Context getContext();
+    }
 
-interface MyClass
-{
-    void shutdown();
-
-    Ice::Context getContext();
-}
-
-interface MyDerivedClass : MyClass
-{
-    Object* echo(Object* obj);
-}
-
+    interface MyDerivedClass : MyClass
+    {
+        Object* echo(Object* obj);
+    }
 }

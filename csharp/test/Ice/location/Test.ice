@@ -9,43 +9,35 @@
 [cs:namespace:ZeroC.Ice.location]
 module Test
 {
+    interface TestLocatorRegistry : ::Ice::LocatorRegistry
+    {
+        // Allow remote addition of objects to the locator registry.
+        void addObject(Object* obj);
+    }
 
-interface TestLocatorRegistry : ::Ice::LocatorRegistry
-{
-    //
-    // Allow remote addition of objects to the locator registry.
-    //
-    void addObject(Object* obj);
-}
+    interface TestLocator : ::Ice::Locator
+    {
+        // Returns the number of request on the locator interface.
+        idempotent int getRequestCount();
+    }
 
-interface TestLocator : ::Ice::Locator
-{
-    //
-    // Returns the number of request on the locator interface.
-    //
-    idempotent int getRequestCount();
-}
+    interface ServerManager
+    {
+        void startServer();
+        void shutdown();
+    }
 
-interface ServerManager
-{
-    void startServer();
-    void shutdown();
-}
+    interface Hello
+    {
+        void sayHello();
+    }
 
-interface Hello
-{
-    void sayHello();
-}
+    interface TestIntf
+    {
+        void shutdown();
 
-interface TestIntf
-{
-    void shutdown();
-
-    Hello* getHello();
-
-    Hello* getReplicatedHello();
-
-    void migrateHello();
-}
-
+        Hello* getHello();
+        Hello* getReplicatedHello();
+        void migrateHello();
+    }
 }

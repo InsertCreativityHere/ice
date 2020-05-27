@@ -4,32 +4,25 @@
 
 #pragma once
 
-[[java:package:test.Glacier2.sessionHelper]]
 module Test
 {
+    exception CallbackException
+    {
+        double someValue;
+        string someString;
+    }
 
-exception CallbackException
-{
-    double someValue;
-    string someString;
-}
+    interface CallbackReceiver
+    {
+        void callback();
+        void callbackEx() throws CallbackException;
+    }
 
-interface CallbackReceiver
-{
-    void callback();
+    interface Callback
+    {
+        void initiateCallback(CallbackReceiver* proxy);
+        void initiateCallbackEx(CallbackReceiver* proxy) throws CallbackException;
 
-    void callbackEx()
-        throws CallbackException;
-}
-
-interface Callback
-{
-    void initiateCallback(CallbackReceiver* proxy);
-
-    void initiateCallbackEx(CallbackReceiver* proxy)
-        throws CallbackException;
-
-    void shutdown();
-}
-
+        void shutdown();
+    }
 }

@@ -6,136 +6,126 @@
 
 module abstract
 {
+    enum as
+    {
+        base
+    }
 
-enum as
-{
-    base
-}
+    struct break
+    {
+        int readonly;
+    }
 
-struct break
-{
-    int readonly;
-}
+    interface case
+    {
+        [amd] void catch(int checked, out int continue);
+    }
 
-interface case
-{
-    [amd] void catch(int checked, out int continue);
-}
+    interface decimal
+    {
+        void default();
+    }
 
-interface decimal
-{
-    void default();
-}
+    class delegate
+    {
+        int if;
+        case* else;
+        int event;
+    }
 
-class delegate
-{
-    int if;
-    case* else;
-    int event;
-}
+    interface explicit : decimal, case
+    {
+    }
 
-interface explicit : decimal, case
-{
-}
+    dictionary<string, break> while;
 
-dictionary<string, break> while;
+    class taggedMembers
+    {
+        tag(1) break? for;
+        tag(2) as? goto;
+        tag(3) explicit* if;
+        tag(5) while? internal;
+        tag(7) string? namespace;
+        tag(8) explicit* null;
+    }
 
-class taggedMembers
-{
-    tag(1) break? for;
-    tag(2) as? goto;
-    tag(3) explicit* if;
-    tag(5) while? internal;
-    tag(7) string? namespace;
-    tag(8) explicit* null;
-}
-
-interface taggedParams
-{
-    tag(1) break? for(tag(2) as? goto,
+    interface taggedParams
+    {
+        tag(1) break? for(tag(2) as? goto,
                           tag(3) explicit* if,
                           tag(5) while? internal,
                           tag(7) string? namespace,
                           tag(8) explicit* null);
 
-    [amd]
-    tag(1) break? continue(tag(2) as? goto,
+        [amd]
+        tag(1) break? continue(tag(2) as? goto,
                                tag(3) explicit* if,
                                tag(5) while? internal,
                                tag(7) string? namespace,
                                tag(8) explicit* null);
 
-    tag(1) break? in(out tag(2) as? goto,
+        tag(1) break? in(out tag(2) as? goto,
                          out tag(3) explicit* if,
                          out tag(5) while? internal,
                          out tag(7) string? namespace,
                          out tag(8) explicit* null);
 
-    [amd]
-    tag(1) break? foreach(out tag(2) as? goto,
+        [amd]
+        tag(1) break? foreach(out tag(2) as? goto,
                               out tag(3) explicit* if,
                               out tag(5) while? internal,
                               out tag(7) string? namespace,
                               out tag(8) explicit* null);
+    }
+
+    exception fixed
+    {
+        int for;
+    }
+
+    exception foreach : fixed
+    {
+        int goto;
+        int if;
+    }
+
+    exception BaseMethods
+    {
+        int Data;
+        int HelpLink;
+        int InnerException;
+        int Message;
+        int Source;
+        int StackTrace;
+        int TargetSite;
+        int HResult;
+        int Equals;
+        int GetBaseException;
+        int GetHashCode;
+        int GetObjectData;
+        int GetType;
+        int ReferenceEquals;
+        int ToString;
+    }
+
+    const int protected = 0;
+    const int public = 0;
+
+    // System as inner module.
+    module System
+    {
+        interface Test
+        {
+            void op();
+        }
+    }
 }
 
-exception fixed
-{
-    int for;
-}
-
-exception foreach : fixed
-{
-    int goto;
-    int if;
-}
-
-exception BaseMethods
-{
-    int Data;
-    int HelpLink;
-    int InnerException;
-    int Message;
-    int Source;
-    int StackTrace;
-    int TargetSite;
-    int HResult;
-    int Equals;
-    int GetBaseException;
-    int GetHashCode;
-    int GetObjectData;
-    int GetType;
-    int ReferenceEquals;
-    int ToString;
-}
-
-const int protected = 0;
-const int public = 0;
-
-//
-// System as inner module.
-//
-module System
-{
-
-interface Test
-{
-    void op();
-}
-
-}
-
-}
-
-//
 // System as outer module.
-//
 module System
 {
-
-interface Test
-{
-    void op();
-}
-
+    interface Test
+    {
+        void op();
+    }
 }

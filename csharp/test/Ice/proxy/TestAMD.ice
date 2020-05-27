@@ -9,17 +9,16 @@
 [cs:namespace:ZeroC.Ice.proxy.AMD]
 module Test
 {
+    [amd]
+    interface MyClass
+    {
+        void shutdown();
+        Ice::Context getContext();
+    }
 
-[amd] interface MyClass
-{
-    void shutdown();
-
-    Ice::Context getContext();
-}
-
-[amd] interface MyDerivedClass : MyClass
-{
-    Object* echo(Object* obj);
-}
-
+    [amd]
+    interface MyDerivedClass : MyClass
+    {
+        Object* echo(Object* obj);
+    }
 }

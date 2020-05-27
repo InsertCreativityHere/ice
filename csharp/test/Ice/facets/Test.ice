@@ -7,50 +7,48 @@
 [cs:namespace:ZeroC.Ice.facets]
 module Test
 {
+    interface Empty
+    {
+    }
 
-interface Empty
-{
-}
+    interface A
+    {
+        string callA();
+    }
 
-interface A
-{
-    string callA();
-}
+    interface B : A
+    {
+        string callB();
+    }
 
-interface B : A
-{
-    string callB();
-}
+    interface C : A
+    {
+        string callC();
+    }
 
-interface C : A
-{
-    string callC();
-}
+    interface D : B, C
+    {
+        string callD();
+    }
 
-interface D : B, C
-{
-    string callD();
-}
+    interface E
+    {
+        string callE();
+    }
 
-interface E
-{
-    string callE();
-}
+    interface F : E
+    {
+        string callF();
+    }
 
-interface F : E
-{
-    string callF();
-}
+    interface G
+    {
+        void shutdown();
+        string callG();
+    }
 
-interface G
-{
-    void shutdown();
-    string callG();
-}
-
-interface H : G
-{
-    string callH();
-}
-
+    interface H : G
+    {
+        string callH();
+    }
 }

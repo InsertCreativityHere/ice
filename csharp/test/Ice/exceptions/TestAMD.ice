@@ -11,64 +11,64 @@
 [cs:namespace:ZeroC.Ice.exceptions.AMD]
 module Test
 {
+    interface Empty
+    {
+    }
 
-interface Empty
-{
-}
+    interface Thrower;
 
-interface Thrower;
+    exception A
+    {
+        int aMem;
+    }
 
-exception A
-{
-    int aMem;
-}
+    exception B : A
+    {
+        int bMem;
+    }
 
-exception B : A
-{
-    int bMem;
-}
+    exception C : B
+    {
+        int cMem;
+    }
 
-exception C : B
-{
-    int cMem;
-}
+    exception D
+    {
+        int dMem;
+    }
 
-exception D
-{
-    int dMem;
-}
+    [amd]
+    interface Thrower
+    {
+        void shutdown();
+        bool supportsAssertException();
 
-[amd] interface Thrower
-{
-    void shutdown();
-    bool supportsAssertException();
+        void throwAasA(int a);
+        void throwAorDasAorD(int a);
+        void throwBasA(int a, int b);
+        void throwCasA(int a, int b, int c);
+        void throwBasB(int a, int b);
+        void throwCasB(int a, int b, int c);
+        void throwCasC(int a, int b, int c);
+        void throwUndeclaredA(int a);
+        void throwUndeclaredB(int a, int b);
+        void throwUndeclaredC(int a, int b, int c);
+        void throwLocalException();
+        void throwNonIceException();
+        void throwAssertException();
+        Ice::ByteSeq throwMemoryLimitException(Ice::ByteSeq seq);
 
-    void throwAasA(int a);
-    void throwAorDasAorD(int a);
-    void throwBasA(int a, int b);
-    void throwCasA(int a, int b, int c);
-    void throwBasB(int a, int b);
-    void throwCasB(int a, int b, int c);
-    void throwCasC(int a, int b, int c);
-    void throwUndeclaredA(int a);
-    void throwUndeclaredB(int a, int b);
-    void throwUndeclaredC(int a, int b, int c);
-    void throwLocalException();
-    void throwNonIceException();
-    void throwAssertException();
-    Ice::ByteSeq throwMemoryLimitException(Ice::ByteSeq seq);
+        idempotent void throwLocalExceptionIdempotent();
 
-    idempotent void throwLocalExceptionIdempotent();
+        void throwAfterResponse();
+        void throwAfterException();
 
-    void throwAfterResponse();
-    void throwAfterException();
+        void throwAConvertedToUnhandled();
+    }
 
-    void throwAConvertedToUnhandled();
-}
-
-[amd] interface WrongOperation
-{
-    void noSuchOperation();
-}
-
+    [amd]
+    interface WrongOperation
+    {
+        void noSuchOperation();
+    }
 }

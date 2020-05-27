@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 [[normalize-case]]
 
 [cs:namespace:ZeroC.Ice.DefaultServant]

@@ -6,40 +6,32 @@
 
 module Test
 {
+    exception UserEx
+    {
+    }
 
-exception UserEx
-{
-}
+    sequence<byte> ByteSeq;
 
-sequence<byte> ByteSeq;
+    interface Metrics
+    {
+        void op();
 
-interface Metrics
-{
-    void op();
+        idempotent void fail();
 
-    idempotent void fail();
+        void opWithUserException() throws UserEx;
+        void opWithRequestFailedException();
+        void opWithLocalException();
+        void opWithUnknownException();
+        void opByteS(ByteSeq bs);
 
-    void opWithUserException()
-        throws UserEx;
+        Object* getAdmin();
 
-    void opWithRequestFailedException();
+        void shutdown();
+    }
 
-    void opWithLocalException();
-
-    void opWithUnknownException();
-
-    void opByteS(ByteSeq bs);
-
-    Object* getAdmin();
-
-    void shutdown();
-}
-
-interface Controller
-{
-    void hold();
-
-    void resume();
-}
-
+    interface Controller
+    {
+        void hold();
+        void resume();
+    }
 }

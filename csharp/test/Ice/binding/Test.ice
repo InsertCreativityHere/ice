@@ -7,26 +7,24 @@
 [cs:namespace:ZeroC.Ice.binding]
 module Test
 {
+    interface TestIntf
+    {
+        string getAdapterName();
+    }
 
-interface TestIntf
-{
-    string getAdapterName();
-}
+    interface RemoteObjectAdapter
+    {
+        TestIntf* getTestIntf();
 
-interface RemoteObjectAdapter
-{
-    TestIntf* getTestIntf();
+        void deactivate();
+    }
 
-    void deactivate();
-}
+    interface RemoteCommunicator
+    {
+        RemoteObjectAdapter* createObjectAdapter(string name, string endpoints);
 
-interface RemoteCommunicator
-{
-    RemoteObjectAdapter* createObjectAdapter(string name, string endpoints);
+        void deactivateObjectAdapter(RemoteObjectAdapter* adapter);
 
-    void deactivateObjectAdapter(RemoteObjectAdapter* adapter);
-
-    void shutdown();
-}
-
+        void shutdown();
+    }
 }

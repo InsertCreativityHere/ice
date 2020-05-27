@@ -10,25 +10,23 @@
 
 module Test
 {
+    class PreservedClass : BaseClass
+    {
+        string pc;
+    }
 
-class PreservedClass : BaseClass
-{
-    string pc;
-}
+    exception Preserved1 : KnownPreservedDerived
+    {
+        BaseClass p1;
+    }
 
-exception Preserved1 : KnownPreservedDerived
-{
-    BaseClass p1;
-}
+    exception Preserved2 : Preserved1
+    {
+        BaseClass p2;
+    }
 
-exception Preserved2 : Preserved1
-{
-    BaseClass p2;
-}
-
-exception ClientPrivateException
-{
-    string cpe;
-}
-
+    exception ClientPrivateException
+    {
+        string cpe;
+    }
 }

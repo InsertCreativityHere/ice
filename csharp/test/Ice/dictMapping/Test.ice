@@ -7,44 +7,43 @@
 [cs:namespace:ZeroC.Ice.dictMapping]
 module Test
 {
-
-dictionary<int, int> NV;
-dictionary<string, string> NR;
-dictionary<string, NV> NDV;
-dictionary<string, NR> NDR;
+    dictionary<int, int> NV;
+    dictionary<string, string> NR;
+    dictionary<string, NV> NDV;
+    dictionary<string, NR> NDR;
     sequence<int> IntSeq;
-struct TEstNv
-{
-    NV d;
-    IntSeq s;
-}
 
-sequence<int> AIS;
-[clr:generic:List] sequence<int> GIS;
+    struct TEstNv
+    {
+        NV d;
+        IntSeq s;
+    }
 
-sequence<string> ASS;
-[clr:generic:List] sequence<string> GSS;
+    sequence<int> AIS;
+    [clr:generic:List] sequence<int> GIS;
 
-dictionary<string, AIS> NDAIS;
-dictionary<string, GIS> NDGIS;
+    sequence<string> ASS;
+    [clr:generic:List] sequence<string> GSS;
 
-dictionary<string, ASS> NDASS;
-dictionary<string, GSS> NDGSS;
+    dictionary<string, AIS> NDAIS;
+    dictionary<string, GIS> NDGIS;
 
-interface MyClass
-{
-    void shutdown();
+    dictionary<string, ASS> NDASS;
+    dictionary<string, GSS> NDGSS;
 
-    NV opNV(NV i, out NV o);
-    NR opNR(NR i, out NR o);
-    NDV opNDV(NDV i, out NDV o);
-    NDR opNDR(NDR i, out NDR o);
+    interface MyClass
+    {
+        void shutdown();
 
-    NDAIS opNDAIS(NDAIS i, out NDAIS o);
-    NDGIS opNDGIS(NDGIS i, out NDGIS o);
+        NV opNV(NV i, out NV o);
+        NR opNR(NR i, out NR o);
+        NDV opNDV(NDV i, out NDV o);
+        NDR opNDR(NDR i, out NDR o);
 
-    NDASS opNDASS(NDASS i, out NDASS o);
-    NDGSS opNDGSS(NDGSS i, out NDGSS o);
-}
+        NDAIS opNDAIS(NDAIS i, out NDAIS o);
+        NDGIS opNDGIS(NDGIS i, out NDGIS o);
 
+        NDASS opNDASS(NDASS i, out NDASS o);
+        NDGSS opNDGSS(NDGSS i, out NDGSS o);
+    }
 }

@@ -10,56 +10,54 @@
 
 module Test
 {
+    class SBSUnknownDerived : SBase
+    {
+        string sbsud;
+    }
 
-class SBSUnknownDerived : SBase
-{
-    string sbsud;
-}
+    class SUnknown
+    {
+        string su;
+        SUnknown cycle;
+    }
 
-class SUnknown
-{
-    string su;
-    SUnknown cycle;
-}
+    class D2 : B
+    {
+        string sd2 = "";
+        B pd2;
+    }
 
-class D2 : B
-{
-    string sd2 = "";
-    B pd2;
-}
+    class D4 : B
+    {
+        B p1;
+        B p2;
+    }
 
-class D4 : B
-{
-    B p1;
-    B p2;
-}
+    exception UnknownDerivedException : BaseException
+    {
+        string sude;
+        D2 pd2;
+    }
 
-exception UnknownDerivedException : BaseException
-{
-    string sude;
-    D2 pd2;
-}
+    class MyClass
+    {
+        int i;
+    }
 
-class MyClass
-{
-    int i;
-}
+    class PSUnknown : Preserved
+    {
+        string psu;
+        PNode graph;
+        MyClass cl;
+    }
 
-class PSUnknown : Preserved
-{
-    string psu;
-    PNode graph;
-    MyClass cl;
-}
+    class PSUnknown2 : Preserved
+    {
+        PBase pb;
+    }
 
-class PSUnknown2 : Preserved
-{
-    PBase pb;
-}
-
-exception PSUnknownException : PreservedException
-{
-    PSUnknown2 p;
-}
-
+    exception PSUnknownException : PreservedException
+    {
+        PSUnknown2 p;
+    }
 }

@@ -10,40 +10,32 @@
 [cs:namespace:ZeroC.Ice.admin]
 module Test
 {
+    interface RemoteCommunicator
+    {
+        Object* getAdmin();
+        Ice::PropertyDict getChanges();
 
-interface RemoteCommunicator
-{
-    Object* getAdmin();
+        // Logger operations
+        void print(string message);
+        void trace(string category, string message);
+        void warning(string message);
+        void error(string message);
 
-    Ice::PropertyDict getChanges();
+        void shutdown();
+        void waitForShutdown();
+        void destroy();
+    }
 
-    //
-    // Logger operations
-    //
-    void print(string message);
-    void trace(string category, string message);
-    void warning(string message);
-    void error(string message);
+    interface RemoteCommunicatorFactory
+    {
+        RemoteCommunicator* createCommunicator(Ice::PropertyDict props);
+        void shutdown();
+    }
 
-    void shutdown();
-
-    void waitForShutdown();
-
-    void destroy();
-}
-
-interface RemoteCommunicatorFactory
-{
-    RemoteCommunicator* createCommunicator(Ice::PropertyDict props);
-
-    void shutdown();
-}
-
-interface TestFacet
-{
-    void op();
-}
-
+    interface TestFacet
+    {
+        void op();
+    }
 }
 
 #endif
