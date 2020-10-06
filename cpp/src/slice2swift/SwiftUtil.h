@@ -83,6 +83,8 @@ protected:
     ParamInfoList getAllOutParams(const OperationPtr&);
     void getOutParams(const OperationPtr&, ParamInfoList&, ParamInfoList&);
 
+    //TODOREMOVE
+    std::string typeToString(const TypePtr&, const ContainedPtr&, const StringMap&);
     std::string typeToString(const TypePtr&, const ContainedPtr&, const StringList& = StringList());
 
     std::string getAbsolute(const TypePtr&);

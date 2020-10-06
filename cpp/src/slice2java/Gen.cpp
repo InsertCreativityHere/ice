@@ -106,7 +106,7 @@ bool isValue(const TypePtr& constType)
     return (b && b->usesClasses()) || cl;
 }
 
-string getSerialVersionUUID(const DataMemberPtr& p)
+long getSerialVersionUUID(const DataMemberContainerPtr& p)
 {
     if (auto serialVersion = p->findMetadata("java:serialVersionUID"))
     {
@@ -115,7 +115,7 @@ string getSerialVersionUUID(const DataMemberPtr& p)
 
         try
         {
-            return to_string(stoll(*serialVersion, nullptr, 0));
+            return stoll(*serialVersion, nullptr, 0);
         }
         catch(const logic_error&) // conversion error
         {
@@ -137,6 +137,8 @@ string getSerialVersionUUID(const DataMemberPtr& p)
     {
         return computeSerialVersionUUID(p2);
     }
+    assert(false);
+    return -1;
 }
 
 }

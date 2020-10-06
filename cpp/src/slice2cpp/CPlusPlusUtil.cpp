@@ -376,6 +376,18 @@ Slice::getUnqualified(const std::string& type, const std::string& scope)
     return type;
 }
 
+//TODOREMOVE
+string
+Slice::typeToString(const TypePtr& type, const string& scope, const StringMap& metadata, int typeCtx)
+{
+    StringList temp;
+    for(const auto& m : metadata)
+    {
+        temp.push_back(m.first + ":" + m.second);
+    }
+    return typeToString(type, scope, temp, typeCtx);
+}
+
 string
 Slice::typeToString(const TypePtr& type, const string& scope, const StringList& metadata, int typeCtx)
 {

@@ -118,6 +118,7 @@ typedef ::IceUtil::Handle<Unit> UnitPtr;
 typedef std::list<TypePtr> TypeList;
 typedef std::set<std::string> StringSet;
 typedef std::list<std::string> StringList;
+typedef std::map<std::string, std::string> StringMap;
 typedef std::list<ContainedPtr> ContainedList;
 typedef std::list<ModulePtr> ModuleList;
 typedef std::list<ConstructedPtr> ConstructedList;
@@ -413,6 +414,8 @@ public:
 
     bool hasMetadata(const std::string&) const;
     bool hasMetadataWithPrefix(const std::string&) const;
+    //TODOREMOVE
+    std::optional<std::string> findMetadata(const std::string& prefix) const;
     bool findMetadata(const std::string&, std::string&) const;
     std::string findMetadataWithPrefix(const std::string&) const;
     std::list<std::string> getAllMetadata() const;
@@ -906,8 +909,8 @@ public:
 
     TypePtr keyType() const;
     TypePtr valueType() const;
-    StringList keyMetadata() const;
-    StringList valueMetadata() const;
+    StringMap keyMetadata() const;
+    StringMap valueMetadata() const;
     bool uses(const ContainedPtr&) const override;
     bool usesClasses() const override;
     size_t minWireSize() const override;
@@ -921,16 +924,16 @@ public:
 
 protected:
 
-    Dictionary(const ContainerPtr&, const std::string&, const TypePtr&, const StringList&, const TypePtr&,
-               const StringList&);
+    Dictionary(const ContainerPtr&, const std::string&, const TypePtr&, const StringMap&, const TypePtr&,
+               const StringMap&);
 
     friend class Container;
     friend class Module;
 
     TypePtr _keyType;
     TypePtr _valueType;
-    StringList _keyMetadata;
-    StringList _valueMetadata;
+    StringMap _keyMetadata;
+    StringMap _valueMetadata;
 };
 
 // ----------------------------------------------------------------------

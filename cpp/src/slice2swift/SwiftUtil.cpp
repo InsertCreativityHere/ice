@@ -1051,6 +1051,18 @@ SwiftGenerator::writeConstantValue(IceUtilInternal::Output& out, const TypePtr& 
     }
 }
 
+//TODOREMOVE
+string
+SwiftGenerator::typeToString(const TypePtr& type, const ContainedPtr& toplevel, const StringMap& metadata)
+{
+    StringList temp;
+    for(const auto& m : metadata)
+    {
+        temp.push_back(m.first + ":" + m.second);
+    }
+    return typeToString(type, toplevel, temp);
+}
+
 string
 SwiftGenerator::typeToString(const TypePtr& type, const ContainedPtr& toplevel, const StringList& metadata)
 {
@@ -2560,28 +2572,20 @@ SwiftGenerator::MetadataVisitor::visitDictionary(const DictionaryPtr& p)
     const DefinitionContextPtr dc = p->unit()->findDefinitionContext(p->file());
     assert(dc);
 
-    StringList newMetadata = p->keyMetadata();
-    for(StringList::const_iterator q = newMetadata.begin(); q != newMetadata.end();)
+    for (const auto& metadata : p->keyMetadata())
     {
-        string s = *q++;
-        if(s.find(prefix) != 0)
+        if (metadata.first.find(prefix) == 0)
         {
-            continue;
+            dc->error(p->file(), p->line(), "invalid metadata `" + metadata.first + "' for dictionary key type");
         }
-
-        dc->error(p->file(), p->line(), "invalid metadata `" + s + "' for dictionary key type");
     }
 
-    newMetadata = p->valueMetadata();
-    TypePtr t = p->valueType();
-    for(StringList::const_iterator q = newMetadata.begin(); q != newMetadata.end();)
+    for (const auto& metadata : p->valueMetadata())
     {
-        string s = *q++;
-        if(s.find(prefix) != 0)
+        if (metadata.first.find(prefix) == 0)
         {
-            continue;
+            dc->error(p->file(), p->line(), "invalid metadata `" + metadata.first + "' for dictionary value type");
         }
-        dc->error(p->file(), p->line(), "error invalid metadata `" + s + "' for dictionary value type");
     }
 
     p->setMetadata(validate(p, p->getAllMetadata(), p->file(), p->line()));

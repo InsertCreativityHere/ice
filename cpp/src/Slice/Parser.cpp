@@ -911,6 +911,20 @@ Slice::Contained::hasMetadataWithPrefix(const string& prefix) const
     return !findMetadataWithPrefix(prefix).empty();
 }
 
+//TODOREMOVE
+optional<string>
+Slice::Contained::findMetadata(const string& prefix) const
+{
+    for (const auto& p : _metadata)
+    {
+        if (p.find(prefix) == 0)
+        {
+            return p.substr(prefix.size());
+        }
+    }
+    return nullopt;
+}
+
 bool
 Slice::Contained::findMetadata(const string& prefix, string& meta) const
 {
@@ -2151,7 +2165,8 @@ Slice::Module::createDictionary(const string& name, const TypePtr& keyType, cons
         }
     }
 
-    DictionaryPtr p = new Dictionary(this, name, keyType, keyMetadata, valueType, valueMetadata);
+    DictionaryPtr p = new Dictionary(this, name, keyType, parseMetadata(keyMetadata), valueType,
+                                     parseMetadata(valueMetadata));
     _contents.push_back(p);
     return p;
 }
@@ -3588,13 +3603,13 @@ Slice::Dictionary::valueType() const
     return _valueType;
 }
 
-StringList
+StringMap
 Slice::Dictionary::keyMetadata() const
 {
     return _keyMetadata;
 }
 
-StringList
+StringMap
 Slice::Dictionary::valueMetadata() const
 {
     return _valueMetadata;
@@ -3744,8 +3759,8 @@ Slice::Dictionary::legalKeyType(const TypePtr& type, bool& containsSequence)
 }
 
 Slice::Dictionary::Dictionary(const ContainerPtr& container, const string& name, const TypePtr& keyType,
-                              const StringList& keyMetadata, const TypePtr& valueType,
-                              const StringList& valueMetadata) :
+                              const StringMap& keyMetadata, const TypePtr& valueType,
+                              const StringMap& valueMetadata) :
     SyntaxTreeBase(container->unit()),
     Type(container->unit()),
     Contained(container, name),

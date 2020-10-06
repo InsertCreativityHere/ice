@@ -819,12 +819,12 @@ map<string, string> Slice::parseMetadata(const StringList& metadata)
     return parsedMetadata;
 }
 
-bool hasMetadata(const string& directive, const map<string, string>& metadata)
+bool Slice::hasMetadata(const string& directive, const map<string, string>& metadata)
 {
     return metadata.find(directive) != metadata.end();
 }
 
-optional<string> findMetadata(const string& directive, const map<string, string>& metadata)
+optional<string> Slice::findMetadata(const string& directive, const map<string, string>& metadata)
 {
     auto match = metadata.find(directive);
     if (match != metadata.end())
@@ -834,7 +834,7 @@ optional<string> findMetadata(const string& directive, const map<string, string>
     return nullopt;
 }
 
-string getDeprecateReason(const ContainedPtr& p, bool checkContainer)
+string Slice::getDeprecateReason(const ContainedPtr& p, bool checkContainer)
 {
     auto deprecateMsg = p->findMetadata("deprecate");
     if (!deprecateMsg && checkContainer)

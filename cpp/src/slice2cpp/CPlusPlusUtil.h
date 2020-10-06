@@ -32,6 +32,8 @@ const int TypeContextLocal = 32;
 bool isMovable(const TypePtr&);
 
 std::string getUnqualified(const std::string&, const std::string&);
+//TODOREMOVE
+std::string typeToString(const TypePtr&, const std::string&, const StringMap&, int);
 std::string typeToString(const TypePtr&, const std::string& = "", const StringList& = StringList(), int = 0);
 std::string typeToString(const TypePtr&, bool, const std::string& = "", const StringList& = StringList(), int = 0);
 std::string returnTypeToString(const TypePtr&, bool, const std::string& = "", const StringList& = StringList(), int = 0);
