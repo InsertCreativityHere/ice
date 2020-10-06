@@ -113,7 +113,7 @@ std::optional<std::string> findMetadata(const std::string& directive,
 
 // Checks if a Slice entity is deprecated and returns the deprecation message if there is one (or a default message if
 // there isn't any. If the entity isn't deprecated, this returns the empty string.
-std::string getDeprecateMessage(const ContainedPtr& p, bool checkContainer = false) const;
+std::string getDeprecateReason(const ContainedPtr& p, bool checkContainer = false);
 
 }
 

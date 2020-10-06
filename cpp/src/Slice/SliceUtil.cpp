@@ -814,7 +814,7 @@ map<string, string> Slice::parseMetadata(const StringList& metadata)
     map<string, string> parsedMetadata;
     for (const auto& m : metadata)
     {
-        parsedMetadata.insert(parsedMetadata(m));
+        parsedMetadata.insert(parseMetadata(m));
     }
     return parsedMetadata;
 }
@@ -826,20 +826,23 @@ bool hasMetadata(const string& directive, const map<string, string>& metadata)
 
 optional<string> findMetadata(const string& directive, const map<string, string>& metadata)
 {
-    match = metadata.find(prefix);
+    auto match = metadata.find(directive);
     if (match != metadata.end())
     {
-        return match.second;
+        return match->second;
     }
     return nullopt;
 }
 
-string getDeprecateMessage(const ContainedPtr& p, bool checkContainer)
+string getDeprecateReason(const ContainedPtr& p, bool checkContainer)
 {
     auto deprecateMsg = p->findMetadata("deprecate");
-    if (!deprecateMsg && checkContainer && (ContainedPtr p2 = ContainedPtr::dynamicCast(p->container())))
+    if (!deprecateMsg && checkContainer)
     {
-        deprecateMsg = p2->findMetadata("deprecate");
+        if (ContainedPtr p2 = ContainedPtr::dynamicCast(p->container()))
+        {
+            deprecateMsg = p2->findMetadata("deprecate");
+        }
     }
 
     // Check if there was `deprecate` metadata on the entity or it's container.
