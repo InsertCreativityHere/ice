@@ -105,15 +105,14 @@ std::string getDeprecateReason(const ContainedPtr& p, bool checkContainer = fals
 std::pair<std::string, std::string> parseMetadata(const std::string& metadata);
 
 // Parses a list of raw metadata strings, converting it into a map of directives (keys) and arguments (values).
-std::map<std::string, std::string> parseMetadata(const StringList& metadata);
+StringMap parseMetadata(const StringList& metadata);
 
 // Returns true if `metadata` contains the specified metadata directive.
-bool hasMetadata(const std::string& directive, const std::map<std::string, std::string>& metadata);
+bool hasMetadata(const std::string& directive, const StringMap& metadata);
 
 // Returns any arguments passed to the specified metadata directive if it's present.
 // Otherwise it returns a null optional to indicate the metadata isn't set.
-std::optional<std::string> findMetadata(const std::string& directive,
-                                        const std::map<std::string, std::string>& metadata);
+std::optional<std::string> findMetadata(const std::string& directive, const StringMap& metadata);
 
 }
 

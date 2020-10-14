@@ -832,9 +832,9 @@ pair<string, string> Slice::parseMetadata(const string& metadata)
     return make_pair(metadata.substr(0, start), metadata.substr(start + 1, length));
 }
 
-map<string, string> Slice::parseMetadata(const StringList& metadata)
+StringMap Slice::parseMetadata(const StringList& metadata)
 {
-    map<string, string> parsedMetadata;
+    StringMap parsedMetadata;
     for (const auto& m : metadata)
     {
         parsedMetadata.insert(parseMetadata(m));
@@ -842,12 +842,12 @@ map<string, string> Slice::parseMetadata(const StringList& metadata)
     return parsedMetadata;
 }
 
-bool Slice::hasMetadata(const string& directive, const map<string, string>& metadata)
+bool Slice::hasMetadata(const string& directive, const StringMap& metadata)
 {
     return metadata.find(directive) != metadata.end();
 }
 
-optional<string> Slice::findMetadata(const string& directive, const map<string, string>& metadata)
+optional<string> Slice::findMetadata(const string& directive, const StringMap& metadata)
 {
     auto match = metadata.find(directive);
     return (match != metadata.end() ? make_optional(match->second) : nullopt);
