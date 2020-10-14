@@ -852,3 +852,20 @@ optional<string> Slice::findMetadata(const string& directive, const StringMap& m
     auto match = metadata.find(directive);
     return (match != metadata.end() ? make_optional(match->second) : nullopt);
 }
+
+StringList Slice::removethis(const StringMap& sm)
+{
+    StringList sl;
+    for (const auto& m : sm)
+    {
+        if(m.second.empty())
+        {
+            sl.push_back(m.first);
+        }
+        else
+        {
+            sl.push_back(m.first + ":" + m.second);
+        }
+    }
+    return sl;
+}

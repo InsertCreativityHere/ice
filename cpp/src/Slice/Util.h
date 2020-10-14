@@ -114,6 +114,8 @@ bool hasMetadata(const std::string& directive, const StringMap& metadata);
 // Otherwise it returns a null optional to indicate the metadata isn't set.
 std::optional<std::string> findMetadata(const std::string& directive, const StringMap& metadata);
 
+StringList removethis(const StringMap&);
+
 }
 
 #endif
