@@ -196,24 +196,15 @@ protected:
                                            const std::string&, bool, int&, bool,
                                            const std::string& = "", const StringList& = StringList());
 
-    //
-    // Search metadata for an entry with the given prefix and return the entire string.
-    //
-    static bool findMetadata(const std::string&, const StringList&, std::string&);
-
-    //
     // Get custom type metadata. If metadata is found, the abstract and
     // concrete types are extracted and the function returns true. If an
     // abstract type is not specified, it is set to an empty string.
-    //
-    static bool getTypeMetadata(const StringList&, std::string&, std::string&);
+    static bool getTypeMetadata(const StringMap&, std::string&, std::string&);
 
-    //
     // Determine whether a custom type is defined. The function checks the
     // metadata of the type's original definition, as well as any optional
     // metadata that typically represents a data member or parameter.
-    //
-    static bool hasTypeMetadata(const TypePtr&, const StringList& = StringList());
+    static bool hasTypeMetadata(const TypePtr&, const StringMap& = StringMap());
 
     //
     // Obtain the concrete and abstract types for a dictionary or sequence type.

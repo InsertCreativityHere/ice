@@ -904,30 +904,16 @@ Slice::JavaGenerator::getPackagePrefix(const ContainedPtr& cont) const
 
     assert(m);
 
-    //
     // The java:package metadata can be defined as global metadata or applied to a top-level module.
     // We check for the metadata at the top-level module first and then fall back to the global scope.
-    //
-    static const string prefix = "java:package:";
-
-    string q;
-    if(!m->findMetadata(prefix, q))
+    auto packageMetadata = m->findMetadata("java:package");
+    if (!packageMetadata)
     {
-        UnitPtr ut = cont->unit();
-        string file = cont->file();
-        assert(!file.empty());
-
-        DefinitionContextPtr dc = ut->findDefinitionContext(file);
+        DefinitionContextPtr dc = cont->unit()->findDefinitionContext(cont->file());
         assert(dc);
-        q = dc->findMetadata(prefix);
+        packageMetadata = dc->findMetadata("java:package");
     }
-
-    if(!q.empty())
-    {
-        q = q.substr(prefix.size());
-    }
-
-    return q;
+    return (packageMetadata ? *packageMetadata : "");
 }
 
 string
@@ -1467,10 +1453,9 @@ Slice::JavaGenerator::writeMarshalUnmarshalCode(Output& out,
     {
         if(isTaggedParam || mode == TaggedMember)
         {
-            string ignored;
             TypePtr elemType = seq->type();
             BuiltinPtr eltBltin = BuiltinPtr::dynamicCast(elemType);
-            if(!hasTypeMetadata(seq, metadata) && eltBltin && eltBltin->kind() < Builtin::KindObject)
+            if (!hasTypeMetadata(seq, parseMetadata(metadata)) && eltBltin && eltBltin->kind() < Builtin::KindObject) //TODOFIX
             {
                 string bs = builtinSuffixTable[eltBltin->kind()];
                 if(marshal)
@@ -1484,7 +1469,7 @@ Slice::JavaGenerator::writeMarshalUnmarshalCode(Output& out,
                     return;
                 }
             }
-            else if(findMetadata("java:serializable", seq->getAllMetadata(), ignored))
+            else if (seq->hasMetadata("java:serializable"))
             {
                 if(marshal)
                 {
@@ -1498,9 +1483,8 @@ Slice::JavaGenerator::writeMarshalUnmarshalCode(Output& out,
                     return;
                 }
             }
-            else if(!hasTypeMetadata(seq, metadata) ||
-                    findMetadata("java:type", seq->getAllMetadata(), ignored) ||
-                    findMetadata("java:type", metadata, ignored))
+            else if (!hasTypeMetadata(seq, parseMetadata(metadata)) || seq->hasMetadata("java:type") || //TODOFIX
+                     Slice::hasMetadata("java:type", parseMetadata(metadata)))//TODOFIX
             {
                 string instanceType, formalType, origInstanceType, origFormalType;
                 getSequenceTypes(seq, "", metadata, instanceType, formalType);
@@ -1542,14 +1526,12 @@ Slice::JavaGenerator::writeMarshalUnmarshalCode(Output& out,
                     const size_t sz = elemType->minWireSize();
                     if(sz > 1)
                     {
-                        string ignored2;
                         out << nl << "final int taggedSize = " << param << " == null ? 0 : ";
-                        if(findMetadata("java:buffer", seq->getAllMetadata(), ignored2) ||
-                           findMetadata("java:buffer", metadata, ignored2))
+                        if (seq->hasMetadata("java:buffer") || Slice::hasMetadata("java:buffer", parseMetadata(metadata)))//TODOFIX
                         {
                             out << param << ".remaining() / " << sz << ";";
                         }
-                        else if(hasTypeMetadata(seq, metadata))
+                        else if (hasTypeMetadata(seq, parseMetadata(metadata))) //TODOFIX
                         {
                             out << param << ".size();";
                         }
@@ -1782,14 +1764,11 @@ Slice::JavaGenerator::writeSequenceMarshalUnmarshalCode(Output& out,
     // get rid of these two easy cases first.
     //
     BuiltinPtr builtin = BuiltinPtr::dynamicCast(elementType);
-    if(builtin && builtin->kind() == Builtin::KindByte)
+    if (builtin && builtin->kind() == Builtin::KindByte)
     {
-        string meta;
-        static const string protobuf = "java:protobuf:";
-        static const string serializable = "java:serializable:";
-        if(seq->findMetadata(serializable, meta))
+        if (seq->hasMetadata("java:serializable"))
         {
-            if(marshal)
+            if (marshal)
             {
                 out << nl << stream << ".writeSerializable(" << param << ");";
             }
@@ -1799,9 +1778,9 @@ Slice::JavaGenerator::writeSequenceMarshalUnmarshalCode(Output& out,
             }
             return;
         }
-        else if(seq->findMetadata(protobuf, meta))
+        else if (seq->hasMetadata("java:protobuf"))
         {
-            if(marshal)
+            if (marshal)
             {
                 out << nl << "if(!" << param << ".isInitialized())";
                 out << sb;
@@ -1824,16 +1803,11 @@ Slice::JavaGenerator::writeSequenceMarshalUnmarshalCode(Output& out,
         }
     }
 
-    if(builtin &&
-       (builtin->kind() == Builtin::KindByte || builtin->kind() == Builtin::KindShort ||
-        builtin->kind() == Builtin::KindInt || builtin->kind() == Builtin::KindLong ||
-        builtin->kind() == Builtin::KindFloat || builtin->kind() == Builtin::KindDouble))
+    if(builtin && builtin->isNumericType())
     {
-        string meta;
-        static const string bytebuffer = "java:buffer";
-        if(seq->findMetadata(bytebuffer, meta) || findMetadata(bytebuffer, metadata, meta))
+        if(seq->hasMetadata("java:buffer") || Slice::hasMetadata("java:buffer", parseMetadata(metadata)))//TODOFIX
         {
-            if(marshal)
+            if (marshal)
             {
                 out << nl << stream << ".write" << builtinSuffixTable[builtin->kind()] << "Buffer(" << param << ");";
             }
@@ -1845,7 +1819,7 @@ Slice::JavaGenerator::writeSequenceMarshalUnmarshalCode(Output& out,
         }
     }
 
-    if(!hasTypeMetadata(seq, metadata) && builtin && builtin->kind() <= Builtin::KindString)
+    if(!hasTypeMetadata(seq, parseMetadata(metadata)) && builtin && builtin->kind() <= Builtin::KindString) // TODOFIX
     {
         if(marshal)
         {
@@ -2097,101 +2071,66 @@ Slice::JavaGenerator::writeSequenceMarshalUnmarshalCode(Output& out,
 }
 
 bool
-Slice::JavaGenerator::findMetadata(const string& prefix, const StringList& metadata, string& value)
+Slice::JavaGenerator::getTypeMetadata(const StringMap& metadata, string& instanceType, string& formalType)
 {
-    for(const auto& q : metadata)
-    {
-        if(q.find(prefix) == 0)
-        {
-            value = q;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool
-Slice::JavaGenerator::getTypeMetadata(const StringList& metadata, string& instanceType, string& formalType)
-{
-    //
     // Extract the instance type and an optional formal type.
-    // The correct syntax is "java:type:instance-type[:formal-type]".
-    //
-    static const string prefix = "java:type:";
-    string directive;
-    if(findMetadata(prefix, metadata, directive))
+    // The correct syntax is "java:type(instance-type[,formal-type])".
+    if (auto typeMetadata = Slice::findMetadata("java:type", metadata))
     {
-        string::size_type pos = directive.find(':', prefix.size());
-        if(pos != string::npos)
+        string customType = *typeMetadata;
+
+        auto pos = customType.find(',');
+        if (pos != string::npos)
         {
-            instanceType = directive.substr(prefix.size(), pos - prefix.size());
-            formalType = directive.substr(pos + 1);
+            instanceType = customType.substr(pos);
+            formalType = customType.substr(pos + 1);
         }
         else
         {
-            instanceType = directive.substr(prefix.size());
+            instanceType = customType;
             formalType.clear();
         }
         return true;
     }
-
     return false;
 }
 
 bool
-Slice::JavaGenerator::hasTypeMetadata(const TypePtr& type, const StringList& localMetadata)
+Slice::JavaGenerator::hasTypeMetadata(const TypePtr& type, const StringMap& localMetadata)
 {
-    ContainedPtr cont = ContainedPtr::dynamicCast(type);
-    if(cont)
+    if (Slice::hasMetadata("java:type", localMetadata))
     {
-        static const string prefix = "java:type:";
-        string directive;
+        return true;
+    }
 
-        if(findMetadata(prefix, localMetadata, directive))
+    if (ContainedPtr cont = ContainedPtr::dynamicCast(type))
+    {
+        if (cont->hasMetadata("java:type"))
         {
             return true;
         }
 
-        StringList metadata = cont->getAllMetadata();
-
-        if(findMetadata(prefix, metadata, directive))
+        if (SequencePtr seq = SequencePtr::dynamicCast(cont))
         {
-            return true;
-        }
+            BuiltinPtr builtin = BuiltinPtr::dynamicCast(seq->type());
 
-        if(findMetadata("java:protobuf:", metadata, directive) ||
-           findMetadata("java:serializable:", metadata, directive))
-        {
-            SequencePtr seq = SequencePtr::dynamicCast(cont);
-            if(seq)
+            if (cont->hasMetadata("java:protobuf") || cont->hasMetadata("java:serializable"))
             {
-                BuiltinPtr builtin = BuiltinPtr::dynamicCast(seq->type());
-                if(builtin && builtin->kind() == Builtin::KindByte)
+                if (builtin && builtin->kind() == Builtin::KindByte)
                 {
                     return true;
                 }
             }
-        }
 
-        if(findMetadata("java:buffer", metadata, directive) ||
-           findMetadata("java:buffer", localMetadata, directive))
-        {
-            SequencePtr seq = SequencePtr::dynamicCast(cont);
-            if(seq)
+            if (cont->hasMetadata("java:buffer") || Slice::hasMetadata("java:buffer", localMetadata))
             {
-                BuiltinPtr builtin = BuiltinPtr::dynamicCast(seq->type());
-                if(builtin &&
-                   (builtin->kind() == Builtin::KindByte || builtin->kind() == Builtin::KindShort ||
-                    builtin->kind() == Builtin::KindInt || builtin->kind() == Builtin::KindLong ||
-                    builtin->kind() == Builtin::KindFloat || builtin->kind() == Builtin::KindDouble))
+                if(builtin && builtin->isNumericType())
                 {
                     return true;
                 }
             }
         }
     }
-
     return false;
 }
 
@@ -2208,11 +2147,9 @@ Slice::JavaGenerator::getDictionaryTypes(const DictionaryPtr& dict,
     string keyTypeStr = typeToObjectString(dict->keyType(), TypeModeIn, package);
     string valueTypeStr = typeToObjectString(unwrapIfOptional(dict->valueType()), TypeModeIn, package);
 
-    //
     // Collect metadata for a custom type.
-    //
-    if(getTypeMetadata(metadata, instanceType, formalType) ||
-       getTypeMetadata(dict->getAllMetadata(), instanceType, formalType))
+    if(getTypeMetadata(parseMetadata(metadata), instanceType, formalType) || //TODOFIX
+       getTypeMetadata(parseMetadata(dict->getAllMetadata()), instanceType, formalType)) //TODOFIX
     {
         assert(!instanceType.empty());
         if(formalType.empty())
@@ -2243,31 +2180,23 @@ Slice::JavaGenerator::getSequenceTypes(const SequencePtr& seq,
     BuiltinPtr builtin = BuiltinPtr::dynamicCast(elementType);
     if(builtin)
     {
-        if(builtin->kind() == Builtin::KindByte)
+        if (builtin->kind() == Builtin::KindByte)
         {
-            string prefix = "java:serializable:";
-            string meta;
-            if(seq->findMetadata(prefix, meta))
+            if (auto typeMetadata = seq->findMetadata("java:serializable"))
             {
-                instanceType = formalType = meta.substr(prefix.size());
+                instanceType = formalType = *typeMetadata;
                 return true;
             }
-            prefix = "java:protobuf:";
-            if(seq->findMetadata(prefix, meta))
+            if (auto typeMetadata = seq->findMetadata("java:protobuf"))
             {
-                instanceType = formalType = meta.substr(prefix.size());
+                instanceType = formalType = *typeMetadata;
                 return true;
             }
         }
 
-        if((builtin->kind() == Builtin::KindByte || builtin->kind() == Builtin::KindShort ||
-            builtin->kind() == Builtin::KindInt || builtin->kind() == Builtin::KindLong ||
-            builtin->kind() == Builtin::KindFloat || builtin->kind() == Builtin::KindDouble))
+        if (builtin->isNumericType())
         {
-            string prefix = "java:buffer";
-            string meta;
-            string ignored;
-            if(seq->findMetadata(prefix, meta) || findMetadata(prefix, metadata, ignored))
+            if(seq->hasMetadata("java:buffer") || Slice::hasMetadata("java:buffer", parseMetadata(metadata)))//TODOFIX
             {
                 instanceType = formalType = typeToBufferString(elementType);
                 return true;
@@ -2275,11 +2204,9 @@ Slice::JavaGenerator::getSequenceTypes(const SequencePtr& seq,
         }
     }
 
-    //
     // Collect metadata for a custom type.
-    //
-    if(getTypeMetadata(metadata, instanceType, formalType) ||
-       getTypeMetadata(seq->getAllMetadata(), instanceType, formalType))
+    if(getTypeMetadata(parseMetadata(metadata), instanceType, formalType) || //TODOFIX
+       getTypeMetadata(parseMetadata(seq->getAllMetadata()), instanceType, formalType)) //TODOFIX
     {
         assert(!instanceType.empty());
         if(formalType.empty())

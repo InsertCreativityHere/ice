@@ -37,6 +37,7 @@ std::string typeToString(const TypePtr&, bool, const std::string& = "", const St
 std::string returnTypeToString(const TypePtr&, bool, const std::string& = "", const StringList& = StringList(), int = 0);
 std::string inputTypeToString(const TypePtr&, bool, const std::string& = "", const StringList& = StringList(), int = 0);
 std::string outputTypeToString(const TypePtr&, bool, const std::string& = "", const StringList& = StringList(), int = 0);
+std::string stringTypeToString(const TypePtr&, const StringList& = StringList(), int = 0);
 std::string operationModeToString(Operation::Mode);
 std::string opFormatTypeToString(const OperationPtr&);
 
@@ -53,9 +54,7 @@ void writeMarshalUnmarshalAllInHolder(IceUtilInternal::Output&, const std::strin
 void writeStreamHelpers(::IceUtilInternal::Output&, const DataMemberContainerPtr&);
 void writeIceTuple(::IceUtilInternal::Output&, MemberList, int);
 
-bool findMetadata(const std::string&, const ClassDeclPtr&, std::string&);
-bool findMetadata(const std::string&, const StringList&, std::string&);
-std::string findMetadata(const StringList&, int = 0);
+std::optional<std::string> getTypeMetadata(const StringMap& metadata, int typeCtx = 0);
 bool inWstringModule(const SequencePtr&);
 
 std::string getDataMemberRef(const MemberPtr&);

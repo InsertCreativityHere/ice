@@ -200,8 +200,8 @@ public:
     void setFilename(const std::string&);
 
     void setMetadata(const StringList&);
-    bool hasMetadata(const std::string&) const;
-    std::string findMetadata(const std::string&) const;
+    bool hasMetadata(const std::string& directive) const;
+    std::optional<std::string> findMetadata(const std::string& directive) const;
     StringList getAllMetadata() const;
 
     // When parsing Slice definitions, apply 3.7 or 4.0 semantics for class parameters, Object etc.
@@ -408,10 +408,8 @@ public:
 
     int includeLevel() const;
 
-    bool hasMetadata(const std::string&) const;
-    std::optional<std::string> findMetadata(const std::string&) const;
-    bool findMetadata(const std::string&, std::string&) const;
-    std::string findMetadataWithPrefix(const std::string&) const;
+    bool hasMetadata(const std::string& directive) const;
+    std::optional<std::string> findMetadata(const std::string& directive) const;
     std::list<std::string> getAllMetadata() const;
     void setMetadata(const std::list<std::string>&);
 

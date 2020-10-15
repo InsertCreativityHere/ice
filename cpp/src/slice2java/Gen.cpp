@@ -2905,7 +2905,7 @@ Slice::Gen::TypesVisitor::visitStructEnd(const StructPtr& p)
             // For all other types, we can use the native equals() method.
             //
             SequencePtr seq = SequencePtr::dynamicCast(d->type());
-            if(seq && !hasTypeMetadata(seq, d->getAllMetadata()))
+            if(seq && !hasTypeMetadata(seq, parseMetadata(d->getAllMetadata()))) //TODOFIX
             {
                 //
                 // Arrays.equals() handles null values.
@@ -3254,7 +3254,7 @@ Slice::Gen::TypesVisitor::visitDataMember(const MemberPtr& p)
         SequencePtr seq = SequencePtr::dynamicCast(type);
         if(seq)
         {
-            if(!hasTypeMetadata(seq, metadata))
+            if(!hasTypeMetadata(seq, parseMetadata(metadata))) //TODOFIX
             {
                 string elem = typeToString(seq->type(), TypeModeMember, getPackage(contained));
 
@@ -3513,13 +3513,12 @@ Slice::Gen::HelperVisitor::visitSequence(const SequencePtr& p)
     // TODO: update
     TypePtr elementType = unwrapIfOptional(p->type());
 
-    string meta;
     BuiltinPtr builtin = BuiltinPtr::dynamicCast(elementType);
     if(!hasTypeMetadata(p) && builtin && builtin->kind() <= Builtin::KindString)
     {
         return; // No helpers for sequence of primitive types
     }
-    else if(hasTypeMetadata(p) && !p->findMetadata("java:type", meta))
+    else if(hasTypeMetadata(p) && !p->hasMetadata("java:type"))
     {
         return; // No helpers for custom metadata other than java:type
     }
@@ -3665,9 +3664,8 @@ Slice::Gen::HelperVisitor::visitSequence(const SequencePtr& p)
             const size_t sz = elementType->minWireSize();
             if(sz > 1)
             {
-                string metadata;
                 out << nl << "final int taggedSize = v == null ? 0 : ";
-                if(findMetadata("java:buffer", p->getAllMetadata(), metadata))
+                if (p->hasMetadata("java:buffer"))
                 {
                     out << "v.remaining() / " << sz << ";";
                 }

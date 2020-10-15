@@ -147,17 +147,10 @@ Slice::DefinitionContext::hasMetadata(const string& directive) const
     return Slice::hasMetadata(directive, _metadata);
 }
 
-string
-Slice::DefinitionContext::findMetadata(const string& prefix) const
+optional<string>
+Slice::DefinitionContext::findMetadata(const string& directive) const
 {
-    for (const auto& metadata : removethis(_metadata))
-    {
-        if (metadata.find(prefix) == 0)
-        {
-            return metadata;
-        }
-    }
-    return "";
+    return Slice::findMetadata(directive, _metadata);
 }
 
 StringList
@@ -169,7 +162,7 @@ Slice::DefinitionContext::getAllMetadata() const
 bool
 Slice::DefinitionContext::compatMode() const
 {
-    return findMetadata("3.7") == "3.7";
+    return this->hasMetadata("3.7");
 }
 
 void
@@ -199,20 +192,18 @@ void
 Slice::DefinitionContext::initSuppressedWarnings()
 {
     _suppressedWarnings.clear();
-    const string prefix = "suppress-warning";
-    string value = findMetadata(prefix);
-    if (value == prefix)
+
+    if (auto suppressMetadata = this->findMetadata("suppress-warning"))
     {
-        _suppressedWarnings.insert(All);
-    }
-    else if (!value.empty())
-    {
-        assert(value.length() > prefix.length());
-        if (value[prefix.length()] == ':')
+        vector<string> results;
+        IceUtilInternal::splitString(*suppressMetadata, ",", results);
+
+        if (results.empty())
         {
-            value = value.substr(prefix.length() + 1);
-            vector<string> results;
-            IceUtilInternal::splitString(value, ",", results);
+            _suppressedWarnings.insert(All);
+        }
+        else
+        {
             for (const auto& p : results)
             {
                 string s = IceUtilInternal::trim(p);
@@ -757,18 +748,14 @@ Slice::Contained::parseComment(bool stripMarkup) const
     CommentPtr comment = new Comment;
 
     // First check metadata for a deprecated tag.
-    string deprecateMetadata;
-    if (findMetadata("deprecate", deprecateMetadata))
+    if (auto metadata = this->findMetadata("deprecate"))
     {
-        comment->_isDeprecated = true;
-        if (deprecateMetadata.find("deprecate:") == 0 && deprecateMetadata.size() > 10)
+        string reason = *metadata;
+        if (!reason.empty())
         {
-            comment->_deprecated.push_back(IceUtilInternal::trim(deprecateMetadata.substr(10)));
+            comment->_deprecated.push_back(IceUtilInternal::trim(reason));
         }
-    }
-    else
-    {
-        comment->_isDeprecated = false;
+        comment->_isDeprecated = true;
     }
 
     if (!comment->_isDeprecated && _comment.empty())
@@ -913,33 +900,7 @@ Slice::Contained::hasMetadata(const string& directive) const
 optional<string>
 Slice::Contained::findMetadata(const string& directive) const
 {
-    // TODO this is temporary until we can fully replace the current metadata logic.
     return Slice::findMetadata(directive, _metadata);
-}
-
-bool
-Slice::Contained::findMetadata(const string& prefix, string& meta) const
-{
-    for (const auto& p : removethis(_metadata))
-    {
-        if (p.find(prefix) == 0)
-        {
-            meta = p;
-            return true;
-        }
-    }
-    return false;
-}
-
-string
-Slice::Contained::findMetadataWithPrefix(const string& prefix) const
-{
-    string meta;
-    if (findMetadata(prefix, meta))
-    {
-        return meta.substr(prefix.size());
-    }
-    return "";
 }
 
 list<string>
@@ -957,26 +918,24 @@ Slice::Contained::setMetadata(const list<string>& metadata)
 FormatType
 Slice::Contained::parseFormatMetadata() const
 {
-    FormatType result = DefaultFormat; // TODO: replace FormatType here by a std::optional<FormatType>
-                                       // and eliminate DefaultFormat (replaced by not-set).
-
-    string tag = findMetadataWithPrefix("format:");
-    if (!tag.empty())
+    if (auto metadata = this->findMetadata("format"))
     {
-        if (tag == "compact")
+        string format = *metadata;
+        if (format == "compact")
         {
-            result = CompactFormat;
+            return CompactFormat;
         }
-        else if (tag == "sliced")
+        else if (format == "sliced")
         {
-            result = SlicedFormat;
+            return SlicedFormat;
         }
-        else if (tag != "default") // TODO: Allow "default" to be specified as a format value?
+        else if (format != "default") // TODO: Allow "default" to be specified as a format value?
         {
             // TODO: How to handle invalid format?
         }
     }
-    return result;
+    // TODO: replace FormatType here by a std::optional<FormatType> and eliminate DefaultFormat (replaced by not-set).
+    return DefaultFormat;
 }
 
 bool

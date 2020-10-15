@@ -671,18 +671,11 @@ Slice::Gen::~Gen()
 void
 Slice::Gen::generate(const UnitPtr& p)
 {
-    string module;
     DefinitionContextPtr dc = p->findDefinitionContext(p->topLevelFile());
     assert(dc);
 
-    {
-        const string prefix = "js:module:";
-        const string m = dc->findMetadata(prefix);
-        if(!m.empty())
-        {
-            module = m.substr(prefix.size());
-        }
-    }
+    auto moduleMetadata = dc->findMetadata("js:module");
+    string module = (moduleMetadata ? *moduleMetadata : "");
 
     if(_useStdout)
     {
@@ -693,15 +686,11 @@ Slice::Gen::generate(const UnitPtr& p)
     printHeader(_jsout);
     printGeneratedHeader(_jsout, _fileBase + ".ice");
 
-    //
     // Check for global "js:module:ice" metadata. If this is set then we are building Ice.
-    //
     bool icejs = module == "ice";
 
-    //
     // Check for global "js:es6-module" metadata. If this is set we are using es6 module mapping
-    //
-    bool es6module = dc->findMetadata("js:es6-module") == "js:es6-module";
+    bool es6module = dc->hasMetadata("js:es6-module");
 
     _jsout << nl << "/* eslint-disable */";
     _jsout << nl << "/* jshint ignore: start */";
@@ -994,15 +983,11 @@ Slice::Gen::RequireVisitor::writeRequires(const UnitPtr& p)
     }
 
     StringList includes = p->includeFiles();
-    if(_es6modules)
+    if (_es6modules)
     {
-        const string prefix = "js:module:";
         DefinitionContextPtr dc = p->findDefinitionContext(p->topLevelFile());
-        string m1 = dc->findMetadata(prefix);
-        if(!m1.empty())
-        {
-            m1 = m1.substr(prefix.size());
-        }
+        auto moduleMetadata = dc->findMetadata("js:module");
+        string m1 = (moduleMetadata ? *moduleMetadata : "");
 
         seenModules.push_back("Ice");
 
@@ -1018,12 +1003,8 @@ Slice::Gen::RequireVisitor::writeRequires(const UnitPtr& p)
             set<string> modules = p->getTopLevelModules(*i);
 
             dc = p->findDefinitionContext(*i);
-
-            string m2 = dc->findMetadata(prefix);
-            if(!m2.empty())
-            {
-                m2 = m2.substr(prefix.size());
-            }
+            moduleMetadata = dc->findMetadata("js:module");
+            string m2 = (moduleMetadata ? *moduleMetadata : "");
 
             if(m1 != m2 && !m2.empty())
             {

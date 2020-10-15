@@ -25,13 +25,8 @@ getClassResolverPrefix(const UnitPtr& p)
     DefinitionContextPtr dc = p->findDefinitionContext(p->topLevelFile());
     assert(dc);
 
-    static const string classResolverPrefix = "swift:class-resolver-prefix:";
-    string result = dc->findMetadata(classResolverPrefix);
-    if(!result.empty())
-    {
-        result = result.substr(classResolverPrefix.size());
-    }
-    return result;
+    auto prefix = dc->findMetadata("swift:class-resolver-prefix");
+    return (prefix ? *prefix : "");
 }
 
 }

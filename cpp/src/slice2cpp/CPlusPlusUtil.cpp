@@ -63,42 +63,24 @@ isOptionalProxyOrClass(const TypePtr& type)
 }
 
 string
-stringTypeToString(const TypePtr&, const StringList& metadata, int typeCtx)
-{
-    string strType = findMetadata(metadata, typeCtx);
-    if(strType == "wstring" || (typeCtx & TypeContextUseWstring && strType == ""))
-    {
-        return "::std::wstring";
-    }
-    else if(strType != "" && strType != "string")
-    {
-        return strType;
-    }
-    else
-    {
-        return "::std::string";
-    }
-}
-
-string
 sequenceTypeToString(const SequencePtr& seq, const string& scope, const StringList& metadata, int typeCtx)
 {
-    string seqType = findMetadata(metadata, typeCtx);
-    if(!seqType.empty())
+    if (auto typeMetadata = getTypeMetadata(parseMetadata(metadata), typeCtx)) //TODOFIX
     {
-        if(seqType == "%array")
+        string seqType = *typeMetadata;
+        if (seqType == "%array")
         {
             BuiltinPtr builtin = BuiltinPtr::dynamicCast(seq->type());
-            if(typeCtx & TypeContextAMIPrivateEnd)
+            if (typeCtx & TypeContextAMIPrivateEnd)
             {
-                if(builtin && builtin->kind() == Builtin::KindByte)
+                if (builtin && builtin->kind() == Builtin::KindByte)
                 {
                     string s = typeToString(seq->type(), scope);
                     return "::std::pair<const " + s + "*, const " + s + "*>";
                 }
-                else if(builtin &&
-                        builtin->kind() != Builtin::KindString &&
-                        builtin->kind() != Builtin::KindObject)
+                else if (builtin &&
+                         builtin->kind() != Builtin::KindString &&
+                         builtin->kind() != Builtin::KindObject)
                 {
                     string s = toTemplateArg(typeToString(builtin, scope));
                     return "::std::pair< ::IceUtil::ScopedArray<" + s + ">, " +
@@ -129,15 +111,11 @@ sequenceTypeToString(const SequencePtr& seq, const string& scope, const StringLi
 string
 dictionaryTypeToString(const DictionaryPtr& dict, const string& scope, const StringList& metadata, int typeCtx)
 {
-    const string dictType = findMetadata(metadata, typeCtx);
-    if(dictType.empty())
+    if (auto dictType = getTypeMetadata(parseMetadata(metadata), typeCtx))
     {
-        return getUnqualified(fixKwd(dict->scoped()), scope);
+        return *dictType;
     }
-    else
-    {
-        return dictType;
-    }
+    return getUnqualified(fixKwd(dict->scoped()), scope);
 }
 
 void
@@ -668,6 +646,22 @@ Slice::outputTypeToString(const TypePtr& type, bool tagged, const string& scope,
 }
 
 string
+Slice::stringTypeToString(const TypePtr&, const StringList& metadata, int typeCtx)
+{
+    if (auto strMetadata = getTypeMetadata(parseMetadata(metadata), typeCtx)) //TODOFIX
+    {
+        string strType = *strMetadata;
+        if (strType == "wstring" || strType == "string")
+        {
+            return "::std::" + strType;
+        }
+        return strType;
+    }
+
+    return (typeCtx & TypeContextUseWstring) ? "::std::wstring" : "::std::string";
+}
+
+string
 Slice::operationModeToString(Operation::Mode mode)
 {
     switch(mode)
@@ -939,97 +933,26 @@ Slice::writeIceTuple(::IceUtilInternal::Output& out, MemberList dataMembers, int
     }
     out << ");" << eb;
 }
-
-bool
-Slice::findMetadata(const string& prefix, const ClassDeclPtr& cl, string& value)
+optional<string>
+Slice::getTypeMetadata(const StringMap& metadata, int typeCtx)
 {
-    if (findMetadata(prefix, cl->getAllMetadata(), value))
+    optional<string> typeMetadata;
+    bool isViewType = typeCtx & (TypeContextInParam | TypeContextAMIPrivateEnd);
+
+    // Check for type-related metadata. The priority of the metadata is 'view-type', 'type', and lastly 'array'.
+    if (isViewType)
     {
-        return true;
+        typeMetadata = Slice::findMetadata("cpp:view-type", metadata);
     }
-
-    ClassDefPtr def = cl->definition();
-    return def ? findMetadata(prefix, def->getAllMetadata(), value) : false;
-}
-
-bool
-Slice::findMetadata(const string& prefix, const StringList& metadata, string& value)
-{
-    for(StringList::const_iterator i = metadata.begin(); i != metadata.end(); i++)
+    if (!typeMetadata)
     {
-        string s = *i;
-        if(s.find(prefix) == 0)
-        {
-            value = s.substr(prefix.size());
-            return true;
-        }
+        typeMetadata = Slice::findMetadata("cpp:type", metadata);
     }
-    return false;
-}
-
-string
-Slice::findMetadata(const StringList& metadata, int typeCtx)
-{
-    static const string prefix = "cpp:";
-
-    for(StringList::const_iterator q = metadata.begin(); q != metadata.end(); ++q)
+    if (!typeMetadata && isViewType && Slice::hasMetadata("cpp:array", metadata))
     {
-        string str = *q;
-        if(str.find(prefix) == 0)
-        {
-            string::size_type pos = str.find(':', prefix.size());
-
-            //
-            // If the form is cpp:type:<...> the data after cpp:type:
-            // is returned.
-            // If the form is cpp:view-type:<...> the data after the
-            // cpp:view-type: is returned
-            //
-            // The priority of the metadata is as follows:
-            // 1: array, view-type for "view" parameters
-            // 2: unscoped
-            //
-
-            if(pos != string::npos)
-            {
-                string ss = str.substr(prefix.size());
-
-                if(typeCtx & (TypeContextInParam | TypeContextAMIPrivateEnd))
-                {
-                    if(ss.find("view-type:") == 0)
-                    {
-                        return str.substr(pos + 1);
-                    }
-                }
-
-                if(ss.find("type:") == 0)
-                {
-                    return str.substr(pos + 1);
-                }
-            }
-            else if(typeCtx & (TypeContextInParam | TypeContextAMIPrivateEnd))
-            {
-                string ss = str.substr(prefix.size());
-                if(ss == "array")
-                {
-                    return "%array";
-                }
-            }
-            //
-            // Otherwise if the data is "unscoped" it is returned.
-            //
-            else
-            {
-                string ss = str.substr(prefix.size());
-                if(ss == "unscoped")
-                {
-                    return "%unscoped";
-                }
-            }
-        }
+        return "%array";
     }
-
-    return "";
+    return typeMetadata;
 }
 
 bool

@@ -318,12 +318,9 @@ compile(const vector<string>& argv)
                 {
                     DefinitionContextPtr dc = p->findDefinitionContext(p->topLevelFile());
                     assert(dc);
-                    const string prefix = "js:module:";
-                    string m = dc->findMetadata(prefix);
-                    if(!m.empty())
-                    {
-                        m = m.substr(prefix.size());
-                    }
+
+                    auto moduleMetadata = dc->findMetadata("js:module");
+                    string m = (moduleMetadata ? *moduleMetadata : "");
 
                     if(moduleInfo.find(m) == moduleInfo.end())
                     {

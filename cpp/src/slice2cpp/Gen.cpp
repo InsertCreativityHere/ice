@@ -108,7 +108,7 @@ writeConstantValue(IceUtilInternal::Output& out, const TypePtr& constType, const
             {
                 case Builtin::KindString:
                 {
-                    bool wide = (typeContext & TypeContextUseWstring) || findMetadata(metadata) == "wstring";
+                    bool wide = stringTypeToString(nullptr, metadata, typeContext) == "::std::wstring"; //TODOFIX
                     out << (wide ? "L\"" : "u8\"");
                     out << toStringLiteral(value, "\a\b\f\n\r\t\v", "?", UCN, 0);
                     out << "\"";
@@ -162,9 +162,7 @@ writeConstantValue(IceUtilInternal::Output& out, const TypePtr& constType, const
                 EnumeratorPtr enumerator = EnumeratorPtr::dynamicCast(valueType);
                 assert(enumerator);
 
-                bool unscoped = (findMetadata(ep->getAllMetadata()) == "%unscoped");
-
-                if(unscoped)
+                if (ep->hasMetadata("cpp:unscoped"))
                 {
                     out << getUnqualified(fixKwd(ep->scope() + enumerator->name()), scope);
                 }
@@ -432,19 +430,16 @@ writeDocSummary(Output& out, const ContainedPtr& p)
         out << nl << " * @deprecated";
     }
 
-    if (ClassDeclPtr::dynamicCast(p) || ClassDefPtr::dynamicCast(p) ||
-        StructPtr::dynamicCast(p) || ExceptionPtr::dynamicCast(p))
+    if (ClassDeclPtr::dynamicCast(p) || DataMemberContainerPtr::dynamicCast(p))
     {
-        UnitPtr unt = p->container()->unit();
         string file = p->file();
         assert(!file.empty());
-        static const string prefix = "cpp:doxygen:include:";
-        DefinitionContextPtr dc = unt->findDefinitionContext(file);
+        DefinitionContextPtr dc = p->container()->unit()->findDefinitionContext(file);
         assert(dc);
-        string q = dc->findMetadata(prefix);
-        if(!q.empty())
+
+        if (auto includeMetadata = dc->findMetadata("cpp:doxygen:include"))
         {
-            out << nl << " * \\headerfile " << q.substr(prefix.size());
+            out << nl << " * \\headerfile " << *includeMetadata;
         }
     }
 
@@ -690,18 +685,15 @@ Slice::Gen::generate(const UnitPtr& p)
         _sourceExtension = sourceExtension;
     }
 
-    //
     // Give precedence to --dll-export command-line option
-    //
-    if(_dllExport.empty())
+    if (_dllExport.empty())
     {
         DefinitionContextPtr dc = p->findDefinitionContext(file);
         assert(dc);
-        static const string dllExportPrefix = "cpp:dll-export:";
-        string meta = dc->findMetadata(dllExportPrefix);
-        if(meta.size() > dllExportPrefix.size())
+
+        if (auto exportMetadata = dc->findMetadata("cpp:dll-export"))
         {
-            _dllExport = meta.substr(dllExportPrefix.size());
+            _dllExport = *exportMetadata;
         }
     }
 
@@ -1409,31 +1401,21 @@ Slice::Gen::resetUseWstring(list<int>& hist)
 string
 Slice::Gen::getHeaderExt(const string& file, const UnitPtr& ut)
 {
-    string ext;
-    static const string headerExtPrefix = "cpp:header-ext:";
     DefinitionContextPtr dc = ut->findDefinitionContext(file);
     assert(dc);
-    string meta = dc->findMetadata(headerExtPrefix);
-    if(meta.size() > headerExtPrefix.size())
-    {
-        ext = meta.substr(headerExtPrefix.size());
-    }
-    return ext;
+
+    auto extMetadata = dc->findMetadata("cpp:header-ext");
+    return extMetadata ? *extMetadata : "";
 }
 
 string
 Slice::Gen::getSourceExt(const string& file, const UnitPtr& ut)
 {
-    string ext;
-    static const string sourceExtPrefix = "cpp:source-ext:";
     DefinitionContextPtr dc = ut->findDefinitionContext(file);
     assert(dc);
-    string meta = dc->findMetadata(sourceExtPrefix);
-    if(meta.size() > sourceExtPrefix.size())
-    {
-        ext = meta.substr(sourceExtPrefix.size());
-    }
-    return ext;
+
+    auto extMetadata = dc->findMetadata("cpp:source-ext");
+    return extMetadata ? *extMetadata : "";
 }
 
 // Visitors
@@ -1942,18 +1924,14 @@ Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
 {
     string name = fixKwd(p->name());
     string scope = fixKwd(p->scope());
-    TypePtr type = p->type();
-    int typeCtx = _useWstring;
-    string s = typeToString(type, scope, removethis(p->typeMetadata()), typeCtx);
-    StringList metadata = p->getAllMetadata();
+    string s = typeToString(p->type(), scope, removethis(p->typeMetadata()), _useWstring);
 
-    string seqType = findMetadata(metadata, _useWstring);
     H << sp;
     writeDocSummary(H, p);
 
-    if(!seqType.empty())
+    if (auto typeMetadata = getTypeMetadata(parseMetadata(p->getAllMetadata()), _useWstring)) //TODOFIX
     {
-        H << nl << "using " << name << " = " << seqType << ';';
+        H << nl << "using " << name << " = " << *typeMetadata << ';';
     }
     else
     {
@@ -1966,30 +1944,24 @@ Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 {
     string name = fixKwd(p->name());
     string scope = fixKwd(p->scope());
-    string dictType = findMetadata(p->getAllMetadata());
-    int typeCtx = _useWstring;
 
     H << sp;
     writeDocSummary(H, p);
 
-    if(dictType.empty())
+    if (auto dictType = getTypeMetadata(parseMetadata(p->getAllMetadata())))//TODOFIX
     {
-        //
-        // A default std::map dictionary
-        //
-        TypePtr keyType = p->keyType();
-        TypePtr valueType = p->valueType();
-        string ks = typeToString(keyType, scope, removethis(p->keyMetadata()), typeCtx);
-        string vs = typeToString(valueType, scope, removethis(p->valueMetadata()), typeCtx);
-
-        H << nl << "using " << name << " = ::std::map<" << ks << ", " << vs << ">;";
+        // A custom dictionary
+        H << nl << "using " << name << " = " << *dictType << ';';
     }
     else
     {
-        //
-        // A custom dictionary
-        //
-        H << nl << "using " << name << " = " << dictType << ';';
+        // A default std::map dictionary
+        TypePtr keyType = p->keyType();
+        TypePtr valueType = p->valueType();
+        string ks = typeToString(keyType, scope, removethis(p->keyMetadata()), _useWstring);
+        string vs = typeToString(valueType, scope, removethis(p->valueMetadata()), _useWstring);
+
+        H << nl << "using " << name << " = ::std::map<" << ks << ", " << vs << ">;";
     }
 }
 
@@ -2563,7 +2535,7 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
 void
 Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 {
-    bool unscoped = findMetadata(p->getAllMetadata()) == "%unscoped";
+    bool unscoped = p->hasMetadata("cpp:unscoped");
     H << sp;
     writeDocSummary(H, p);
     H << nl << "enum ";

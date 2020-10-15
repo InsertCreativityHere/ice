@@ -234,15 +234,11 @@ compile(const vector<string>& argv)
             UnitPtr u = Unit::createUnit(false);
             int parseStatus = u->parse(*i, cppHandle, debug);
 
-            string ext = headerExtension;
-            static const string headerExtPrefix = "cpp:header-ext:";
             DefinitionContextPtr dc = u->findDefinitionContext(u->topLevelFile());
             assert(dc);
-            string meta = dc->findMetadata(headerExtPrefix);
-            if(meta.size() > headerExtPrefix.size())
-            {
-                ext = meta.substr(headerExtPrefix.size());
-            }
+
+            auto extMetadata = dc->findMetadata("cpp:header-ext");
+            string ext = (extMetadata ? *extMetadata : headerExtension);
 
             u->destroy();
 

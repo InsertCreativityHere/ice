@@ -212,14 +212,8 @@ Slice::getNamespacePrefix(const ContainedPtr& cont)
 
     assert(m);
 
-    static const string prefix = "cs:namespace:";
-
-    string q;
-    if(m->findMetadata(prefix, q))
-    {
-        q = q.substr(prefix.size());
-    }
-    return q;
+    auto namespaceMetadata = m->findMetadata("cs:namespace");
+    return (namespaceMetadata ? *namespaceMetadata : "");
 }
 
 string
@@ -384,14 +378,14 @@ Slice::CsGenerator::typeToString(const TypePtr& type, const string& package, boo
         return getUnqualified(getNamespace(interface) + "." + interfaceName(interface) + "Prx", package);
     }
 
-    if(seq)
+    if (seq)
     {
-        string customType = seq->findMetadataWithPrefix("cs:generic:");
+        auto typeMetadata = seq->findMetadata("cs:generic");
         if (readOnly)
         {
             auto elementType = seq->type();
             string elementTypeStr = "<" + typeToString(elementType, package, readOnly) + ">";
-            if (isFixedSizeNumericSequence(seq) && customType.empty() && readOnlyParam)
+            if (isFixedSizeNumericSequence(seq) && !typeMetadata && readOnlyParam)
             {
                 return "global::System.ReadOnlyMemory" + elementTypeStr; // same for optional!
             }
@@ -400,13 +394,14 @@ Slice::CsGenerator::typeToString(const TypePtr& type, const string& package, boo
                 return "global::System.Collections.Generic.IEnumerable" + elementTypeStr + (optional ? "?" : "");
             }
         }
-        else if (customType.empty())
+        else if (!typeMetadata)
         {
             return typeToString(seq->type(), package) + "[]";
         }
         else
         {
             ostringstream out;
+            string customType = *typeMetadata;
             if (customType == "List" || customType == "LinkedList" || customType == "Queue" || customType == "Stack")
             {
                 out << "global::System.Collections.Generic.";
@@ -416,15 +411,12 @@ Slice::CsGenerator::typeToString(const TypePtr& type, const string& package, boo
         }
     }
 
-    DictionaryPtr d = DictionaryPtr::dynamicCast(type);
-    if(d)
+    if (DictionaryPtr d = DictionaryPtr::dynamicCast(type))
     {
-        string prefix = "cs:generic:";
-        string meta;
         string typeName;
-        if(d->findMetadata(prefix, meta))
+        if (auto typeMetadata = d->findMetadata("cs:generic"))
         {
-            typeName = meta.substr(prefix.size());
+            typeName = *typeMetadata;
         }
         else
         {
@@ -1125,8 +1117,9 @@ Slice::CsGenerator::writeTaggedUnmarshalCode(
             valueType = optional->underlying();
         }
 
+        auto typeMetadata = d->findMetadata("cs:generic");
+        bool sorted = (typeMetadata && *typeMetadata == "SortedDictionary");
         bool fixedSize = !keyType->isVariableLength() && !valueType->isVariableLength();
-        bool sorted = d->findMetadataWithPrefix("cs:generic:") == "SortedDictionary";
 
         out << "istr.ReadTagged" << (sorted ? "Sorted" : "") << "Dictionary(" << tag
             << ", minKeySize: " << keyType->minWireSize();
@@ -1199,76 +1192,52 @@ Slice::CsGenerator::sequenceMarshalCode(
 string
 Slice::CsGenerator::sequenceUnmarshalCode(const SequencePtr& seq, const string& scope)
 {
-    string generic = seq->findMetadataWithPrefix("cs:generic:");
-
     TypePtr type = seq->type();
     BuiltinPtr builtin = BuiltinPtr::dynamicCast(type);
     auto en = EnumPtr::dynamicCast(type);
 
     ostringstream out;
-    if (generic.empty())
-    {
-        if ((builtin && builtin->isNumericTypeOrBool() && !builtin->isVariableLength()) ||
-            (en && en->underlying() && en->isUnchecked()))
-        {
-            out << "istr.ReadArray<" << typeToString(type, scope) << ">()";
-        }
-        else if (en && en->underlying())
-        {
-            out << "istr.ReadArray((" << typeToString(en, scope) << " e) => _ = " << helperName(en, scope)
-                << ".As" << en->name() << "((" << typeToString(en->underlying(), scope) << ")e))";
-        }
-        else if (auto optional = OptionalPtr::dynamicCast(type); optional && optional->encodedUsingBitSequence())
-        {
-            TypePtr underlying = optional->underlying();
-            out << "istr.ReadArray(" << (isReferenceType(underlying) ? "withBitSequence: true, " : "")
-                << inputStreamReader(underlying, scope) << ")";
-        }
-        else
-        {
-            out << "istr.ReadArray(minElementSize: " << type->minWireSize() << ", "
-                << inputStreamReader(type, scope) << ")";
-        }
-    }
-    else
+    auto generic = seq->findMetadata("cs:generic");
+
+    if (generic)
     {
         out << "new " << typeToString(seq, scope) << "(";
-        if (generic == "Stack")
+        if (*generic == "Stack")
         {
             out << "global::System.Linq.Enumerable.Reverse(";
         }
-
-        if ((builtin && builtin->isNumericTypeOrBool() && !builtin->isVariableLength()) ||
-            (en && en->underlying() && en->isUnchecked()))
-        {
-            // We always read an array even when mapped to a collection, as it's expected to be faster than unmarshaling
-            // the collection elements one by one.
-            out << "istr.ReadArray<" << typeToString(type, scope) << ">()";
-        }
-        else if (en && en->underlying())
-        {
-            out << "istr.ReadArray((" << typeToString(en, scope) << " e) => _ = "
-                << helperName(en, scope) << ".As" << en->name()
-                << "((" << typeToString(en->underlying(), scope) << ")e))";
-        }
-        else if (auto optional = OptionalPtr::dynamicCast(type); optional && optional->encodedUsingBitSequence())
-        {
-            TypePtr underlying = optional->underlying();
-            out << "istr.ReadSequence(" << (isReferenceType(underlying) ? "withBitSequence: true, " : "")
-                << inputStreamReader(underlying, scope) << ")";
-        }
-        else
-        {
-            out << "istr.ReadSequence(minElementSize: " << type->minWireSize() << ", "
-                << inputStreamReader(type, scope) << ")";
-        }
-
-        if (generic == "Stack")
-        {
-            out << ")";
-        }
-        out << ")";
     }
+
+    string storageType = (generic ? "Sequence" : "Array");
+    if ((builtin && builtin->isNumericTypeOrBool() && !builtin->isVariableLength()) ||
+        (en && en->underlying() && en->isUnchecked()))
+    {
+        // We always read an array even when mapped to a collection, as it's expected to be faster than unmarshaling
+        // the collection elements one by one.
+        out << "istr.ReadArray<" << typeToString(type, scope) << ">()";
+    }
+    else if (en && en->underlying())
+    {
+        out << "istr.ReadArray((" << typeToString(en, scope) << " e) => _ = " << helperName(en, scope)
+            << ".As" << en->name() << "((" << typeToString(en->underlying(), scope) << ")e))";
+    }
+    else if (auto optional = OptionalPtr::dynamicCast(type); optional && optional->encodedUsingBitSequence())
+    {
+        TypePtr underlying = optional->underlying();
+        out << "istr.Read" << storageType << "(" << (isReferenceType(underlying) ? "withBitSequence: true, " : "")
+            << inputStreamReader(underlying, scope) << ")";
+    }
+    else
+    {
+        out << "istr.Read" << storageType << "(minElementSize: " << type->minWireSize() << ", "
+            << inputStreamReader(type, scope) << ")";
+    }
+
+    if (generic)
+    {
+        out << ((*generic == "Stack") ? "))" : ")");
+    }
+
     return out.str();
 }
 
@@ -1302,8 +1271,9 @@ Slice::CsGenerator::dictionaryUnmarshalCode(const DictionaryPtr& dict, const str
 {
     TypePtr key = dict->keyType();
     TypePtr value = dict->valueType();
-    string generic = dict->findMetadataWithPrefix("cs:generic:");
     string dictS = typeToString(dict, scope);
+    auto typeMetadata = dict->findMetadata("cs:generic");
+    bool isSorted = (typeMetadata && *typeMetadata == "SortedDictionary");
 
     bool withBitSequence = false;
     if (auto optional = OptionalPtr::dynamicCast(value); optional && optional->encodedUsingBitSequence())
@@ -1314,7 +1284,7 @@ Slice::CsGenerator::dictionaryUnmarshalCode(const DictionaryPtr& dict, const str
 
     ostringstream out;
     out << "istr.";
-    out << (generic == "SortedDictionary" ? "ReadSortedDictionary(" : "ReadDictionary(");
+    out << (isSorted ? "ReadSortedDictionary(" : "ReadDictionary(");
     out << "minKeySize: " << key->minWireSize() << ", ";
     if (!withBitSequence)
     {

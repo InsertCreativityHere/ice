@@ -764,17 +764,14 @@ namespace
 
 bool opCompress(const OperationPtr& op, bool params)
 {
-    string direction = params ? "params" : "return";
-    string prefix = "compress:";
-    string compress = op->findMetadataWithPrefix(prefix);
-
-    if (compress.empty())
+    if (auto compress = op->findMetadata("compress"))
     {
-        return false;
+        string direction = params ? "params" : "return";
+        vector<string> directions;
+        splitString(*compress, ",", directions);
+        return find(directions.begin(), directions.end(), direction) != directions.end();
     }
-    vector<string> directions;
-    splitString(compress, ",", directions);
-    return find(directions.begin(), directions.end(), direction) != directions.end();
+    return false;
 }
 
 }

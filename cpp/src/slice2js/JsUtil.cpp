@@ -181,14 +181,12 @@ Slice::JsGenerator::getModuleMetadata(const TypePtr& constType)
 string
 Slice::JsGenerator::getModuleMetadata(const ContainedPtr& p)
 {
-    //
     // Check if the file contains the js:module global metadata.
-    //
     DefinitionContextPtr dc = p->definitionContext();
     assert(dc);
-    const string prefix = "js:module:";
-    const string value = dc->findMetadata(prefix);
-    return value.empty() ? value : value.substr(prefix.size());
+
+    auto moduleMetadata = dc->findMetadata("js:module");
+    return moduleMetadata ? *moduleMetadata : "";
 }
 
 //
@@ -300,21 +298,6 @@ Slice::JsGenerator::importPrefix(const ContainedPtr& contained,
     }
 
     return "";
-}
-
-bool
-Slice::JsGenerator::findMetadata(const string& prefix, const StringList& metadata, string& value)
-{
-    for(StringList::const_iterator i = metadata.begin(); i != metadata.end(); i++)
-    {
-        string s = *i;
-        if(s.find(prefix) == 0)
-        {
-            value = s.substr(prefix.size());
-            return true;
-        }
-    }
-    return false;
 }
 
 string

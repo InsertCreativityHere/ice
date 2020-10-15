@@ -863,19 +863,19 @@ parseComment(const ContainedPtr& p)
 {
     DocElements doc;
 
-    doc.deprecated = false;
-
-    //
     // First check metadata for a deprecated tag.
-    //
-    string deprecateMetadata;
-    if(p->findMetadata("deprecate", deprecateMetadata))
+    if (auto metadata = p->findMetadata("deprecate"))
     {
-        doc.deprecated = true;
-        if(deprecateMetadata.find("deprecate:") == 0 && deprecateMetadata.size() > 10)
+        string reason = *metadata;
+        if (!reason.empty())
         {
-            doc.deprecateReason.push_back(IceUtilInternal::trim(deprecateMetadata.substr(10)));
+            doc.deprecateReason.push_back(IceUtilInternal::trim(reason));
         }
+        doc.deprecated = true;
+    }
+    else
+    {
+        doc.deprecated = false;
     }
 
     //

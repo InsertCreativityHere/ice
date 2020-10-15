@@ -135,13 +135,11 @@ Slice::fixIdent(const string& ident)
 string
 Slice::getSwiftModule(const ModulePtr& module, string& swiftPrefix)
 {
-    const string modulePrefix = "swift:module:";
-
     string swiftModule;
 
-    if(module->findMetadata(modulePrefix, swiftModule))
+    if (auto metadata = module->findMetadata("swift:module"))
     {
-        swiftModule = swiftModule.substr(modulePrefix.size());
+        swiftModule = *metadata;
 
         size_t pos = swiftModule.find(':');
         if(pos != string::npos)
@@ -352,19 +350,19 @@ SwiftGenerator::parseComment(const ContainedPtr& p)
 {
     DocElements doc;
 
-    doc.deprecated = false;
-
-    //
     // First check metadata for a deprecated tag.
-    //
-    string deprecateMetadata;
-    if(p->findMetadata("deprecate", deprecateMetadata))
+    if (auto metadata = p->findMetadata("deprecate"))
     {
-        doc.deprecated = true;
-        if(deprecateMetadata.find("deprecate:") == 0 && deprecateMetadata.size() > 10)
+        string reason = *metadata;
+        if (!reason.empty())
         {
-            doc.deprecateReason.push_back(IceUtilInternal::trim(deprecateMetadata.substr(10)));
+            doc.deprecateReason.push_back(IceUtilInternal::trim(reason));
         }
+        doc.deprecated = true;
+    }
+    else
+    {
+        doc.deprecated = false;
     }
 
     //
@@ -1584,14 +1582,12 @@ SwiftGenerator::MetadataVisitor::visitModuleStart(const ModulePtr& p)
         const DefinitionContextPtr dc = ut->findDefinitionContext(p->file());
         assert(dc);
 
-        const string modulePrefix = "swift:module:";
-
         string swiftModule;
         string swiftPrefix;
 
-        if(p->findMetadata(modulePrefix, swiftModule))
+        if (auto metadata = p->findMetadata("swift:module"))
         {
-            swiftModule = swiftModule.substr(modulePrefix.size());
+            swiftModule = *metadata;
 
             size_t pos = swiftModule.find(':');
             if(pos != string::npos)
