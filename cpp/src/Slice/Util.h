@@ -114,6 +114,10 @@ bool hasMetadata(const std::string& directive, const StringMap& metadata);
 // Otherwise it returns a null optional to indicate the metadata isn't set.
 std::optional<std::string> findMetadata(const std::string& directive, const StringMap& metadata);
 
+// Combines the metadata in m1 and m2 into a new metadata map. If any metadata is repeated,
+// a warning is issued, but the values in m1 take precedence.
+StringMap mergeMetadata(const StringMap& m1, const StringMap& m2);
+
 StringList removethis(const StringMap&);
 
 }
