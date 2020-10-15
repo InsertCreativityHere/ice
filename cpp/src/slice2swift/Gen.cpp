@@ -813,8 +813,8 @@ Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
     const string swiftModule = getSwiftModule(getTopLevelModule(ContainedPtr::dynamicCast(p)));
     const string name = getUnqualified(getAbsolute(p), swiftModule);
 
-    const string keyType = typeToString(p->keyType(), p, p->keyMetadata());
-    const string valueType = typeToString(p->valueType(), p, p->valueMetadata());
+    const string keyType = typeToString(p->keyType(), p, removethis(p->keyMetadata()));
+    const string valueType = typeToString(p->valueType(), p, removethis(p->valueMetadata()));
     out << sp;
     writeDocSummary(out, p);
     out << nl << "public typealias " << fixIdent(name) << " = [" << keyType << ": " << valueType << "]";

@@ -2567,7 +2567,7 @@ SwiftGenerator::MetadataVisitor::visitDictionary(const DictionaryPtr& p)
     const DefinitionContextPtr dc = p->unit()->findDefinitionContext(p->file());
     assert(dc);
 
-    StringList newMetadata = p->keyMetadata();
+    StringList newMetadata = removethis(p->keyMetadata());
     for(StringList::const_iterator q = newMetadata.begin(); q != newMetadata.end();)
     {
         string s = *q++;
@@ -2579,7 +2579,7 @@ SwiftGenerator::MetadataVisitor::visitDictionary(const DictionaryPtr& p)
         dc->error(p->file(), p->line(), "invalid metadata `" + s + "' for dictionary key type");
     }
 
-    newMetadata = p->valueMetadata();
+    newMetadata = removethis(p->valueMetadata());
     TypePtr t = p->valueType();
     for(StringList::const_iterator q = newMetadata.begin(); q != newMetadata.end();)
     {

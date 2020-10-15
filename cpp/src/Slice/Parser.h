@@ -871,7 +871,7 @@ class Sequence : public virtual Constructed
 public:
 
     TypePtr type() const;
-    StringList typeMetadata() const;
+    StringMap typeMetadata() const;
     bool uses(const ContainedPtr&) const override;
     bool usesClasses() const override;
     size_t minWireSize() const override;
@@ -883,13 +883,13 @@ public:
 
 protected:
 
-    Sequence(const ContainerPtr&, const std::string&, const TypePtr&, const StringList&);
+    Sequence(const ContainerPtr&, const std::string&, const TypePtr&, const StringMap&);
 
     friend class Container;
     friend class Module;
 
     TypePtr _type;
-    StringList _typeMetadata;
+    StringMap _typeMetadata;
 };
 
 // ----------------------------------------------------------------------
@@ -902,8 +902,8 @@ public:
 
     TypePtr keyType() const;
     TypePtr valueType() const;
-    StringList keyMetadata() const;
-    StringList valueMetadata() const;
+    StringMap keyMetadata() const;
+    StringMap valueMetadata() const;
     bool uses(const ContainedPtr&) const override;
     bool usesClasses() const override;
     size_t minWireSize() const override;
@@ -917,16 +917,16 @@ public:
 
 protected:
 
-    Dictionary(const ContainerPtr&, const std::string&, const TypePtr&, const StringList&, const TypePtr&,
-               const StringList&);
+    Dictionary(const ContainerPtr&, const std::string&, const TypePtr&, const StringMap&, const TypePtr&,
+               const StringMap&);
 
     friend class Container;
     friend class Module;
 
     TypePtr _keyType;
     TypePtr _valueType;
-    StringList _keyMetadata;
-    StringList _valueMetadata;
+    StringMap _keyMetadata;
+    StringMap _valueMetadata;
 };
 
 // ----------------------------------------------------------------------
@@ -1020,7 +1020,7 @@ class Const : public virtual Contained
 public:
 
     TypePtr type() const;
-    StringList typeMetadata() const;
+    StringMap typeMetadata() const;
     SyntaxTreeBasePtr valueType() const;
     std::string value() const;
     std::string literal() const;
@@ -1030,14 +1030,14 @@ public:
 
 protected:
 
-    Const(const ContainerPtr&, const std::string&, const TypePtr&, const StringList&, const SyntaxTreeBasePtr&,
+    Const(const ContainerPtr&, const std::string&, const TypePtr&, const StringMap&, const SyntaxTreeBasePtr&,
           const std::string&, const std::string&);
 
     friend class Container;
     friend class Module;
 
     TypePtr _type;
-    StringList _typeMetadata;
+    StringMap _typeMetadata;
     SyntaxTreeBasePtr _valueType;
     std::string _value;
     std::string _literal;

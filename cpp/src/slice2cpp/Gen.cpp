@@ -1944,7 +1944,7 @@ Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
     string scope = fixKwd(p->scope());
     TypePtr type = p->type();
     int typeCtx = _useWstring;
-    string s = typeToString(type, scope, p->typeMetadata(), typeCtx);
+    string s = typeToString(type, scope, removethis(p->typeMetadata()), typeCtx);
     StringList metadata = p->getAllMetadata();
 
     string seqType = findMetadata(metadata, _useWstring);
@@ -1979,8 +1979,8 @@ Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
         //
         TypePtr keyType = p->keyType();
         TypePtr valueType = p->valueType();
-        string ks = typeToString(keyType, scope, p->keyMetadata(), typeCtx);
-        string vs = typeToString(valueType, scope, p->valueMetadata(), typeCtx);
+        string ks = typeToString(keyType, scope, removethis(p->keyMetadata()), typeCtx);
+        string vs = typeToString(valueType, scope, removethis(p->valueMetadata()), typeCtx);
 
         H << nl << "using " << name << " = ::std::map<" << ks << ", " << vs << ">;";
     }
@@ -2610,10 +2610,9 @@ Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
     H << sp;
     writeDocSummary(H, p);
     H << nl << (isConstexprType(p->type()) ? "constexpr " : "const ")
-      << typeToString(p->type(), scope, p->typeMetadata(), _useWstring) << " " << fixKwd(p->name())
+      << typeToString(p->type(), scope, removethis(p->typeMetadata()), _useWstring) << " " << fixKwd(p->name())
       << " = ";
-    writeConstantValue(H, p->type(), p->valueType(), p->value(), _useWstring, p->typeMetadata(),
-                       scope);
+    writeConstantValue(H, p->type(), p->valueType(), p->value(), _useWstring, removethis(p->typeMetadata()), scope);
     H << ';';
 }
 

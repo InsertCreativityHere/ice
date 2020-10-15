@@ -106,12 +106,12 @@ sequenceTypeToString(const SequencePtr& seq, const string& scope, const StringLi
                 }
                 else
                 {
-                    string s = toTemplateArg(typeToString(seq->type(), scope, seq->typeMetadata(),
+                    string s = toTemplateArg(typeToString(seq->type(), scope, removethis(seq->typeMetadata()),
                                                           inWstringModule(seq) ? TypeContextUseWstring : 0));
                     return "::std::vector<" + s + '>';
                 }
             }
-            string s = typeToString(seq->type(), scope, seq->typeMetadata(),
+            string s = typeToString(seq->type(), scope, removethis(seq->typeMetadata()),
                                     typeCtx | (inWstringModule(seq) ? TypeContextUseWstring : 0));
             return "::std::pair<const " + s + "*, const " + s + "*>";
         }

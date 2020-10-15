@@ -2093,7 +2093,7 @@ Slice::Module::createSequence(const string& name, const TypePtr& type, const Str
         _unit->error("`" + name + "': a sequence can only be defined at module scope");
     }
 
-    SequencePtr p = new Sequence(this, name, type, metadata);
+    SequencePtr p = new Sequence(this, name, type, parseMetadata(metadata));
     _contents.push_back(p);
     return p;
 }
@@ -2129,7 +2129,7 @@ Slice::Module::createDictionary(const string& name, const TypePtr& keyType, cons
         }
     }
 
-    DictionaryPtr p = new Dictionary(this, name, keyType, keyMetadata, valueType, valueMetadata);
+    DictionaryPtr p = new Dictionary(this, name, keyType, parseMetadata(keyMetadata), valueType, parseMetadata(valueMetadata));
     _contents.push_back(p);
     return p;
 }
@@ -2176,7 +2176,7 @@ Slice::Module::createConst(const string name, const TypePtr& constType, const St
         return nullptr;
     }
 
-    ConstPtr p = new Const(this, name, constType, metadata, resolvedValueType, value, literal);
+    ConstPtr p = new Const(this, name, constType, parseMetadata(metadata), resolvedValueType, value, literal);
     _contents.push_back(p);
     return p;
 }
@@ -3479,7 +3479,7 @@ Slice::Sequence::type() const
     return _type;
 }
 
-StringList
+StringMap
 Slice::Sequence::typeMetadata() const
 {
     return _typeMetadata;
@@ -3540,7 +3540,7 @@ Slice::Sequence::recDependencies(set<ConstructedPtr>& dependencies)
 }
 
 Slice::Sequence::Sequence(const ContainerPtr& container, const string& name, const TypePtr& type,
-                          const StringList& typeMetadata) :
+                          const StringMap& typeMetadata) :
     SyntaxTreeBase(container->unit()),
     Type(container->unit()),
     Contained(container, name),
@@ -3566,13 +3566,13 @@ Slice::Dictionary::valueType() const
     return _valueType;
 }
 
-StringList
+StringMap
 Slice::Dictionary::keyMetadata() const
 {
     return _keyMetadata;
 }
 
-StringList
+StringMap
 Slice::Dictionary::valueMetadata() const
 {
     return _valueMetadata;
@@ -3722,8 +3722,8 @@ Slice::Dictionary::legalKeyType(const TypePtr& type, bool& containsSequence)
 }
 
 Slice::Dictionary::Dictionary(const ContainerPtr& container, const string& name, const TypePtr& keyType,
-                              const StringList& keyMetadata, const TypePtr& valueType,
-                              const StringList& valueMetadata) :
+                              const StringMap& keyMetadata, const TypePtr& valueType,
+                              const StringMap& valueMetadata) :
     SyntaxTreeBase(container->unit()),
     Type(container->unit()),
     Contained(container, name),
@@ -4009,7 +4009,7 @@ Slice::Const::type() const
     return _type;
 }
 
-StringList
+StringMap
 Slice::Const::typeMetadata() const
 {
     return _typeMetadata;
@@ -4053,7 +4053,7 @@ Slice::Const::visit(ParserVisitor* visitor, bool)
 }
 
 Slice::Const::Const(const ContainerPtr& container, const string& name, const TypePtr& type,
-                    const StringList& typeMetadata, const SyntaxTreeBasePtr& valueType, const string& value,
+                    const StringMap& typeMetadata, const SyntaxTreeBasePtr& valueType, const string& value,
                     const string& literal) :
     SyntaxTreeBase(container->unit()),
     Contained(container, name),
