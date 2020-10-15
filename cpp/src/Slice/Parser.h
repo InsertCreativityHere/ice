@@ -192,7 +192,7 @@ class DefinitionContext : public ::IceUtil::SimpleShared
 {
 public:
 
-    DefinitionContext(int, const StringList&);
+    DefinitionContext(int, const StringMap&);
 
     std::string filename() const;
     int includeLevel() const;
@@ -217,7 +217,7 @@ private:
     void initSuppressedWarnings();
 
     int _includeLevel;
-    StringList _metadata;
+    StringMap _metadata;
     std::string _filename;
     std::set<WarningCategory> _suppressedWarnings;
 };
@@ -434,7 +434,7 @@ protected:
     int _line;
     std::string _comment;
     int _includeLevel;
-    std::list<std::string> _metadata;
+    StringMap _metadata;
 };
 
 // ----------------------------------------------------------------------
@@ -1154,10 +1154,10 @@ public:
 
 private:
 
-    Unit(bool, const StringList&);
+    Unit(bool, const StringMap&);
 
     bool _all;
-    StringList _defaultFileMetadata;
+    StringMap _defaultFileMetadata;
     int _errors;
     std::string _currentComment;
     int _currentIncludeLevel;

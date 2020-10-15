@@ -110,7 +110,7 @@ namespace Slice
 // DefinitionContext
 // ----------------------------------------------------------------------
 
-Slice::DefinitionContext::DefinitionContext(int includeLevel, const StringList& metadata) :
+Slice::DefinitionContext::DefinitionContext(int includeLevel, const StringMap& metadata) :
     _includeLevel(includeLevel), _metadata(metadata)
 {
     initSuppressedWarnings();
@@ -137,14 +137,14 @@ Slice::DefinitionContext::setFilename(const string& filename)
 void
 Slice::DefinitionContext::setMetadata(const StringList& metadata)
 {
-    _metadata = metadata;
+    _metadata = parseMetadata(metadata);//TODOFIX
     initSuppressedWarnings();
 }
 
 string
 Slice::DefinitionContext::findMetadata(const string& prefix) const
 {
-    for (const auto& metadata : _metadata)
+    for (const auto& metadata : removethis(_metadata))
     {
         if (metadata.find(prefix) == 0)
         {
@@ -157,7 +157,7 @@ Slice::DefinitionContext::findMetadata(const string& prefix) const
 StringList
 Slice::DefinitionContext::getAllMetadata() const
 {
-    return _metadata;
+    return removethis(_metadata);
 }
 
 bool
@@ -899,9 +899,9 @@ Slice::Contained::includeLevel() const
 }
 
 bool
-Slice::Contained::hasMetadata(const string& meta) const
+Slice::Contained::hasMetadata(const string& directive) const
 {
-    return find(_metadata.begin(), _metadata.end(), meta) != _metadata.end();
+    return Slice::hasMetadata(directive, _metadata);
 }
 
 bool
@@ -914,13 +914,13 @@ optional<string>
 Slice::Contained::findMetadata(const string& directive) const
 {
     // TODO this is temporary until we can fully replace the current metadata logic.
-    return Slice::findMetadata(directive, parseMetadata(_metadata));
+    return Slice::findMetadata(directive, _metadata);
 }
 
 bool
 Slice::Contained::findMetadata(const string& prefix, string& meta) const
 {
-    for (const auto& p : _metadata)
+    for (const auto& p : removethis(_metadata))
     {
         if (p.find(prefix) == 0)
         {
@@ -945,13 +945,13 @@ Slice::Contained::findMetadataWithPrefix(const string& prefix) const
 list<string>
 Slice::Contained::getAllMetadata() const
 {
-    return _metadata;
+    return removethis(_metadata);
 }
 
 void
 Slice::Contained::setMetadata(const list<string>& metadata)
 {
-    _metadata = metadata;
+    _metadata = parseMetadata(metadata);//TODOFIX
 }
 
 FormatType
@@ -4553,7 +4553,7 @@ Slice::Member::Member(const ContainerPtr& container, const string& name, const T
 UnitPtr
 Slice::Unit::createUnit(bool all, const StringList& defaultFileMetadata)
 {
-    return new Unit(all, defaultFileMetadata);
+    return new Unit(all, parseMetadata(defaultFileMetadata));
 }
 
 ModulePtr
@@ -5128,7 +5128,7 @@ Slice::Unit::getTopLevelModules(const string& file) const
     }
 }
 
-Slice::Unit::Unit(bool all, const StringList& defaultFileMetadata) :
+Slice::Unit::Unit(bool all, const StringMap& defaultFileMetadata) :
     SyntaxTreeBase(nullptr),
     Container(nullptr),
     _all(all),
