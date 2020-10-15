@@ -734,8 +734,6 @@ Slice::JavaOutput::printHeader()
     print("//\n");
 }
 
-const string Slice::JavaGenerator::_getSetMetadata = "java:getset";
-
 Slice::JavaGenerator::JavaGenerator(const string& dir) :
     _dir(dir),
     _out(0)

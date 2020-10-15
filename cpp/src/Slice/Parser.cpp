@@ -141,6 +141,12 @@ Slice::DefinitionContext::setMetadata(const StringList& metadata)
     initSuppressedWarnings();
 }
 
+bool
+Slice::DefinitionContext::hasMetadata(const string& directive) const
+{
+    return Slice::hasMetadata(directive, _metadata);
+}
+
 string
 Slice::DefinitionContext::findMetadata(const string& prefix) const
 {
@@ -902,12 +908,6 @@ bool
 Slice::Contained::hasMetadata(const string& directive) const
 {
     return Slice::hasMetadata(directive, _metadata);
-}
-
-bool
-Slice::Contained::hasMetadataWithPrefix(const string& prefix) const
-{
-    return !findMetadataWithPrefix(prefix).empty();
 }
 
 optional<string>
@@ -4140,7 +4140,7 @@ Slice::Operation::mode() const
 Operation::Mode
 Slice::Operation::sendMode() const
 {
-    if (_mode == Operation::Idempotent && hasMetadata("nonmutating"))
+    if (_mode == Operation::Idempotent && this->hasMetadata("nonmutating"))
     {
         return Operation::Nonmutating;
     }
@@ -4155,7 +4155,7 @@ Slice::Operation::hasMarshaledResult() const
 {
     InterfaceDefPtr interface = InterfaceDefPtr::dynamicCast(container());
     assert(interface);
-    if (interface->hasMetadata("marshaled-result") || hasMetadata("marshaled-result"))
+    if (interface->hasMetadata("marshaled-result") || this->hasMetadata("marshaled-result"))
     {
         for (const auto& returnValue : _returnType)
         {
@@ -4733,14 +4733,15 @@ Slice::Unit::currentIncludeLevel() const
 }
 
 void
-Slice::Unit::addFileMetadata(const StringList& metadata)
+Slice::Unit::addFileMetadata(const StringMap& metadata)
 {
     DefinitionContextPtr dc = currentDefinitionContext();
     assert(dc);
-    // Append the file metadata to any existing metadata (e.g., default file metadata).
-    StringList l = dc->getAllMetadata();
-    copy(metadata.begin(), metadata.end(), back_inserter(l));
-    dc->setMetadata(l);
+
+    // Merge the file metadata into any existing metadata (e.g., default file metadata).
+    // The new file metadata takes priority over existing metadata is clashes occur.
+    StringMap newMetadata = mergeMetadata(metadata, parseMetadata(dc->getAllMetadata())); //TODOFIX
+    dc->setMetadata(removethis(newMetadata));
 }
 
 void

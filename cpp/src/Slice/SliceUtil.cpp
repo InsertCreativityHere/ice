@@ -853,20 +853,21 @@ optional<string> Slice::findMetadata(const string& directive, const StringMap& m
     return (match != metadata.end() ? make_optional(match->second) : nullopt);
 }
 
-StringMap mergeMetadata(const StringMap& m1, const StringMap& m2)
+StringMap Slice::mergeMetadata(const StringMap& m1, const StringMap& m2)
 {
     StringMap result = m1;
     // Iterate through the entries of m2 and try to insert them into m1.
     for (const auto& [directive, arguments] : m2)
     {
         // If the key already exists in m1, it won't be overriden, and we issue a warning.
-        if (!(m1.insert(make_pair(directive, arguments)).second))
+        if (!(result.insert(make_pair(directive, arguments)).second))
         {
             string message = "duplicate metadata: `" + directive;
             message += (arguments.empty() ? "" : ", overriding original value of `" + arguments + "'");
             unit->warning(InvalidMetadata, message);
         }
     }
+    return result;
 }
 
 StringList Slice::removethis(const StringMap& sm)

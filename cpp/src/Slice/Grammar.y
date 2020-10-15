@@ -238,7 +238,7 @@ definitions
     StringListTokPtr metadata = StringListTokPtr::dynamicCast($2);
     if(!metadata->v.empty())
     {
-        unit->addFileMetadata(metadata->v);
+        unit->addFileMetadata(parseMetadata(metadata->v));
     }
 }
 | definitions local_metadata definition

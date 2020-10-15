@@ -200,6 +200,7 @@ public:
     void setFilename(const std::string&);
 
     void setMetadata(const StringList&);
+    bool hasMetadata(const std::string&) const;
     std::string findMetadata(const std::string&) const;
     StringList getAllMetadata() const;
 
@@ -408,7 +409,6 @@ public:
     int includeLevel() const;
 
     bool hasMetadata(const std::string&) const;
-    bool hasMetadataWithPrefix(const std::string&) const;
     std::optional<std::string> findMetadata(const std::string&) const;
     bool findMetadata(const std::string&, std::string&) const;
     std::string findMetadataWithPrefix(const std::string&) const;
@@ -1104,7 +1104,7 @@ public:
     int setCurrentFile(const std::string&, int);
     int currentIncludeLevel() const;
 
-    void addFileMetadata(const StringList&);
+    void addFileMetadata(const StringMap&);
 
     void error(const std::string&); // Not const because error count is increased
     void warning(WarningCategory, const std::string&) const;

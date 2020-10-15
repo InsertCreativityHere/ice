@@ -934,7 +934,7 @@ Slice::CsGenerator::writeTaggedMarshalCode(
         const TypePtr elementType = seq->type();
         builtin = BuiltinPtr::dynamicCast(elementType);
 
-        bool hasCustomType = seq->hasMetadataWithPrefix("cs:generic");
+        bool hasCustomType = seq->hasMetadata("cs:generic");
         bool readOnly = !isDataMember;
 
         if (isFixedSizeNumericSequence(seq) && (readOnly || !hasCustomType))
@@ -1056,7 +1056,7 @@ Slice::CsGenerator::writeTaggedUnmarshalCode(
     else if (seq)
     {
         const TypePtr elementType = seq->type();
-        if (isFixedSizeNumericSequence(seq) && !seq->hasMetadataWithPrefix("cs:generic"))
+        if (isFixedSizeNumericSequence(seq) && !seq->hasMetadata("cs:generic"))
         {
             out << "istr.ReadTaggedArray";
             if (auto enElement = EnumPtr::dynamicCast(elementType); enElement && !enElement->isUnchecked())
@@ -1070,7 +1070,7 @@ Slice::CsGenerator::writeTaggedUnmarshalCode(
                 out << "<" << typeToString(elementType, scope) << ">(" << tag << ")";
             }
         }
-        else if (seq->hasMetadataWithPrefix("cs:generic:"))
+        else if (seq->hasMetadata("cs:generic:"))
         {
             const string tmpName = (dataMember ? dataMember->name() : param) + "_";
             if (auto optional = OptionalPtr::dynamicCast(elementType); optional && optional->encodedUsingBitSequence())
@@ -1160,7 +1160,7 @@ Slice::CsGenerator::sequenceMarshalCode(
 
     assert(!readOnlyParam || readOnly);
 
-    bool hasCustomType = seq->hasMetadataWithPrefix("cs:generic");
+    bool hasCustomType = seq->hasMetadata("cs:generic");
 
     if (isFixedSizeNumericSequence(seq) && (readOnly || !hasCustomType))
     {

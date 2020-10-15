@@ -226,8 +226,6 @@ protected:
 
     virtual JavaOutput* createOutput();
 
-    static const std::string _getSetMetadata;
-
 private:
 
     std::string _dir;

@@ -1878,7 +1878,7 @@ yyreduce:
     StringListTokPtr metadata = StringListTokPtr::dynamicCast(yyvsp[0]);
     if(!metadata->v.empty())
     {
-        unit->addFileMetadata(metadata->v);
+        unit->addFileMetadata(parseMetadata(metadata->v));
     }
 }
 #line 1885 "src/Slice/Grammar.cpp"

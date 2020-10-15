@@ -3068,7 +3068,7 @@ Slice::Gen::TypesVisitor::visitDataMember(const MemberPtr& p)
 
     const string name = fixKwd(p->name());
     const StringList metadata = p->getAllMetadata();
-    const bool getSet = p->hasMetadata(_getSetMetadata) || contained->hasMetadata(_getSetMetadata);
+    const bool getSet = p->hasMetadata("java:getset") || contained->hasMetadata("java:getset");
     const bool isTagged = p->tagged();
     const TypePtr type = unwrapIfOptional(p->type());
     const BuiltinPtr b = BuiltinPtr::dynamicCast(type);
