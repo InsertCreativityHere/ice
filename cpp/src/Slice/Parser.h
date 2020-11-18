@@ -851,7 +851,7 @@ protected:
 // TypeAlias
 // ----------------------------------------------------------------------
 
-class TypeAlias : public virtual Constructed
+class TypeAlias : public virtual Contained, public virtual Type
 {
 public:
 
