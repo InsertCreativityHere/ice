@@ -645,7 +645,7 @@ csharpIdentifier(const ContainedPtr& contained, const string& identifier)
     else
     {
         TypeList types = contained->unit()->lookupTypeNoBuiltin(typeName, false, true);
-        definition = types.empty() ? nullptr : ContainedPtr::dynamicCast(types.front());
+        definition = types.empty() ? nullptr : ContainedPtr::dynamicCast(unwrapIfAlias(types.front()));
     }
 
     ostringstream os;
