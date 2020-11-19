@@ -1682,7 +1682,7 @@ type_alias_def
 : ICE_USING ICE_IDENTIFIER '=' local_metadata type
 {
     StringTokPtr ident = StringTokPtr::dynamicCast($2);
-    StringListTokPtr metadata = StringListTokPtr::dynamicCast($3);
+    StringListTokPtr metadata = StringListTokPtr::dynamicCast($4);
     TypePtr type = TypePtr::dynamicCast($5);
 
     if (auto alias = TypeAliasPtr::dynamicCast(type))
@@ -1697,7 +1697,7 @@ type_alias_def
 | ICE_USING ICE_IDENTIFIER
 {
     StringTokPtr ident = StringTokPtr::dynamicCast($2);
-    unit->error("missing underlying type");
+    unit->error("missing underlying type for typealias `" + ident->v + "'");
     $$ = nullptr;
 }
 
