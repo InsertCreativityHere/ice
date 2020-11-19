@@ -3533,7 +3533,7 @@ yyreduce:
 #line 1683 "src/Slice/Grammar.y"
 {
     StringTokPtr ident = StringTokPtr::dynamicCast(yyvsp[-3]);
-    StringListTokPtr metadata = StringListTokPtr::dynamicCast(yyvsp[-2]);
+    StringListTokPtr metadata = StringListTokPtr::dynamicCast(yyvsp[-1]);
     TypePtr type = TypePtr::dynamicCast(yyvsp[0]);
 
     if (auto alias = TypeAliasPtr::dynamicCast(type))
@@ -3552,7 +3552,7 @@ yyreduce:
 #line 1698 "src/Slice/Grammar.y"
 {
     StringTokPtr ident = StringTokPtr::dynamicCast(yyvsp[0]);
-    unit->error("missing underlying type");
+    unit->error("missing underlying type for typealias `" + ident->v + "'");
     yyval = nullptr;
 }
 #line 3559 "src/Slice/Grammar.cpp"
