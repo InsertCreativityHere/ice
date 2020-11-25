@@ -2430,10 +2430,10 @@ Slice::Module::hasNonClassTypes() const
         }
         else if (!ClassDeclPtr::dynamicCast(content) && !ClassDefPtr::dynamicCast(content) &&
                  TypePtr::dynamicCast(content))
-         {
+        {
             return true;
         }
-        else if(ExceptionPtr::dynamicCast(content) || ConstPtr::dynamicCast(content))
+        else if (ExceptionPtr::dynamicCast(content) || ConstPtr::dynamicCast(content))
         {
             return true;
         }

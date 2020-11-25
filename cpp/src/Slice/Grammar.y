@@ -338,6 +338,10 @@ opt_semicolon
     assert($1 == 0 || SequencePtr::dynamicCast($1));
 }
 ';'
+| sequence_def
+{
+    unit->error("`;' missing after sequence definition");
+}
 | type_alias_def
 {
     assert($1 == 0 || TypeAliasPtr::dynamicCast($1));
@@ -346,10 +350,6 @@ opt_semicolon
 | type_alias_def
 {
     unit->error("`;' missing after type-alias");
-}
-| sequence_def
-{
-    unit->error("`;' missing after sequence definition");
 }
 | dictionary_def
 {
@@ -1725,7 +1725,7 @@ sequence_def
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
     {
         mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        type = rewrapIfOptional(type, alias->underlying());
+        type = rewrapIfOptional(alias->underlying(), type);
     }
 
     ModulePtr cont = unit->currentModule();
@@ -1740,7 +1740,7 @@ sequence_def
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
     {
         mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        type = rewrapIfOptional(type, alias->underlying());
+        type = rewrapIfOptional(alias->underlying(), type);
     }
 
     ModulePtr cont = unit->currentModule();
@@ -1763,12 +1763,12 @@ dictionary_def
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(keyType)))
     {
         mergeMetadataInPlace(keyMetadata->v, alias->typeMetadata());
-        keyType = rewrapIfOptional(keyType, alias->underlying());
+        keyType = rewrapIfOptional(alias->underlying(), keyType);
     }
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(valueType)))
     {
         mergeMetadataInPlace(valueMetadata->v, alias->typeMetadata());
-        valueType = rewrapIfOptional(valueType, alias->underlying());
+        valueType = rewrapIfOptional(alias->underlying(), valueType);
     }
 
     ModulePtr cont = unit->currentModule();
@@ -1785,12 +1785,12 @@ dictionary_def
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(keyType)))
     {
         mergeMetadataInPlace(keyMetadata->v, alias->typeMetadata());
-        keyType = rewrapIfOptional(keyType, alias->underlying());
+        keyType = rewrapIfOptional(alias->underlying(), keyType);
     }
     if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(valueType)))
     {
         mergeMetadataInPlace(valueMetadata->v, alias->typeMetadata());
-        valueType = rewrapIfOptional(valueType, alias->underlying());
+        valueType = rewrapIfOptional(alias->underlying(), valueType);
     }
 
     ModulePtr cont = unit->currentModule();
@@ -2313,14 +2313,16 @@ tagged_type
 | type
 {
     TaggedDefTokPtr taggedDef = new TaggedDefTok;
-    if (auto alias = TypeAliasPtr::dynamicCast($1))
+    TypePtr type = TypePtr::dynamicCast($1);
+
+    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
     {
-        taggedDef->type = alias->underlying();
+        taggedDef->type = rewrapIfOptional(alias->underlying(), type);
         taggedDef->metadata = alias->typeMetadata();
     }
     else
     {
-        taggedDef->type = TypePtr::dynamicCast($1);
+        taggedDef->type = type;
     }
     $$ = taggedDef;
 }
@@ -2500,7 +2502,7 @@ const_def
     if (auto alias = TypeAliasPtr::dynamicCast(const_type))
     {
         mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        const_type = rewrapIfOptional(const_type, alias->underlying());
+        const_type = rewrapIfOptional(alias->underlying(), const_type);
     }
 
     $$ = unit->currentModule()->createConst(ident->v, const_type, metadata->v, value->v,
@@ -2516,7 +2518,7 @@ const_def
     if (auto alias = TypeAliasPtr::dynamicCast(const_type))
     {
         mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        const_type = rewrapIfOptional(const_type, alias->underlying());
+        const_type = rewrapIfOptional(alias->underlying(), const_type);
     }
 
     $$ = unit->currentModule()->createConst(IceUtil::generateUUID(), const_type, metadata->v, value->v,
