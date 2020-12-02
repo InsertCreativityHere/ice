@@ -1068,11 +1068,6 @@ class_extends
         {
             if (auto alias = TypeAliasPtr::dynamicCast(types.front()))
             {
-                if (!alias->typeMetadata().empty())
-                {
-                    unit->error("illegal metadata: typealias metadata `" + alias->typeMetadata().front() +
-                                "' cannot be used in inheritance declarations");
-                }
                 cl = ClassDeclPtr::dynamicCast(alias->underlying());
             }
         }
@@ -1529,11 +1524,6 @@ interface_list
         {
             if (auto alias = TypeAliasPtr::dynamicCast(types.front()))
             {
-                if (!alias->typeMetadata().empty())
-                {
-                    unit->error("illegal metadata: typealias metadata `" + alias->typeMetadata().front() +
-                                "' cannot be used in inheritance declarations");
-                }
                 interface = InterfaceDeclPtr::dynamicCast(alias->underlying());
             }
         }
@@ -1692,6 +1682,21 @@ type_alias_def
             type = alias->underlying();
         }
 
+        // Metadata cannot be specified on aliases of classes and interfaces.
+        if (!metadata->v.empty())
+        {
+            if (ClassDeclPtr::dynamicCast(type))
+            {
+                unit->error("illegal metadata on `" + ident->v +
+                            "': metadata cannot be specified on aliases of classes");
+            }
+            else if (InterfaceDeclPtr::dynamicCast(type))
+            {
+                unit->error("illegal metadata on `" + ident->v +
+                            "': metadata cannot be specified on aliases of interfaces");
+            }
+        }
+
         ModulePtr cont = unit->currentModule();
         $$ = cont->createTypeAlias(ident->v, type, metadata->v);
     }
@@ -1721,11 +1726,7 @@ sequence_def
     StringListTokPtr metadata = StringListTokPtr::dynamicCast($3);
     TypePtr type = TypePtr::dynamicCast($4);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
-    {
-        mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        type = rewrapIfOptional(type, alias->underlying());
-    }
+    resolveAlias(type, metadata->v);
 
     ModulePtr cont = unit->currentModule();
     $$ = cont->createSequence(ident->v, type, metadata->v);
@@ -1736,11 +1737,7 @@ sequence_def
     StringListTokPtr metadata = StringListTokPtr::dynamicCast($3);
     TypePtr type = TypePtr::dynamicCast($4);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
-    {
-        mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        type = rewrapIfOptional(type, alias->underlying());
-    }
+    resolveAlias(type, metadata->v);
 
     ModulePtr cont = unit->currentModule();
     $$ = cont->createSequence(ident->v, type, metadata->v); // Dummy
@@ -1759,16 +1756,8 @@ dictionary_def
     StringListTokPtr valueMetadata = StringListTokPtr::dynamicCast($6);
     TypePtr valueType = TypePtr::dynamicCast($7);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(keyType)))
-    {
-        mergeMetadataInPlace(keyMetadata->v, alias->typeMetadata());
-        keyType = rewrapIfOptional(keyType, alias->underlying());
-    }
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(valueType)))
-    {
-        mergeMetadataInPlace(valueMetadata->v, alias->typeMetadata());
-        valueType = rewrapIfOptional(valueType, alias->underlying());
-    }
+    resolveAlias(keyType, keyMetadata->v);
+    resolveAlias(valueType, valueMetadata->v);
 
     ModulePtr cont = unit->currentModule();
     $$ = cont->createDictionary(ident->v, keyType, keyMetadata->v, valueType, valueMetadata->v);
@@ -1781,16 +1770,8 @@ dictionary_def
     StringListTokPtr valueMetadata = StringListTokPtr::dynamicCast($6);
     TypePtr valueType = TypePtr::dynamicCast($7);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(keyType)))
-    {
-        mergeMetadataInPlace(keyMetadata->v, alias->typeMetadata());
-        keyType = rewrapIfOptional(keyType, alias->underlying());
-    }
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(valueType)))
-    {
-        mergeMetadataInPlace(valueMetadata->v, alias->typeMetadata());
-        valueType = rewrapIfOptional(valueType, alias->underlying());
-    }
+    resolveAlias(keyType, keyMetadata->v);
+    resolveAlias(valueType, valueMetadata->v);
 
     ModulePtr cont = unit->currentModule();
     $$ = cont->createDictionary(ident->v, keyType, keyMetadata->v, valueType, valueMetadata->v); // Dummy
@@ -2312,17 +2293,10 @@ tagged_type
 | type
 {
     TaggedDefTokPtr taggedDef = new TaggedDefTok;
-    TypePtr type = TypePtr::dynamicCast($1);
+    taggedDef->type = TypePtr::dynamicCast($1);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(unwrapIfOptional(type)))
-    {
-        taggedDef->type = rewrapIfOptional(type, alias->underlying());
-        taggedDef->metadata = alias->typeMetadata();
-    }
-    else
-    {
-        taggedDef->type = type;
-    }
+    resolveAlias(taggedDef->type, taggedDef->metadata);
+
     $$ = taggedDef;
 }
 ;
@@ -2498,11 +2472,7 @@ const_def
     StringTokPtr ident = StringTokPtr::dynamicCast($4);
     ConstDefTokPtr value = ConstDefTokPtr::dynamicCast($6);
 
-    if (auto alias = TypeAliasPtr::dynamicCast(const_type))
-    {
-        mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        const_type = rewrapIfOptional(const_type, alias->underlying());
-    }
+    resolveAlias(const_type, metadata->v);
 
     $$ = unit->currentModule()->createConst(ident->v, const_type, metadata->v, value->v,
                                                value->valueAsString, value->valueAsLiteral);
@@ -2514,11 +2484,7 @@ const_def
     ConstDefTokPtr value = ConstDefTokPtr::dynamicCast($5);
     unit->error("missing constant name");
 
-    if (auto alias = TypeAliasPtr::dynamicCast(const_type))
-    {
-        mergeMetadataInPlace(metadata->v, alias->typeMetadata());
-        const_type = rewrapIfOptional(const_type, alias->underlying());
-    }
+    resolveAlias(const_type, metadata->v);
 
     $$ = unit->currentModule()->createConst(IceUtil::generateUUID(), const_type, metadata->v, value->v,
                                                value->valueAsString, value->valueAsLiteral, Dummy); // Dummy
