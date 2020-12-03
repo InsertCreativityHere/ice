@@ -1561,11 +1561,6 @@ interface_list
         {
             if (auto alias = TypeAliasPtr::dynamicCast(types.front()))
             {
-                if (!alias->typeMetadata().empty())
-                {
-                    unit->error("illegal metadata: typealias metadata `" + alias->typeMetadata().front() +
-                                "' cannot be used in inheritance declarations");
-                }
                 interface = InterfaceDeclPtr::dynamicCast(alias->underlying());
             }
         }
