@@ -66,7 +66,6 @@ StringLiteralGenerator::escapeASCIIChar(char c)
 
     string result;
 
-    Format lastFormat = _format;
     _format = NoFormat;
 
     if(_nonPrintableEscaped.find(c) != string::npos)
