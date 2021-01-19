@@ -10,8 +10,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceGrid)]]
-
 #ifndef ICE_BUILDING_ICEGRIDDB
 [[cpp:dll-export(ICEGRID_API)]]
 #endif

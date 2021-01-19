@@ -3040,18 +3040,6 @@ class Driver:
         if self.communicator:
             return
 
-        try:
-            import Ice
-        except ImportError:
-            # Try to add the local Python build to the sys.path
-            try:
-                pythonMapping = Mapping.getByName("python")
-                if pythonMapping:
-                    for p in pythonMapping.getPythonDirs(pythonMapping.getPath(), self.configs[pythonMapping]):
-                        sys.path.append(p)
-            except RuntimeError:
-                print("couldn't find IcePy, running these tests require it to be installed or built")
-
         import Ice
         Ice.loadSlice(os.path.join(self.component.getSourceDir(), "scripts", "Controller.ice"))
 
@@ -3483,44 +3471,6 @@ class CppBasedMapping(Mapping):
             # the C++ library directory to the library path
             env[platform.getLdPathEnvName()] = self.component.getLibDir(process, Mapping.getByName("cpp"), current)
         return env
-
-class PythonMapping(CppBasedMapping):
-
-    class Config(CppBasedMapping.Config):
-        mappingName = "python"
-        mappingDesc = "Python"
-
-    def getCommandLine(self, current, process, exe, args):
-        return "\"{0}\"  {1} {2} {3}".format(sys.executable,
-                                             os.path.join(self.path, "test", "TestHelper.py"),
-                                             exe,
-                                             args)
-
-    def getEnv(self, process, current):
-        env = CppBasedMapping.getEnv(self, process, current)
-        dirs = []
-        if self.component.getInstallDir(self, current) != platform.getInstallDir():
-            # If not installed in the default platform installation directory, add
-            # the Ice python directory to PYTHONPATH
-            dirs += self.getPythonDirs(self.component.getInstallDir(self, current), current.config)
-        dirs += [current.testcase.getPath(current)]
-        env["PYTHONPATH"] = os.pathsep.join(dirs)
-        return env
-
-    def getPythonDirs(self, iceDir, config):
-        dirs = []
-        if isinstance(platform, Windows):
-            dirs.append(os.path.join(iceDir, "python", config.buildPlatform, config.buildConfig))
-        dirs.append(os.path.join(iceDir, "python"))
-        return dirs
-
-    def _getDefaultSource(self, processType):
-        return {
-            "client" : "Client.py",
-            "server" : "Server.py",
-            "serveramd" : "ServerAMD.py",
-            "collocated" : "Collocated.py",
-        }[processType]
 
 class CppBasedClientMapping(CppBasedMapping):
 

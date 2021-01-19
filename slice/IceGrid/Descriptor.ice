@@ -10,8 +10,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceGrid)]]
-
 [[3.7]]
 
 #ifndef ICE_BUILDING_ICEGRIDDB

@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceGrid)]]
-
 #include <IceGrid/Exception.ice>
 #include <IceGrid/Session.ice>
 #include <IceGrid/Admin.ice>

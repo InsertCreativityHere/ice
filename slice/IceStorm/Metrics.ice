@@ -10,7 +10,6 @@
 [[cpp:include(IceStorm/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[python:pkgdir(IceStorm)]]
 
 #include <Ice/Metrics.ice>
 

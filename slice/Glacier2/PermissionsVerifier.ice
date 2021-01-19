@@ -9,8 +9,6 @@
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 
-[[python:pkgdir(Glacier2)]]
-
 #include <Glacier2/SSLInfo.ice>
 
 [cs:namespace(ZeroC)]

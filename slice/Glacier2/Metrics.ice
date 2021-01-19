@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(Glacier2)]]
-
 #include <Ice/Metrics.ice>
 
 [cs:namespace(ZeroC)]

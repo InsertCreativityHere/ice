@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceGrid)]]
-
 [cs:namespace(ZeroC)]
 module IceGrid
 {

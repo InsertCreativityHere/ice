@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceGrid)]]
-
 [[3.7]]
 
 #include <Ice/Identity.ice>

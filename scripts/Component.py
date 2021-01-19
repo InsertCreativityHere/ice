@@ -198,7 +198,7 @@ from IceStormUtil import *
 #
 
 # The order that the languages will be tested in.
-lang_order = ("cpp", "python", "csharp")
+lang_order = ("cpp", "csharp")
 
 # Filters out any files that aren't directories or don't start with one of the prefixes specified in 'lang_order'.
 mapping_filter = lambda x: os.path.isdir(os.path.join(toplevel, x)) and x.startswith(lang_order)
@@ -208,16 +208,10 @@ mapping_orderer = lambda x: [index for index, name in enumerate(lang_order) if x
 for m in sorted(filter(mapping_filter, os.listdir(toplevel)), key=mapping_orderer):
     if m == "cpp" or re.match("cpp-.*", m):
         Mapping.add(m, CppMapping(), component)
-#    TODO temporarily disabled testing of Python mapping.
-#    elif m == "python" or re.match("python-.*", m):
-#        Mapping.add(m, PythonMapping(), component)
     elif m == "csharp" or re.match("charp-.*", m):
         Mapping.add("csharp", CSharpMapping(), component, enable=isinstance(platform, Windows) or platform.hasDotNet())
 
 if isinstance(platform, Windows):
     # Windows doesn't support all the mappings, we take them out here.
-#    TODO temporarily disabled testing of Python mapping.
-#    if platform.getCompiler() not in ["v141"]:
-#        Mapping.disable("python")
     if platform.getCompiler() not in ["v142"]:
         Mapping.disable("csharp")

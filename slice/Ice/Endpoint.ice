@@ -10,8 +10,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(Ice)]]
-
 #include <Ice/BuiltinSequences.ice>
 
 [cs:namespace(ZeroC)]

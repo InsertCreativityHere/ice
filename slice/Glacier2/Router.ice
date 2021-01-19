@@ -9,9 +9,6 @@
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 
-
-[[python:pkgdir(Glacier2)]]
-
 #include <Ice/Router.ice>
 #include <Glacier2/Session.ice>
 #include <Glacier2/PermissionsVerifier.ice>

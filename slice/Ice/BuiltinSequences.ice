@@ -10,9 +10,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(Ice)]]
-
-
 [[3.7]] // TODO, temporary
 
 [cs:namespace(ZeroC)]

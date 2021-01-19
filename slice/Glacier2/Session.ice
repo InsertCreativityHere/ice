@@ -9,8 +9,6 @@
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 
-[[python:pkgdir(Glacier2)]]
-
 #include <Ice/BuiltinSequences.ice>
 #include <Ice/Identity.ice>
 #include <Glacier2/SSLInfo.ice>

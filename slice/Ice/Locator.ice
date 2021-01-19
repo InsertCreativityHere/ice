@@ -9,8 +9,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(Ice)]]
-
 #include <Ice/BuiltinSequences.ice>
 #include <Ice/Endpoint.ice>
 #include <Ice/Identity.ice>

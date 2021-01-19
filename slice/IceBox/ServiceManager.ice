@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceBox)]]
-
 #include <Ice/BuiltinSequences.ice>
 
 [cs:namespace(ZeroC)]

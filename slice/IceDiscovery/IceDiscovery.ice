@@ -9,8 +9,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceDiscovery)]]
-
 #include <Ice/Identity.ice>
 
 /// The IceDiscovery plug-in implements the {@link Ice::Locator} interface to locate (or discover) objects and object

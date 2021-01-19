@@ -9,8 +9,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceDiscovery)]]
-
 #include <Ice/Endpoint.ice>
 #include <Ice/Identity.ice>
 

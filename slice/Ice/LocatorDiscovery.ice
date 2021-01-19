@@ -9,8 +9,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceLocatorDiscovery)]]
-
 #include <Ice/Locator.ice>
 
 /// Ice Locator Discovery is built-in {@see Ice::Locator} implementation that discovers IceGrid or custom locators via

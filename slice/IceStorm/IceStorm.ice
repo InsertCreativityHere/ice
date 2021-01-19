@@ -11,8 +11,6 @@
 
 [[suppress-warning(reserved-identifier)]]
 
-[[python:pkgdir(IceStorm)]]
-
 #include <Ice/Identity.ice>
 
 #include <IceStorm/Metrics.ice>

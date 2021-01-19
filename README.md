@@ -19,7 +19,6 @@ Ice supports the following programming languages:
 
 - C#
 - C++
-- Python
 
 ## Platforms
 
