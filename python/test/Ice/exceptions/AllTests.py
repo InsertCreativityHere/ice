@@ -91,11 +91,6 @@ class Callback(CallbackBase):
         except Test.Mod.A as ex:
             test(ex.aMem == 1)
             test(ex.a2Mem == 2)
-        except Ice.OperationNotExistException:
-            #
-            # This operation is not supported in Java.
-            #
-            pass
         except:
             test(False)
         self.called()
@@ -339,11 +334,6 @@ def allTests(helper, communicator):
     except Test.Mod.A as ex:
         test(ex.aMem == 1)
         test(ex.a2Mem == 2)
-    except Ice.OperationNotExistException:
-        #
-        # This operation is not supported in Java.
-        #
-        pass
     except:
         print(sys.exc_info())
         test(False)
@@ -377,11 +367,6 @@ def allTests(helper, communicator):
         test(False)
     except Test.A as ex:
         test(ex.aMem == 1)
-    except Ice.OperationNotExistException:
-        #
-        # This operation is not supported in Java.
-        #
-        pass
     except:
         print(sys.exc_info())
         test(False)
@@ -646,11 +631,6 @@ def allTests(helper, communicator):
     except Test.Mod.A as ex:
         test(ex.aMem == 1)
         test(ex.a2Mem == 2)
-    except Ice.OperationNotExistException:
-        #
-        # This operation is not supported in Java.
-        #
-        pass
     except:
         print(sys.exc_info())
         test(False)

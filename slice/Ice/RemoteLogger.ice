@@ -12,11 +12,8 @@
 [[cpp:include(list)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Ice)]]
-
-[[java:package(com.zeroc)]]
 
 [cs:namespace(ZeroC)]
 module Ice
@@ -65,8 +62,6 @@ module Ice
     /// The Ice remote logger interface. An application can implement a
     /// RemoteLogger to receive the log messages sent to the local {@link Logger}
     /// of another Ice application.
-    // TODO: fix C++ and Java implementations of the LoggerAdmin facet to use oneway invocations once [oneway]
-    // is supported in these languages.
     interface RemoteLogger
     {
         /// init is called by attachRemoteLogger when a RemoteLogger proxy is attached.

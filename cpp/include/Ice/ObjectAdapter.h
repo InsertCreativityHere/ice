@@ -566,10 +566,6 @@ public:
      * @see Endpoint
      */
     virtual void setPublishedEndpoints(const EndpointSeq& newEndpoints) = 0;
-
-#ifdef ICE_SWIFT
-    virtual dispatch_queue_t getDispatchQueue() const = 0;
-#endif
 };
 
 }

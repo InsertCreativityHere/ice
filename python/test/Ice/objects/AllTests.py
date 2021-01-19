@@ -257,9 +257,6 @@ def allTests(helper, communicator):
     except Ice.UnknownLocalException:
         # Expected marshal exception from the server (max class graph depth reached)
         pass
-    except Ice.UnknownException:
-        # Expected stack overflow from the server (Java only)
-        pass
     initial.setRecursive(Test.Recursive())
     print("ok")
 

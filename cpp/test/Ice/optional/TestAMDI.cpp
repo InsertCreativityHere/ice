@@ -381,13 +381,6 @@ InitialI::supportsRequiredParamsAsync(::std::function<void(bool)> response,
 }
 
 void
-InitialI::supportsJavaSerializableAsync(::std::function<void(bool)> response,
-                                        ::std::function<void(::std::exception_ptr)>, const Ice::Current&)
-{
-    response(true);
-}
-
-void
 InitialI::supportsCsharpSerializableAsync(::std::function<void(bool)> response,
                                           ::std::function<void(::std::exception_ptr)>, const Ice::Current&)
 {

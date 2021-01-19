@@ -49,10 +49,6 @@
 #include <stdio.h>
 #include <list>
 
-#ifdef __APPLE__
-#   include <Ice/OSLogLoggerI.h>
-#endif
-
 #ifndef _WIN32
 #   include <Ice/SysLoggerI.h>
 #   include <Ice/SystemdJournalI.h>
@@ -1086,15 +1082,6 @@ IceInternal::Instance::Instance(const CommunicatorPtr& communicator, const Initi
                 _initData.logger = std::make_shared<SysLoggerI>(
                                                    _initData.properties->getProperty("Ice.ProgramName"),
                                                    _initData.properties->getPropertyWithDefault("Ice.SyslogFacility", "LOG_USER"));
-            }
-            else
-#endif
-
-#ifdef ICE_SWIFT
-            if(!_initData.logger && _initData.properties->getPropertyAsInt("Ice.UseOSLog") > 0)
-            {
-                _initData.logger = std::make_shared<OSLogLoggerI>(
-                                                   _initData.properties->getProperty("Ice.ProgramName"));
             }
             else
 #endif

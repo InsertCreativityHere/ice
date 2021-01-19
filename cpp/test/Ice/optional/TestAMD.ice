@@ -268,8 +268,6 @@ interface Initial
 
     bool supportsRequiredParams();
 
-    bool supportsJavaSerializable();
-
     bool supportsCsharpSerializable();
 
     bool supportsCppStringView();

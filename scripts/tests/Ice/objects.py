@@ -12,9 +12,7 @@ class ObjectClientServerTestCase(ClientServerTestCase):
 
     def getProps(self, process, current):
         props = ClientServerTestCase.getProps(self, process, current)
-        if process.getMapping(current) in ["java"] and isinstance(process, Server):
-            props["Ice.ThreadPool.Server.StackSize"] = 512 * 1024
-        elif current.config.buildPlatform == "iphoneos":
+        if current.config.buildPlatform == "iphoneos":
             #
             # Use a 768KB thread stack size for the objects test. This is necessary when running the
             # test on arm64 devices with a debug Ice libraries which require lots of stack space.

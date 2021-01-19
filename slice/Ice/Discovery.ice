@@ -8,7 +8,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceDiscovery)]]
 
@@ -21,7 +20,6 @@
 /// Ice Discovery also implements the {@see Ice::LocatorDiscovery} interface to allow servers to respond to such
 /// multicast discovery requests.
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module Ice::Discovery
 {
     interface FindAdapterByIdReply;

@@ -8,7 +8,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceLocatorDiscovery)]]
 
@@ -18,7 +17,6 @@
 /// UDP multicast. You enable this built-in locator implementation by setting the configuration property
 /// Ice.Default.Locator to LocatorDiscovery.
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module Ice::LocatorDiscovery
 {
     /// The Ice.LocatorDiscovery.Reply object adapter of a client application hosts a LookupReply object that processes

@@ -83,10 +83,6 @@ public:
     virtual EndpointSeq getPublishedEndpoints() const noexcept;
     virtual void setPublishedEndpoints(const EndpointSeq&);
 
-#ifdef ICE_SWIFT
-    virtual dispatch_queue_t getDispatchQueue() const;
-#endif
-
     bool isLocal(const ObjectPrxPtr&) const;
 
     void flushAsyncBatchRequests(const IceInternal::CommunicatorFlushBatchAsyncPtr&, CompressBatch);

@@ -151,9 +151,6 @@ class InitialI(Test.Initial):
     def supportsRequiredParams(self, current=None):
         return Ice.Future.completed(False)
 
-    def supportsJavaSerializable(self, current=None):
-        return Ice.Future.completed(True)
-
     def supportsCsharpSerializable(self, current=None):
         return Ice.Future.completed(False)
 

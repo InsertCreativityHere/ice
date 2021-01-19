@@ -10,14 +10,12 @@
 [[cpp:include(IceGrid/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceGrid)]]
 
 #include <Glacier2/Session.ice>
 #include <IceGrid/Exception.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 module IceGrid
 {

@@ -377,22 +377,6 @@ Ice::CommunicatorI::getValueFactoryManager() const noexcept
     return _instance->initializationData().valueFactoryManager;
 }
 
-#ifdef ICE_SWIFT
-
-dispatch_queue_t
-Ice::CommunicatorI::getClientDispatchQueue() const
-{
-    return _instance->clientThreadPool()->getDispatchQueue();
-}
-
-dispatch_queue_t
-Ice::CommunicatorI::getServerDispatchQueue() const
-{
-    return _instance->serverThreadPool()->getDispatchQueue();
-}
-
-#endif
-
 namespace
 {
 

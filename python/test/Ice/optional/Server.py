@@ -145,9 +145,6 @@ class InitialI(Test.Initial):
     def supportsRequiredParams(self, current=None):
         return False
 
-    def supportsJavaSerializable(self, current=None):
-        return True
-
     def supportsCsharpSerializable(self, current=None):
         return True
 

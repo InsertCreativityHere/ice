@@ -10,7 +10,6 @@
 [[cpp:include(IceStorm/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceStorm)]]
 
@@ -18,7 +17,6 @@
 
 #include <IceStorm/Metrics.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 /// A messaging service with support for federation. In contrast to
 /// most other messaging or event services, IceStorm supports typed

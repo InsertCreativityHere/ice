@@ -132,7 +132,7 @@ IceSSL::readFile(const string& file, vector<char>& buffer)
 bool
 IceSSL::checkPath(const string& path, const string& defaultDir, bool dir, string& resolved)
 {
-#if defined(ICE_USE_SECURE_TRANSPORT_IOS) || defined(ICE_SWIFT)
+#if defined(ICE_USE_SECURE_TRANSPORT_IOS)
     CFBundleRef bundle = CFBundleGetMainBundle();
     if(bundle)
     {

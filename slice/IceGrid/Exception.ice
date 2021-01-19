@@ -9,7 +9,6 @@
 [[cpp:include(IceGrid/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceGrid)]]
 
@@ -20,7 +19,6 @@
 #include <Ice/Identity.ice>
 #include <Ice/BuiltinSequences.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 module IceGrid
 {

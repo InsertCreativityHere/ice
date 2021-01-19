@@ -10,16 +10,14 @@
 [[cpp:include(IceBox/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceBox)]]
 
 #include <Ice/BuiltinSequences.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 /// IceBox is an application server for Ice applications. IceBox can load IceBox services packaged as DLLs, .NET
-/// assemblies, Java classes and similar.
+/// assemblies and similar.
 module IceBox
 {
     /// This exception is thrown if an attempt is made to start an already-started service.

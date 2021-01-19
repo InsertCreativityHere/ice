@@ -359,10 +359,6 @@ allTests(Test::TestHelper* helper)
         // Expected marshal exception from the server (max class graph depth reached)
         test(depth == 100); // The default is 100.
     }
-    catch(const Ice::UnknownException&)
-    {
-        // Expected stack overflow from the server (Java only)
-    }
     initial->setRecursive(std::make_shared<Recursive>());
     cout << "ok" << endl;
 

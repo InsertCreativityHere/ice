@@ -161,12 +161,6 @@ public:
             test(ex.aMem == 1);
             test(ex.a2Mem == 2);
         }
-        catch(const Ice::OperationNotExistException&)
-        {
-            //
-            // This operation is not supported in Java.
-            //
-        }
         catch(...)
         {
             test(false);
@@ -735,12 +729,6 @@ allTests(Test::TestHelper* helper)
         test(ex.aMem == 1);
         test(ex.a2Mem == 2);
     }
-    catch(const Ice::OperationNotExistException&)
-    {
-        //
-        // This operation is not supported in Java.
-        //
-    }
     catch(...)
     {
         test(false);
@@ -787,12 +775,6 @@ allTests(Test::TestHelper* helper)
     catch(const A& ex)
     {
         test(ex.aMem == 1);
-    }
-    catch(const Ice::OperationNotExistException&)
-    {
-        //
-        // This operation is not supported in Java.
-        //
     }
     catch(...)
     {
@@ -928,10 +910,6 @@ allTests(Test::TestHelper* helper)
         catch(const Ice::ConnectionLostException&)
         {
         }
-        catch(const Ice::UnknownLocalException&)
-        {
-            // Expected with JS bidir server
-        }
         catch(const Ice::LocalException& ex)
         {
             cerr << ex << endl;
@@ -959,10 +937,6 @@ allTests(Test::TestHelper* helper)
             catch(const Ice::ConnectionLostException&)
             {
             }
-        }
-        catch(const Ice::ConnectionRefusedException&)
-        {
-            // Expected with JS bidir server
         }
         cout << "ok" << endl;
     }
@@ -1203,12 +1177,6 @@ allTests(Test::TestHelper* helper)
         catch(const A& ex)
         {
             test(ex.aMem == 1);
-        }
-        catch(const Ice::OperationNotExistException&)
-        {
-            //
-            // This operation is not supported in Java.
-            //
         }
         catch(...)
         {

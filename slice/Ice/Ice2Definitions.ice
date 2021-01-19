@@ -7,7 +7,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Ice)]]
 
@@ -15,7 +14,6 @@
 #include <Ice/Context.ice>
 #include <Ice/Identity.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 module Ice
 {

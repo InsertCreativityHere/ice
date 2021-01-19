@@ -9,15 +9,11 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Ice)]]
 
 #include <Ice/BuiltinSequences.ice>
 
-[[java:package(com.zeroc)]]
-
-[swift:module(Ice:MX)]
 [cs:namespace(ZeroC)]
 /// The Ice Management eXtension facility. It provides the {@link IceMX#MetricsAdmin} interface for management clients
 /// to retrieve metrics from Ice applications.

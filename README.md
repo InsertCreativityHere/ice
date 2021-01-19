@@ -19,13 +19,7 @@ Ice supports the following programming languages:
 
 - C#
 - C++
-- Java
-- JavaScript
-- MATLAB
-- PHP
 - Python
-- Swift
-- TypeScript
 
 ## Platforms
 
@@ -36,7 +30,6 @@ Ice runs on a wide range of platforms:
 - Linux
 - Linux on embedded devices
 - macOS
-- Node.js
 - Unix systems such as AIX
 - Web Browser
 - Windows

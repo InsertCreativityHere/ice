@@ -596,7 +596,7 @@ class Expect (object):
             pass
 
         try:
-            terminateProcess(self.p, self.hasInterruptSupport())
+            terminateProcess(self.p, True)
         except KeyboardInterrupt:
             kill()
             raise
@@ -618,7 +618,7 @@ class Expect (object):
         """Send the signal to the process."""
         self.killed = sig  # Save the sent signal.
         if win32:
-            terminateProcess(self.p, self.hasInterruptSupport())
+            terminateProcess(self.p, True)
         else:
             os.kill(self.p.pid, sig)
 
@@ -634,12 +634,6 @@ class Expect (object):
     def getOutput(self):
         return self.buf if self.p is None else self.r.getbuf()
 
-    def hasInterruptSupport(self):
-        """Return True if the application gracefully terminated, False otherwise."""
-        if win32 and (self.mapping == "java"):
-            return False
-        return True
-
     def testExitStatus(self, exitstatus):
 
         def test(result, expected):
@@ -654,14 +648,10 @@ class Expect (object):
 
         if self.killed is not None:
             #
-            # If we explicitly signaled the process, the exitstatus might not be the expected status. Java
-            # returns 128 + signal for the exit status. Other language mapping executables either return
-            # -signal or 0 depending on the signal value (in general 0 SIGTERM and -2 for SIGINT). On Windows,
-            # we explicitly set the exitstatus to -signal when we explicitly kill the process.
+            # If we explicitly signaled the process, the exitstatus might not be the expected status.Language mapping
+            # executables either return -signal or 0 depending on the signal value (in general 0 SIGTERM and -2 for
+            # SIGINT). On Windows, we explicitly set the exitstatus to -signal when we explicitly kill the process.
             #
-            if not win32 and (self.mapping == "java"):
-                test(self.exitstatus, 128 + self.killed)
-            else:
-                test(self.exitstatus, [exitstatus, -self.killed])
+            test(self.exitstatus, [exitstatus, -self.killed])
         else:
             test(self.exitstatus, exitstatus)

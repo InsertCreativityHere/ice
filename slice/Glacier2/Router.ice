@@ -9,7 +9,6 @@
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 
-[[js:module(ice)]]
 
 [[python:pkgdir(Glacier2)]]
 
@@ -17,7 +16,6 @@
 #include <Glacier2/Session.ice>
 #include <Glacier2/PermissionsVerifier.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 /// Glacier2 is a firewall solution for Ice. Glacier2 authenticates
 /// and filters client requests and allows callbacks to the client in a

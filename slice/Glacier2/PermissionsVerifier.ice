@@ -9,13 +9,10 @@
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 
-[[js:module(ice)]]
-
 [[python:pkgdir(Glacier2)]]
 
 #include <Glacier2/SSLInfo.ice>
 
-[[java:package(com.zeroc)]]
 [cs:namespace(ZeroC)]
 module Glacier2
 {

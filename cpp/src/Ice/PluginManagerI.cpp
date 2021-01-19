@@ -337,11 +337,9 @@ Ice::PluginManagerI::loadPlugins(int& argc, const char* argv[])
         if(dotPos != string::npos)
         {
             string suffix = name.substr(dotPos + 1);
-            if(suffix == "java" || suffix == "clr")
+            if(suffix == "clr")
             {
-                //
                 // Ignored
-                //
                 plugins.erase(p);
             }
             else if(suffix == "cpp")

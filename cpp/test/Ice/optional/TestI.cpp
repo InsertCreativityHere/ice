@@ -399,12 +399,6 @@ InitialI::supportsRequiredParams(const Ice::Current&)
 }
 
 bool
-InitialI::supportsJavaSerializable(const Ice::Current&)
-{
-    return true;
-}
-
-bool
 InitialI::supportsCsharpSerializable(const Ice::Current&)
 {
     return true;

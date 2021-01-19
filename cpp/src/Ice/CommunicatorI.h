@@ -92,11 +92,6 @@ public:
 
     virtual ValueFactoryManagerPtr getValueFactoryManager() const noexcept;
 
-#ifdef ICE_SWIFT
-    virtual dispatch_queue_t getClientDispatchQueue() const;
-    virtual dispatch_queue_t getServerDispatchQueue() const;
-#endif
-
     virtual ::std::function<void()>
     flushBatchRequestsAsync(CompressBatch,
                             ::std::function<void(::std::exception_ptr)>,

@@ -695,18 +695,6 @@ Ice::ObjectAdapterI::setPublishedEndpoints(const EndpointSeq& newEndpoints)
     }
 }
 
-#ifdef ICE_SWIFT
-dispatch_queue_t
-Ice::ObjectAdapterI::getDispatchQueue() const
-{
-    IceUtil::Monitor<IceUtil::RecMutex>::Lock sync(*this);
-
-    checkForDeactivation();
-
-    return getThreadPool()->getDispatchQueue();
-}
-#endif
-
 bool
 Ice::ObjectAdapterI::isLocal(const ObjectPrxPtr& proxy) const
 {

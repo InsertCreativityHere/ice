@@ -21,10 +21,10 @@ IceInternal::RegisterPluginsInit::RegisterPluginsInit()
     Ice::registerPluginFactory("IceTCP", createIceTCP, true);
 
     //
-    // Only include the UDP and WS transport plugins with non-static builds or Gem/PyPI/Swift
+    // Only include the UDP and WS transport plugins with non-static builds or Gem/PyPI
     // builds.
     //
-#if !defined(ICE_STATIC_LIBS) || defined(ICE_GEM) || defined(ICE_PYPI) || defined(ICE_SWIFT)
+#if !defined(ICE_STATIC_LIBS) || defined(ICE_GEM) || defined(ICE_PYPI)
     Ice::registerPluginFactory("IceUDP", createIceUDP, true);
     Ice::registerPluginFactory("IceWS", createIceWS, true);
 #endif

@@ -283,10 +283,6 @@ namespace ZeroC.Ice.Test.Exceptions
                     {
                         TestHelper.Assert(!thrower.GetCachedConnection()!.IsActive);
                     }
-                    catch (UnhandledException)
-                    {
-                        // Expected with JS bidir server
-                    }
                     catch (Exception ex)
                     {
                         TestHelper.Assert(false, $"unexpected exception:\n{ex}");
@@ -314,10 +310,6 @@ namespace ZeroC.Ice.Test.Exceptions
                         {
                             TestHelper.Assert(thrower.GetCachedConnection()!.Protocol == Protocol.Ice1);
                         }
-                    }
-                    catch (ConnectionRefusedException)
-                    {
-                        // Expected with JS bidir server
                     }
                 }
                 else

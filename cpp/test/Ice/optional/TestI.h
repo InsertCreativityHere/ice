@@ -179,8 +179,6 @@ public:
 
     virtual bool supportsRequiredParams(const Ice::Current&);
 
-    virtual bool supportsJavaSerializable(const Ice::Current&);
-
     virtual bool supportsCsharpSerializable(const Ice::Current&);
 
     virtual bool supportsCppStringView(const Ice::Current&);

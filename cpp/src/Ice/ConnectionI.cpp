@@ -1678,12 +1678,6 @@ Ice::ConnectionI::message(ThreadPoolCurrent& current)
         }
     }
 
-// dispatchFromThisThread dispatches to the correct DispatchQueue
-#ifdef ICE_SWIFT
-    _threadPool->dispatchFromThisThread(new DispatchCall(shared_from_this(), startCB, sentCBs, compress, requestId,
-                                                         invokeNum, servantManager, adapter, outAsync,
-                                                         heartbeatCallback, current.stream));
-#else
     if(!_dispatcher) // Optimization, call dispatch() directly if there's no dispatcher.
     {
         dispatch(startCB, sentCBs, compress, requestId, invokeNum, servantManager, adapter, outAsync, heartbeatCallback,
@@ -1696,7 +1690,6 @@ Ice::ConnectionI::message(ThreadPoolCurrent& current)
                                                              heartbeatCallback, current.stream));
 
     }
-#endif
 }
 
 void

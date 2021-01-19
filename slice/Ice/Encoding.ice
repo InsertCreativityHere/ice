@@ -7,12 +7,10 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Ice)]]
 
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module Ice
 {
     /// The Ice encoding defines how Slice constructs are marshaled to and later unmarshaled from sequences of bytes.

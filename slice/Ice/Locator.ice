@@ -8,7 +8,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Ice)]]
 
@@ -18,7 +17,6 @@
 #include <Ice/Process.ice>
 
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module Ice
 {
     /// This exception is thrown when a server tries to register endpoints for an object adapter that is already active.

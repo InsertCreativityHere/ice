@@ -189,9 +189,6 @@ public:
     virtual void supportsRequiredParamsAsync(::std::function<void(bool)>,
                                              ::std::function<void(::std::exception_ptr)>, const Ice::Current&) override;
 
-    virtual void supportsJavaSerializableAsync(::std::function<void(bool)>,
-                                               ::std::function<void(::std::exception_ptr)>, const Ice::Current&) override;
-
     virtual void supportsCsharpSerializableAsync(::std::function<void(bool)>,
                                                  ::std::function<void(::std::exception_ptr)>, const Ice::Current&) override;
 

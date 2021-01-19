@@ -14,10 +14,6 @@
 
 #include <Ice/Metrics.ice>
 
-[[java:package(com.zeroc)]]
-
-[js:module(ice)]
-[swift:module(IceStorm:MX)]
 [cs:namespace(ZeroC)]
 module IceMX
 {

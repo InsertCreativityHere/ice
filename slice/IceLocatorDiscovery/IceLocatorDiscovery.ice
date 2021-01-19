@@ -8,7 +8,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceLocatorDiscovery)]]
 
@@ -19,7 +18,6 @@
 /// {@link Ice::Locator} interface to locate (or discover) locators such as the IceGrid registry or custom IceGrid-like
 /// locator implementations using UDP multicast.
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module IceLocatorDiscovery
 {
     /// The {plug-in name}.Reply object adapter of a client application hosts a LookupReply object that processes

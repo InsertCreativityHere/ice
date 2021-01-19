@@ -91,15 +91,12 @@ include $(top_srcdir)/config/Make.project.rules
 include $(top_srcdir)/config/Make.tests.rules
 
 dotnet := $(shell command -v dotnet 2> /dev/null)
-nodejs := $(shell command -v node 2> /dev/null)
 
 #
 # Languages, platforms and configurations to build
 #
-supported-languages     ?= $(strip cpp java \
-                                   $(if $(filter %/node,$(nodejs)),js) \
-                                   $(if $(filter %/dotnet,$(dotnet)),csharp) \
-                                   $(if $(filter Darwin,$(os)), swift))
+supported-languages     ?= $(strip cpp \
+                                   $(if $(filter %/dotnet,$(dotnet)),csharp)
 supported-configs       ?= shared
 
 version                 = 4.0.0-alpha.0

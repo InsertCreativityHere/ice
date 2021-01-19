@@ -8,7 +8,6 @@
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(IceDiscovery)]]
 
@@ -18,7 +17,6 @@
 /// adapters using UDP multicast. It also implements the {@link Ice::LocatorDiscovery} interface to allow servers to
 /// respond to such multicast discovery requests.
 [cs:namespace(ZeroC)]
-[java:package(com.zeroc)]
 module IceDiscovery
 {
     interface LookupReply;

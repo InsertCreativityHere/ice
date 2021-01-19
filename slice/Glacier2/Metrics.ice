@@ -10,16 +10,12 @@
 [[cpp:include(Glacier2/Config.h)]]
 
 [[suppress-warning(reserved-identifier)]]
-[[js:module(ice)]]
 
 [[python:pkgdir(Glacier2)]]
 
 #include <Ice/Metrics.ice>
 
-[[java:package(com.zeroc)]]
-
 [cs:namespace(ZeroC)]
-[swift:module(Glacier2:MX)]
 module IceMX
 {
     /// Provides information on Glacier2 sessions.

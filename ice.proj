@@ -17,14 +17,6 @@
       <Properties>Platform=$(Platform);Configuration=$(Configuration)</Properties>
     </Projects>
 
-    <Projects Include="$(MSBuildThisFileDirectory)java\msbuild\ice.proj">
-      <Properties>Platform=$(Platform);Configuration=$(Configuration)</Properties>
-    </Projects>
-
-    <Projects Include="$(MSBuildThisFileDirectory)js\msbuild\ice.proj">
-      <Properties>Platform=$(Platform);Configuration=$(Configuration)</Properties>
-    </Projects>
-
 <!--
     <Projects Include="$(MSBuildThisFileDirectory)python\msbuild\ice.proj" Condition="'$(DefaultPlatformToolset)' == 'v141'">
       <Properties>Platform=$(Platform);Configuration=$(Configuration)</Properties>
