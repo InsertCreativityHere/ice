@@ -96,7 +96,7 @@ dotnet := $(shell command -v dotnet 2> /dev/null)
 # Languages, platforms and configurations to build
 #
 supported-languages     ?= $(strip cpp \
-                                   $(if $(filter %/dotnet,$(dotnet)),csharp)
+                                   $(if $(filter %/dotnet,$(dotnet)),csharp))
 supported-configs       ?= shared
 
 version                 = 4.0.0-alpha.0

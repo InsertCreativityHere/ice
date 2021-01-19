@@ -288,28 +288,25 @@ namespace ZeroC.Ice.Test.Exceptions
                         TestHelper.Assert(false, $"unexpected exception:\n{ex}");
                     }
 
+                    var thrower2 = IThrowerPrx.Parse(helper.GetTestProxy("thrower", 1), communicator);
                     try
                     {
-                        var thrower2 = IThrowerPrx.Parse(helper.GetTestProxy("thrower", 1), communicator);
-                        try
-                        {
-                            thrower2.SendAndReceive(new byte[2 * 1024 * 1024]); // 2MB(no limits)
-                            TestHelper.Assert(false);
-                        }
-                        catch (InvalidDataException)
-                        {
-                        }
+                        thrower2.SendAndReceive(new byte[2 * 1024 * 1024]); // 2MB(no limits)
+                        TestHelper.Assert(false);
+                    }
+                    catch (InvalidDataException)
+                    {
+                    }
 
-                        var thrower3 = IThrowerPrx.Parse(helper.GetTestProxy("thrower", 2), communicator);
-                        try
-                        {
-                            thrower3.SendAndReceive(new byte[1024]); // 1KB limit
-                            TestHelper.Assert(false);
-                        }
-                        catch (ConnectionLostException)
-                        {
-                            TestHelper.Assert(thrower.GetCachedConnection()!.Protocol == Protocol.Ice1);
-                        }
+                    var thrower3 = IThrowerPrx.Parse(helper.GetTestProxy("thrower", 2), communicator);
+                    try
+                    {
+                        thrower3.SendAndReceive(new byte[1024]); // 1KB limit
+                        TestHelper.Assert(false);
+                    }
+                    catch (ConnectionLostException)
+                    {
+                        TestHelper.Assert(thrower.GetCachedConnection()!.Protocol == Protocol.Ice1);
                     }
                 }
                 else

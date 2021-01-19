@@ -14,7 +14,7 @@ class IceBox(ProcessFromBinDir, Server):
 
     def getExe(self, current):
         mapping = self.getMapping(current)
-        elif isinstance(mapping, CSharpMapping):
+        if isinstance(mapping, CSharpMapping):
             return "iceboxnet"
         else:
             name = "icebox"

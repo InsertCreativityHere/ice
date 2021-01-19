@@ -49,7 +49,7 @@ StringLiteralGenerator::StringLiteralGenerator(const string& nonPrintableEscaped
                                                EscapeMode escapeMode,
                                                unsigned char cutOff) :
     _nonPrintableEscaped(nonPrintableEscaped),
-    _printableEscaped(printableEscaped + "\\"),
+    _printableEscaped(printableEscaped + "\\\""),
     _escapeMode(escapeMode),
     _cutOff(cutOff),
     _shortUCNPrefix("\\u"),
