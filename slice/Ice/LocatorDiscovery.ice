@@ -4,9 +4,6 @@
 
 #ifdef __SLICE2CS__ // C# only for now
 
-[[cpp:doxygen:include(Ice/LocatorDiscovery.h)]]
-[[cpp:header-ext(h)]]
-
 [[suppress-warning(reserved-identifier)]]
 
 #include <Ice/Locator.ice>

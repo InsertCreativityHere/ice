@@ -4,9 +4,6 @@
 
 #ifdef __SLICE2CS__
 
-[[cpp:doxygen:include(Ice/Discovery.h)]]
-[[cpp:header-ext(h)]]
-
 [[suppress-warning(reserved-identifier)]]
 
 #include <Ice/Endpoint.ice>

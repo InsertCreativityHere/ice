@@ -436,22 +436,6 @@ writeDocSummary(Output& out, const ContainedPtr& p)
         out << nl << " * @deprecated";
     }
 
-    if (ClassDeclPtr::dynamicCast(p) || ClassDefPtr::dynamicCast(p) ||
-        StructPtr::dynamicCast(p) || ExceptionPtr::dynamicCast(p))
-    {
-        UnitPtr unt = p->container()->unit();
-        string file = p->file();
-        assert(!file.empty());
-        static const string prefix = "cpp:doxygen:include:";
-        DefinitionContextPtr dc = unt->findDefinitionContext(file);
-        assert(dc);
-        string q = dc->findMetadata(prefix);
-        if(!q.empty())
-        {
-            out << nl << " * \\headerfile " << q.substr(prefix.size());
-        }
-    }
-
     out << nl << " */";
 }
 
@@ -1081,7 +1065,6 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& p)
                 static const string cppHeaderExtPrefix = "cpp:header-ext:";
                 static const string cppSourceExtPrefix = "cpp:source-ext:";
                 static const string cppDllExportPrefix = "cpp:dll-export:";
-                static const string cppDoxygenIncludePrefix = "cpp:doxygen:include:";
 
                 if(s.find(cppIncludePrefix) == 0 && s.size() > cppIncludePrefix.size())
                 {
@@ -1129,10 +1112,6 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& p)
 
                         globalMetadata.remove(s);
                     }
-                    continue;
-                }
-                else if(s.find(cppDoxygenIncludePrefix) == 0 && s.size() > cppDoxygenIncludePrefix.size())
-                {
                     continue;
                 }
 

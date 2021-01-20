@@ -6,10 +6,6 @@
 
 #pragma once
 
-[[cpp:dll-export(ICE_API)]]
-[[cpp:doxygen:include(Ice/Ice.h)]]
-[[cpp:header-ext(h)]]
-
 [[suppress-warning(reserved-identifier)]]
 
 #include <Ice/BuiltinSequences.ice>

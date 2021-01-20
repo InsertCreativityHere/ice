@@ -5,7 +5,6 @@
 #pragma once
 
 [[cpp:dll-export(GLACIER2_API)]]
-[[cpp:doxygen:include(Glacier2/Glacier2.h)]]
 [[cpp:header-ext(h)]]
 [[cpp:include(Glacier2/Config.h)]]
 

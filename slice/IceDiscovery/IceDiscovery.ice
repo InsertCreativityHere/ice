@@ -4,7 +4,6 @@
 
 // TODO: these definitions moved to Ice/Discovery.ice. Remove this file when all languages mappings are updated.
 
-[[cpp:doxygen:include(IceDiscovery/IceDiscovery.h)]]
 [[cpp:header-ext(h)]]
 
 [[suppress-warning(reserved-identifier)]]

@@ -4,7 +4,6 @@
 
 #pragma once
 
-[[cpp:doxygen:include(IceGrid/IceGrid.h)]]
 [[cpp:header-ext(h)]]
 [[cpp:include(IceGrid/Config.h)]]
 

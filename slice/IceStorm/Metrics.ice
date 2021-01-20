@@ -5,7 +5,6 @@
 #pragma once
 
 [[cpp:dll-export(ICESTORM_API)]]
-[[cpp:doxygen:include(IceStorm/IceStorm.h)]]
 [[cpp:header-ext(h)]]
 [[cpp:include(IceStorm/Config.h)]]
 
