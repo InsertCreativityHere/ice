@@ -96,19 +96,19 @@ class Ice(Component):
                     return False
         elif isinstance(platform, Windows):
             #
-            # On Windows, if testing with a binary distribution, don't test Glacier2/IceBridge services
+            # On Windows, if testing with a binary distribution, don't test Glacier2 services
             # with the Debug configurations since we don't provide binaries for them.
             #
             if self.useBinDist(mapping, current):
-                if parent in ["Glacier2", "IceBridge"] and current.config.buildConfig.find("Debug") >= 0:
+                if parent in ["Glacier2"] and current.config.buildConfig.find("Debug") >= 0:
                     return False
         elif isinstance(platform, AIX):
             if current.config.buildPlatform == "ppc" and self.useBinDist(mapping, current):
                 #
-                # Don't test Glacier2, IceBridge and IceGrid services on ppc with bindist. We only ship
+                # Don't test Glacier2 and IceGrid services on ppc with bindist. We only ship
                 # ppc64 binaries for these services
                 #
-                if parent in ["Glacier2", "IceBridge", "IceGrid"]:
+                if parent in ["Glacier2", "IceGrid"]:
                     return False
                 if testId == "IceStorm/repgrid":
                     return False
@@ -142,7 +142,7 @@ class Ice(Component):
     def getOptions(self, testcase, current):
 
         parent = re.match(r'^([\w]*).*', testcase.getTestSuite().getId()).group(1)
-        if parent not in ["Ice", "IceBox", "IceGrid", "Glacier2", "IceStorm", "IceDiscovery", "IceBridge"]:
+        if parent not in ["Ice", "IceBox", "IceGrid", "Glacier2", "IceStorm", "IceDiscovery"]:
             return None
 
         # No specific options for collocated tests
@@ -189,7 +189,6 @@ component = Ice()
 
 from Glacier2Util import *
 from IceBoxUtil import *
-from IceBridgeUtil import *
 from IceGridUtil import *
 from IceStormUtil import *
 

@@ -154,11 +154,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "icegriddb", "..\src\icegrid
 		{18BF13D3-85D3-43A5-8C96-E52EB0672F72} = {18BF13D3-85D3-43A5-8C96-E52EB0672F72}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "icebridge", "..\src\IceBridge\msbuild\icebridge.vcxproj", "{1D6E8807-7C28-421F-B49E-BCB482FCB21D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3AB9772C-6113-4F1C-90FB-5368E7486C11} = {3AB9772C-6113-4F1C-90FB-5368E7486C11}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "icesslopenssl", "..\src\IceSSL\msbuild\icesslopenssl\icesslopenssl.vcxproj", "{0D08F6B8-39C0-413B-84CE-D73230BCC740}"
 	ProjectSection(ProjectDependencies) = postProject
 		{72FA68A9-49B6-4AB6-94AE-34BB03770A51} = {72FA68A9-49B6-4AB6-94AE-34BB03770A51}
@@ -377,14 +372,6 @@ Global
 		{369524F4-D374-44F4-BCFD-408934595701}.Release|Win32.Build.0 = Release|Win32
 		{369524F4-D374-44F4-BCFD-408934595701}.Release|x64.ActiveCfg = Release|x64
 		{369524F4-D374-44F4-BCFD-408934595701}.Release|x64.Build.0 = Release|x64
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Debug|Win32.Build.0 = Debug|Win32
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Debug|x64.ActiveCfg = Debug|x64
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Debug|x64.Build.0 = Debug|x64
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Release|Win32.ActiveCfg = Release|Win32
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Release|Win32.Build.0 = Release|Win32
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Release|x64.ActiveCfg = Release|x64
-		{1D6E8807-7C28-421F-B49E-BCB482FCB21D}.Release|x64.Build.0 = Release|x64
 		{0D08F6B8-39C0-413B-84CE-D73230BCC740}.Debug|Win32.ActiveCfg = Debug|Win32
 		{0D08F6B8-39C0-413B-84CE-D73230BCC740}.Debug|Win32.Build.0 = Debug|Win32
 		{0D08F6B8-39C0-413B-84CE-D73230BCC740}.Debug|x64.ActiveCfg = Debug|x64
