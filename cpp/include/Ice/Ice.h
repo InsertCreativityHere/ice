@@ -18,7 +18,6 @@
 #include <Ice/LoggerUtil.h>
 #include <Ice/RemoteLogger.h>
 #include <Ice/Communicator.h>
-#include <Ice/CommunicatorAsync.h>
 #include <Ice/ObjectFactory.h>
 #include <Ice/ObjectAdapter.h>
 #include <Ice/ServantLocator.h>

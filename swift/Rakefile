@@ -141,7 +141,6 @@ def create_platform_targets(project, platform, bindist)
                       "AsyncResult.cpp",
                       "ConvertUTF.cpp",
                       "DLLMain.cpp",
-                      "GCObject.cpp",
                       "ResponseHandler.cpp",
                       "SystemdJournal.cpp",
                       "Unicode.cpp"],

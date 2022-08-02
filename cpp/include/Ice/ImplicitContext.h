@@ -22,7 +22,6 @@
 #include <Ice/LocalObject.h>
 #include <Ice/StreamHelpers.h>
 #include <Ice/Comparable.h>
-#include <IceUtil/ScopedArray.h>
 #include <Ice/Optional.h>
 #include <Ice/ExceptionHelpers.h>
 #include <Ice/LocalException.h>

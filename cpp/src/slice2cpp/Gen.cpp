@@ -845,7 +845,6 @@ Slice::Gen::generate(const UnitPtr& p)
     {
         H << "\n#include <Ice/Proxy.h>";
         H << "\n#include <Ice/Object.h>";
-        H << "\n#include <Ice/GCObject.h>";
         H << "\n#include <Ice/Value.h>";
         H << "\n#include <Ice/Incoming.h>";
         if(p->hasContentsWithMetaData("amd"))
@@ -866,7 +865,6 @@ Slice::Gen::generate(const UnitPtr& p)
         H << "\n#include <Ice/FactoryTableInit.h>";
     }
 
-    H << "\n#include <IceUtil/ScopedArray.h>";
     H << "\n#include <Ice/Optional.h>";
 
     if(p->hasExceptions())

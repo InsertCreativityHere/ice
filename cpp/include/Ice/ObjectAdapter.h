@@ -24,12 +24,10 @@
 #include <Ice/Comparable.h>
 #include <Ice/Proxy.h>
 #include <Ice/Object.h>
-#include <Ice/GCObject.h>
 #include <Ice/Value.h>
 #include <Ice/Incoming.h>
 #include <Ice/IncomingAsync.h>
 #include <Ice/FactoryTableInit.h>
-#include <IceUtil/ScopedArray.h>
 #include <Ice/Optional.h>
 #include <Ice/ExceptionHelpers.h>
 #include <Ice/CommunicatorF.h>

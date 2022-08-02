@@ -104,53 +104,41 @@
     <ClCompile Include="..\..\LookupI.cpp" />
     <ClCompile Include="..\..\PluginI.cpp" />
     <ClCompile Include="Win32\Debug\IceDiscovery.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\IceDiscovery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\IceDiscovery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\IceDiscovery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\include\generated\Win32\Debug\IceDiscovery\IceDiscovery.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\generated\Win32\Release\IceDiscovery\IceDiscovery.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\generated\x64\Debug\IceDiscovery\IceDiscovery.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\generated\x64\Release\IceDiscovery\IceDiscovery.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\..\..\..\slice\IceDiscovery\IceDiscovery.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="..\..\LocatorI.h" />

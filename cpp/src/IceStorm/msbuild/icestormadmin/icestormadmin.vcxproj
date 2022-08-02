@@ -95,123 +95,93 @@
     <ClCompile Include="..\..\Parser.cpp" />
     <ClCompile Include="..\..\Scanner.cpp" />
     <ClCompile Include="Win32\Debug\Election.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Debug\IceStormInternal.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Debug\LinkRecord.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Debug\LLURecord.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Debug\SubscriberRecord.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\Election.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\IceStormInternal.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\LinkRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\LLURecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="Win32\Release\SubscriberRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\Election.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\IceStormInternal.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\LinkRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\LLURecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Debug\SubscriberRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\Election.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\IceStormInternal.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\LinkRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\LLURecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClCompile>
     <ClCompile Include="x64\Release\SubscriberRecord.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClCompile>
   </ItemGroup>
@@ -224,123 +194,93 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32\Debug\IceStorm\Election.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Debug\IceStorm\IceStormInternal.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Debug\IceStorm\LinkRecord.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Debug\IceStorm\LLURecord.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Debug\IceStorm\SubscriberRecord.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Release\IceStorm\Election.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Release\IceStorm\IceStormInternal.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Release\IceStorm\LinkRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Release\IceStorm\LLURecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="Win32\Release\IceStorm\SubscriberRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Debug\IceStorm\Election.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Debug\IceStorm\IceStormInternal.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Debug\IceStorm\LinkRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Debug\IceStorm\LLURecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Debug\IceStorm\SubscriberRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|      <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Release\IceStorm\Election.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\Election.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Release\IceStorm\IceStormInternal.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\IceStormInternal.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Release\IceStorm\LinkRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\LinkRecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Release\IceStorm\LLURecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\LLURecord.ice</SliceCompileSource>
     </ClInclude>
     <ClInclude Include="x64\Release\IceStorm\SubscriberRecord.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <SliceCompileSource>..\..\SubscriberRecord.ice</SliceCompileSource>
     </ClInclude>
   </ItemGroup>

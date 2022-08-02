@@ -27,7 +27,6 @@ namespace IceInternal
 
 class Incoming;
 class Direct;
-class GCVisitor;
 
 }
 

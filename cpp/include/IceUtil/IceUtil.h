@@ -27,7 +27,6 @@
 #include <IceUtil/Mutex.h>
 #include <IceUtil/MutexPtrLock.h>
 #include <IceUtil/RecMutex.h>
-#include <IceUtil/ScopedArray.h>
 #include <IceUtil/Shared.h>
 #include <IceUtil/StringConverter.h>
 #include <IceUtil/Thread.h>
