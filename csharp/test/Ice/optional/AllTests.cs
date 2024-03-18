@@ -55,7 +55,6 @@ namespace Ice
                 mo1.h = "test";
                 mo1.i = Test.MyEnum.MyEnumMember;
                 mo1.j = new Ice.Optional<Test.MyInterfacePrx>(Test.MyInterfacePrxHelper.uncheckedCast(communicator.stringToProxy("test")));
-                mo1.k = mo1;
                 mo1.bs = new byte[] { 5 };
                 mo1.ss = new string[] { "test", "test2" };
                 mo1.iid = new Dictionary<int, int>();
@@ -73,7 +72,6 @@ namespace Ice
                 mo1.es = new Test.MyEnum[] { Test.MyEnum.MyEnumMember, Test.MyEnum.MyEnumMember };
                 mo1.fss = new Test.FixedStruct[] { fs };
                 mo1.vss = new Test.VarStruct[] { vs };
-                mo1.oos = new Test.OneOptional[] { oo1 };
                 mo1.mips = new Test.MyInterfacePrx[] { Test.MyInterfacePrxHelper.uncheckedCast(communicator.stringToProxy("test")) };
 
                 mo1.ied = new Dictionary<int, Test.MyEnum>();
@@ -82,8 +80,6 @@ namespace Ice
                 mo1.ifsd.Value.Add(4, fs);
                 mo1.ivsd = new Dictionary<int, Test.VarStruct>();
                 mo1.ivsd.Value.Add(5, vs);
-                mo1.iood = new Dictionary<int, Test.OneOptional>();
-                mo1.iood.Value.Add(5, new Test.OneOptional(15));
                 mo1.imipd = new Dictionary<int, Test.MyInterfacePrx>();
                 mo1.imipd.Value.Add(5, Test.MyInterfacePrxHelper.uncheckedCast(communicator.stringToProxy("test")));
 
@@ -99,7 +95,6 @@ namespace Ice
                 test(mo1.h.Value == "test");
                 test(mo1.i.Value == Test.MyEnum.MyEnumMember);
                 test(mo1.j.Value.Equals(communicator.stringToProxy("test")));
-                test(mo1.k.Value == mo1);
                 test(ArraysEqual(mo1.bs.Value, new byte[] {(byte)5 }));
                 test(ArraysEqual(mo1.ss.Value, new String[] { "test", "test2" }));
                 test(mo1.iid.Value[4] == 3);
@@ -111,13 +106,11 @@ namespace Ice
                 test(mo1.es.Value[0] == Test.MyEnum.MyEnumMember && mo1.es.Value[1] == Test.MyEnum.MyEnumMember);
                 test(mo1.fss.Value[0].Equals(new Test.FixedStruct(78)));
                 test(mo1.vss.Value[0].Equals(new Test.VarStruct("hello")));
-                test(mo1.oos.Value[0] == oo1);
                 test(mo1.mips.Value[0].Equals(communicator.stringToProxy("test")));
 
                 test(mo1.ied.Value[4] == Test.MyEnum.MyEnumMember);
                 test(mo1.ifsd.Value[4].Equals(new Test.FixedStruct(78)));
                 test(mo1.ivsd.Value[5].Equals(new Test.VarStruct("hello")));
-                test(mo1.iood.Value[5].a.Value == 15);
                 test(mo1.imipd.Value[5].Equals(communicator.stringToProxy("test")));
 
                 test(ArraysEqual(mo1.bos.Value, new bool[] { false, true, false }));
@@ -144,7 +137,6 @@ namespace Ice
                 test(!mo4.h.HasValue);
                 test(!mo4.i.HasValue);
                 test(!mo4.j.HasValue);
-                test(!mo4.k.HasValue);
                 test(!mo4.bs.HasValue);
                 test(!mo4.ss.HasValue);
                 test(!mo4.iid.HasValue);
@@ -156,13 +148,11 @@ namespace Ice
                 test(!mo4.es.HasValue);
                 test(!mo4.fss.HasValue);
                 test(!mo4.vss.HasValue);
-                test(!mo4.oos.HasValue);
                 test(!mo4.mips.HasValue);
 
                 test(!mo4.ied.HasValue);
                 test(!mo4.ifsd.HasValue);
                 test(!mo4.ivsd.HasValue);
-                test(!mo4.iood.HasValue);
                 test(!mo4.imipd.HasValue);
 
                 test(!mo4.bos.HasValue);
@@ -178,7 +168,6 @@ namespace Ice
                 test(mo5.h.Value.Equals(mo1.h.Value));
                 test(mo5.i.Value == mo1.i.Value);
                 test(mo5.j.Value.Equals(mo1.j.Value));
-                test(mo5.k.Value == mo5);
                 test(ArraysEqual(mo5.bs.Value, mo1.bs.Value));
                 test(ArraysEqual(mo5.ss.Value, mo1.ss.Value));
                 test(mo5.iid.Value[4] == 3);
@@ -189,13 +178,11 @@ namespace Ice
                 test(mo5.es.Value[0] == Test.MyEnum.MyEnumMember && mo1.es.Value[1] == Test.MyEnum.MyEnumMember);
                 test(mo5.fss.Value[0].Equals(new Test.FixedStruct(78)));
                 test(mo5.vss.Value[0].Equals(new Test.VarStruct("hello")));
-                test(mo5.oos.Value[0].a.Value == 15);
                 test(mo5.mips.Value[0].Equals(communicator.stringToProxy("test")));
 
                 test(mo5.ied.Value[4] == Test.MyEnum.MyEnumMember);
                 test(mo5.ifsd.Value[4].Equals(new Test.FixedStruct(78)));
                 test(mo5.ivsd.Value[5].Equals(new Test.VarStruct("hello")));
-                test(mo5.iood.Value[5].a.Value == 15);
                 test(mo5.imipd.Value[5].Equals(communicator.stringToProxy("test")));
 
                 test(ArraysEqual(mo5.bos.Value, new bool[] { false, true, false }));
@@ -212,9 +199,7 @@ namespace Ice
                 mo6.fs = mo5.fs;
                 mo6.shs = mo5.shs;
                 mo6.fss = mo5.fss;
-                mo6.oos = mo5.oos;
                 mo6.ifsd = mo5.ifsd;
-                mo6.iood = mo5.iood;
                 mo6.bos = mo5.bos;
 
                 Test.MultiOptional mo7 =(Test.MultiOptional)initial.pingPong(mo6);
@@ -228,7 +213,6 @@ namespace Ice
                 test(mo7.h.Equals(mo1.h));
                 test(!mo7.i.HasValue);
                 test(mo7.j.Equals(mo1.j));
-                test(!mo7.k.HasValue);
                 test(ArraysEqual(mo7.bs.Value, mo1.bs.Value));
                 test(!mo7.ss.HasValue);
                 test(mo7.iid.Value[4] == 3);
@@ -240,13 +224,11 @@ namespace Ice
                 test(!mo7.es.HasValue);
                 test(mo7.fss.Value[0].Equals(new Test.FixedStruct(78)));
                 test(!mo7.vss.HasValue);
-                test(mo7.oos.Value[0].a.Value == 15);
                 test(!mo7.mips.HasValue);
 
                 test(!mo7.ied.HasValue);
                 test(mo7.ifsd.Value[4].Equals(new Test.FixedStruct(78)));
                 test(!mo7.ivsd.HasValue);
-                test(mo7.iood.Value[5].a.Value == 15);
                 test(!mo7.imipd.HasValue);
 
                 test(ArraysEqual(mo7.bos.Value, new bool[] { false, true, false }));
@@ -258,7 +240,6 @@ namespace Ice
                 mo8.e = mo5.e;
                 mo8.g = mo5.g;
                 mo8.i = mo5.i;
-                mo8.k = mo8;
                 mo8.ss = mo5.ss;
                 mo8.sid = mo5.sid;
                 mo8.vs = mo5.vs;
@@ -282,7 +263,6 @@ namespace Ice
                 test(!mo9.h.HasValue);
                 test(mo9.i.Equals(mo1.i));
                 test(!mo9.j.HasValue);
-                test(mo9.k.Value == mo9);
                 test(!mo9.bs.HasValue);
                 test(ArraysEqual(mo9.ss.Value, mo1.ss.Value));
                 test(!mo9.iid.HasValue);
@@ -294,13 +274,11 @@ namespace Ice
                 test(mo9.es.Value[0] == Test.MyEnum.MyEnumMember && mo9.es.Value[1] == Test.MyEnum.MyEnumMember);
                 test(!mo9.fss.HasValue);
                 test(mo9.vss.Value[0].Equals(new Test.VarStruct("hello")));
-                test(!mo9.oos.HasValue);
                 test(mo9.mips.Value[0].Equals(communicator.stringToProxy("test")));
 
                 test(mo9.ied.Value[4] == Test.MyEnum.MyEnumMember);
                 test(!mo9.ifsd.HasValue);
                 test(mo9.ivsd.Value[5].Equals(new Test.VarStruct("hello")));
-                test(!mo9.iood.HasValue);
                 test(mo9.imipd.Value[5].Equals(communicator.stringToProxy("test")));
 
                 test(!mo9.bos.HasValue);

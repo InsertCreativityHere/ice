@@ -53,7 +53,6 @@ sequence<SmallStruct> SmallStructSeq;
 sequence<FixedStruct> FixedStructSeq;
 ["cpp:type:std::list< ::Test::FixedStruct>"] sequence<FixedStruct> FixedStructList;
 sequence<VarStruct> VarStructSeq;
-sequence<OneOptional> OneOptionalSeq;
 sequence<MyInterface*> MyInterfacePrxSeq;
 
 sequence<byte> Serializable;
@@ -68,8 +67,6 @@ dictionary<int, MyInterface*> IntMyInterfacePrxDict;
 
 ["cpp:type:Test::CustomMap<std::int32_t, std::string>"] dictionary<int, string> IntStringDict;
 
-class MultiOptional
-{
     optional(1) byte a;
     optional(2) bool b;
     optional(3) short c;
@@ -80,31 +77,25 @@ class MultiOptional
     optional(8) string h;
     optional(9) MyEnum i;
     optional(10) MyInterface* j;
-    optional(11) MultiOptional k;
-    optional(12) ByteSeq bs;
-    optional(13) StringSeq ss;
-    optional(14) IntIntDict iid;
-    optional(15) StringIntDict sid;
-    optional(16) FixedStruct fs;
-    optional(17) VarStruct vs;
+    optional(11) ByteSeq bs;
+    optional(12) StringSeq ss;
+    optional(13) IntIntDict iid;
+    optional(14) StringIntDict sid;
+    optional(15) FixedStruct fs;
+    optional(16) VarStruct vs;
 
-    optional(18) ShortSeq shs;
-    optional(19) MyEnumSeq es;
-    optional(20) FixedStructSeq fss;
-    optional(21) VarStructSeq vss;
-    optional(22) OneOptionalSeq oos;
-    optional(23) MyInterfacePrxSeq mips;
+    optional(17) ShortSeq shs;
+    optional(18) MyEnumSeq es;
+    optional(19) FixedStructSeq fss;
+    optional(20) VarStructSeq vss;
+    optional(21) MyInterfacePrxSeq mips;
 
-    optional(24) IntEnumDict ied;
-    optional(25) IntFixedStructDict ifsd;
-    optional(26) IntVarStructDict ivsd;
-    optional(27) IntOneOptionalDict iood;
-    optional(28) IntMyInterfacePrxDict imipd;
+    optional(22) IntEnumDict ied;
+    optional(23) IntFixedStructDict ifsd;
+    optional(24) IntVarStructDict ivsd;
+    optional(25) IntMyInterfacePrxDict imipd;
 
-    optional(29) BoolSeq bos;
-
-    optional(30) Serializable ser;
-}
+    optional(26) BoolSeq bos;
 
 class A
 {

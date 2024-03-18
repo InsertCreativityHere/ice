@@ -42,7 +42,6 @@ function allTests($helper)
     test($mo1->h == Ice\None);
     test($mo1->i == Ice\None);
     test($mo1->j == Ice\None);
-    test($mo1->k == Ice\None);
     test($mo1->bs == Ice\None);
     test($mo1->ss == Ice\None);
     test($mo1->iid == Ice\None);
@@ -54,13 +53,11 @@ function allTests($helper)
     test($mo1->es == Ice\None);
     test($mo1->fss == Ice\None);
     test($mo1->vss == Ice\None);
-    test($mo1->oos == Ice\None);
     test($mo1->mips == Ice\None);
 
     test($mo1->ied == Ice\None);
     test($mo1->ifsd == Ice\None);
     test($mo1->ivsd == Ice\None);
-    test($mo1->iood == Ice\None);
     test($mo1->imipd == Ice\None);
 
     test($mo1->bos == Ice\None);
@@ -71,10 +68,10 @@ function allTests($helper)
     $prx = $communicator->stringToProxy("test")->ice_uncheckedCast("::Test::MyInterface");
     $oo15 = new Test\OneOptional(15);
     $mo1 = new Test\MultiOptional(15, true, 19, 78, 99, 5.5, 1.0, 'test', Test\MyEnum::MyEnumMember,
-                      $prx, null, array(5), array('test', 'test2'), array(4=>3), array('test'=>10),
-                      $fs, $vs, array(1), array(Test\MyEnum::MyEnumMember, Test\MyEnum::MyEnumMember), array($fs), array($vs), array($oo1),
+                      $prx, array(5), array('test', 'test2'), array(4=>3), array('test'=>10),
+                      $fs, $vs, array(1), array(Test\MyEnum::MyEnumMember, Test\MyEnum::MyEnumMember), array($fs), array($vs),
                       array($prx), array(4=>Test\MyEnum::MyEnumMember), array(4=>$fs), array(5=>$vs),
-                      array(5=>$oo15), array(5=>$prx), array(false, true, false));
+                      array(5=>$prx), array(false, true, false));
 
     test($mo1->a == 15);
     test($mo1->b == true);
@@ -86,7 +83,6 @@ function allTests($helper)
     test($mo1->h == "test");
     test($mo1->i == Test\MyEnum::MyEnumMember);
     test($mo1->j == $prx);
-    test($mo1->k == null);
     test($mo1->bs == array(5));
     test($mo1->ss == array("test", "test2"));
     test($mo1->iid[4] == 3);
@@ -98,13 +94,11 @@ function allTests($helper)
     test($mo1->es[0] == Test\MyEnum::MyEnumMember && $mo1->es[1] == Test\MyEnum::MyEnumMember);
     test($mo1->fss[0] == $fs);
     test($mo1->vss[0] == $vs);
-    test($mo1->oos[0] == $oo1);
     test($mo1->mips[0] == $prx);
 
     test($mo1->ied[4] == Test\MyEnum::MyEnumMember);
     test($mo1->ifsd[4] == $fs);
     test($mo1->ivsd[5] == $vs);
-    test($mo1->iood[5]->a == 15);
     test($mo1->imipd[5] == $prx);
 
     test($mo1->bos == array(false, true, false));
@@ -139,7 +133,6 @@ function allTests($helper)
     test($mo4->h == Ice\None);
     test($mo4->i == Ice\None);
     test($mo4->j == Ice\None);
-    test($mo4->k == Ice\None);
     test($mo4->bs == Ice\None);
     test($mo4->ss == Ice\None);
     test($mo4->iid == Ice\None);
@@ -151,13 +144,11 @@ function allTests($helper)
     test($mo4->es == Ice\None);
     test($mo4->fss == Ice\None);
     test($mo4->vss == Ice\None);
-    test($mo4->oos == Ice\None);
     test($mo4->mips == Ice\None);
 
     test($mo4->ied == Ice\None);
     test($mo4->ifsd == Ice\None);
     test($mo4->ivsd == Ice\None);
-    test($mo4->iood == Ice\None);
     test($mo4->imipd == Ice\None);
 
     test($mo4->bos == Ice\None);
@@ -173,11 +164,6 @@ function allTests($helper)
     test($mo5->h == $mo1->h);
     test($mo5->i == $mo1->i);
     test($mo5->j == $mo1->j);
-    //
-    // With Swift mapping you cannot distinguish null from unset
-    // so we test for both here to support cross testing.
-    //
-    test($mo5->k == null || $mo5->k == Ice\None);
     test($mo5->bs[0] == 5);
     test($mo5->ss == $mo1->ss);
     test($mo5->iid[4] == 3);
@@ -188,13 +174,11 @@ function allTests($helper)
     test($mo5->es[0] == Test\MyEnum::MyEnumMember && $mo1->es[1] == Test\MyEnum::MyEnumMember);
     test($mo5->fss[0] == $fs);
     test($mo5->vss[0] == $vs);
-    test($mo5->oos[0]->a == 15);
     test($mo5->mips[0] == $prx);
 
     test($mo5->ied[4] == Test\MyEnum::MyEnumMember);
     test($mo5->ifsd[4] == $fs);
     test($mo5->ivsd[5] == $vs);
-    test($mo5->iood[5]->a == 15);
     test($mo5->imipd[5] == $prx);
 
     test($mo5->bos == $mo1->bos);
@@ -211,9 +195,7 @@ function allTests($helper)
     $mo6->fs = $mo5->fs;
     $mo6->shs = $mo5->shs;
     $mo6->fss = $mo5->fss;
-    $mo6->oos = $mo5->oos;
     $mo6->ifsd = $mo5->ifsd;
-    $mo6->iood = $mo5->iood;
     $mo6->bos = $mo5->bos;
 
     $mo7 = $initial->pingPong($mo6);
@@ -227,7 +209,6 @@ function allTests($helper)
     test($mo7->h == $mo1->h);
     test($mo7->i == Ice\None);
     test($mo7->j == $mo1->j);
-    test($mo7->k == Ice\None);
     test($mo7->bs[0] == 5);
     test($mo7->ss == Ice\None);
     test($mo7->iid[4] == 3);
@@ -239,13 +220,11 @@ function allTests($helper)
     test($mo7->es == Ice\None);
     test($mo7->fss[0] == $fs);
     test($mo7->vss == Ice\None);
-    test($mo7->oos[0]->a == 15);
     test($mo7->mips == Ice\None);
 
     test($mo7->ied == Ice\None);
     test($mo7->ifsd[4] == $fs);
     test($mo7->ivsd == Ice\None);
-    test($mo7->iood[5]->a == 15);
     test($mo7->imipd == Ice\None);
 
     test($mo7->bos == array(false, true, false));
@@ -257,7 +236,6 @@ function allTests($helper)
     $mo8->e = $mo5->e;
     $mo8->g = $mo5->g;
     $mo8->i = $mo5->i;
-    $mo8->k = $mo8;
     $mo8->ss = $mo5->ss;
     $mo8->sid = $mo5->sid;
     $mo8->vs = $mo5->vs;
@@ -281,7 +259,6 @@ function allTests($helper)
     test($mo9->h == Ice\None);
     test($mo9->i == $mo1->i);
     test($mo9->j == Ice\None);
-    test($mo9->k == $mo9);
     test($mo9->bs == Ice\None);
     test($mo9->ss == $mo1->ss);
     test($mo9->iid == Ice\None);
@@ -293,13 +270,11 @@ function allTests($helper)
     test($mo9->es[0] == Test\MyEnum::MyEnumMember && $mo1->es[1] == Test\MyEnum::MyEnumMember);
     test($mo9->fss == Ice\None);
     test($mo9->vss[0] == $vs);
-    test($mo9->oos == Ice\None);
     test($mo9->mips[0] == $prx);
 
     test($mo9->ied[4] == Test\MyEnum::MyEnumMember);
     test($mo9->ifsd == Ice\None);
     test($mo9->ivsd[5] == $vs);
-    test($mo9->iood == Ice\None);
     test($mo9->imipd[5] == $prx);
 
     test($mo9->bos == Ice\None);

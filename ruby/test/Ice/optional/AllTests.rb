@@ -38,7 +38,6 @@ def allTests(helper, communicator)
     test(mo1.h == Ice::Unset)
     test(mo1.i == Ice::Unset)
     test(mo1.j == Ice::Unset)
-    test(mo1.k == Ice::Unset)
     test(mo1.bs == Ice::Unset)
     test(mo1.ss == Ice::Unset)
     test(mo1.iid == Ice::Unset)
@@ -50,13 +49,11 @@ def allTests(helper, communicator)
     test(mo1.es == Ice::Unset)
     test(mo1.fss == Ice::Unset)
     test(mo1.vss == Ice::Unset)
-    test(mo1.oos == Ice::Unset)
     test(mo1.mips == Ice::Unset)
 
     test(mo1.ied == Ice::Unset)
     test(mo1.ifsd == Ice::Unset)
     test(mo1.ivsd == Ice::Unset)
-    test(mo1.iood == Ice::Unset)
     test(mo1.imipd == Ice::Unset)
 
     test(mo1.bos == Ice::Unset)
@@ -66,11 +63,11 @@ def allTests(helper, communicator)
     vs = Test::VarStruct.new("hello")
     mo1 = Test::MultiOptional.new(15, true, 19, 78, 99, 5.5, 1.0, "test", Test::MyEnum::MyEnumMember, \
                                   Test::MyInterfacePrx::uncheckedCast(communicator.stringToProxy("test")), \
-                                  nil, [5], ["test", "test2"], {4=>3}, {"test"=>10}, fs, vs, [1], \
+                                  [5], ["test", "test2"], {4=>3}, {"test"=>10}, fs, vs, [1], \
                                   [Test::MyEnum::MyEnumMember, Test::MyEnum::MyEnumMember], \
-                                  [ fs ], [ vs ], [ oo1 ], \
+                                  [ fs ], [ vs ], \
                                   [ Test::MyInterfacePrx::uncheckedCast(communicator.stringToProxy("test")) ], \
-                                  {4=> Test::MyEnum::MyEnumMember}, {4=>fs}, {5=>vs}, {5=>Test::OneOptional.new(15)}, \
+                                  {4=> Test::MyEnum::MyEnumMember}, {4=>fs}, {5=>vs}, \
                                   {5=> Test::MyInterfacePrx::uncheckedCast(communicator.stringToProxy("test"))}, \
                                   [false, true, false])
 
@@ -84,7 +81,6 @@ def allTests(helper, communicator)
     test(mo1.h == "test")
     test(mo1.i == Test::MyEnum::MyEnumMember)
     test(mo1.j == communicator.stringToProxy("test"))
-    test(mo1.k == nil)
     test(mo1.bs == [5])
     test(mo1.ss == ["test", "test2"])
     test(mo1.iid[4] == 3)
@@ -96,13 +92,11 @@ def allTests(helper, communicator)
     test(mo1.es[0] == Test::MyEnum::MyEnumMember && mo1.es[1] == Test::MyEnum::MyEnumMember)
     test(mo1.fss[0] == Test::FixedStruct.new(78))
     test(mo1.vss[0] == Test::VarStruct.new("hello"))
-    test(mo1.oos[0] == oo1)
     test(mo1.mips[0] == communicator.stringToProxy("test"))
 
     test(mo1.ied[4] == Test::MyEnum::MyEnumMember)
     test(mo1.ifsd[4] == Test::FixedStruct.new(78))
     test(mo1.ivsd[5] == Test::VarStruct.new("hello"))
-    test(mo1.iood[5].a == 15)
     test(mo1.imipd[5] == communicator.stringToProxy("test"))
 
     test(mo1.bos == [false, true, false])
@@ -137,7 +131,6 @@ def allTests(helper, communicator)
     test(mo4.h == Ice::Unset)
     test(mo4.i == Ice::Unset)
     test(mo4.j == Ice::Unset)
-    test(mo4.k == Ice::Unset)
     test(mo4.bs == Ice::Unset)
     test(mo4.ss == Ice::Unset)
     test(mo4.iid == Ice::Unset)
@@ -149,13 +142,11 @@ def allTests(helper, communicator)
     test(mo4.es == Ice::Unset)
     test(mo4.fss == Ice::Unset)
     test(mo4.vss == Ice::Unset)
-    test(mo4.oos == Ice::Unset)
     test(mo4.mips == Ice::Unset)
 
     test(mo4.ied == Ice::Unset)
     test(mo4.ifsd == Ice::Unset)
     test(mo4.ivsd == Ice::Unset)
-    test(mo4.iood == Ice::Unset)
     test(mo4.imipd == Ice::Unset)
 
     test(mo4.bos == Ice::Unset)
@@ -171,11 +162,6 @@ def allTests(helper, communicator)
     test(mo5.h == mo1.h)
     test(mo5.i == mo1.i)
     test(mo5.j == mo1.j)
-    #
-    # With Swift mapping you cannot distinguish null from unset
-    # so we test for both here to support cross testing.
-    #
-    test(mo5.k == nil || Ice::Unset)
     test(mo5.bs.unpack("C*") == [0x05])
     test(mo5.ss == mo1.ss)
     test(mo5.iid[4] == 3)
@@ -186,13 +172,11 @@ def allTests(helper, communicator)
     test(mo5.es[0] == Test::MyEnum::MyEnumMember && mo1.es[1] == Test::MyEnum::MyEnumMember)
     test(mo5.fss[0] == Test::FixedStruct.new(78))
     test(mo5.vss[0] == Test::VarStruct.new("hello"))
-    test(mo5.oos[0].a == 15)
     test(mo5.mips[0] == communicator.stringToProxy("test"))
 
     test(mo5.ied[4] == Test::MyEnum::MyEnumMember)
     test(mo5.ifsd[4] == Test::FixedStruct.new(78))
     test(mo5.ivsd[5] == Test::VarStruct.new("hello"))
-    test(mo5.iood[5].a == 15)
     test(mo5.imipd[5] == communicator.stringToProxy("test"))
 
     test(mo5.bos == mo1.bos)
@@ -209,9 +193,7 @@ def allTests(helper, communicator)
     mo6.fs = mo5.fs
     mo6.shs = mo5.shs
     mo6.fss = mo5.fss
-    mo6.oos = mo5.oos
     mo6.ifsd = mo5.ifsd
-    mo6.iood = mo5.iood
     mo6.bos = mo5.bos
 
     mo7 = initial.pingPong(mo6)
@@ -225,7 +207,6 @@ def allTests(helper, communicator)
     test(mo7.h == mo1.h)
     test(mo7.i == Ice::Unset)
     test(mo7.j == mo1.j)
-    test(mo7.k == Ice::Unset)
     test(mo7.bs.unpack("C*") == [0x05])
     test(mo7.ss == Ice::Unset)
     test(mo7.iid[4] == 3)
@@ -237,13 +218,11 @@ def allTests(helper, communicator)
     test(mo7.es == Ice::Unset)
     test(mo7.fss[0] == Test::FixedStruct.new(78))
     test(mo7.vss == Ice::Unset)
-    test(mo7.oos[0].a == 15)
     test(mo7.mips == Ice::Unset)
 
     test(mo7.ied == Ice::Unset)
     test(mo7.ifsd[4] == Test::FixedStruct.new(78))
     test(mo7.ivsd == Ice::Unset)
-    test(mo7.iood[5].a == 15)
     test(mo7.imipd == Ice::Unset)
 
     test(mo7.bos == [false, true, false])
@@ -255,7 +234,6 @@ def allTests(helper, communicator)
     mo8.e = mo5.e
     mo8.g = mo5.g
     mo8.i = mo5.i
-    mo8.k = mo8
     mo8.ss = mo5.ss
     mo8.sid = mo5.sid
     mo8.vs = mo5.vs
@@ -279,7 +257,6 @@ def allTests(helper, communicator)
     test(mo9.h == Ice::Unset)
     test(mo9.i == mo1.i)
     test(mo9.j == Ice::Unset)
-    test(mo9.k == mo9)
     test(mo9.bs == Ice::Unset)
     test(mo9.ss == mo1.ss)
     test(mo9.iid == Ice::Unset)
@@ -291,13 +268,11 @@ def allTests(helper, communicator)
     test(mo9.es[0] == Test::MyEnum::MyEnumMember && mo1.es[1] == Test::MyEnum::MyEnumMember)
     test(mo9.fss == Ice::Unset)
     test(mo9.vss[0] == Test::VarStruct.new("hello"))
-    test(mo9.oos == Ice::Unset)
     test(mo9.mips[0] == communicator.stringToProxy("test"))
 
     test(mo9.ied[4] == Test::MyEnum::MyEnumMember)
     test(mo9.ifsd == Ice::Unset)
     test(mo9.ivsd[5] == Test::VarStruct.new("hello"))
-    test(mo9.iood == Ice::Unset)
     test(mo9.imipd[5] == communicator.stringToProxy("test"))
 
     test(mo9.bos == Ice::Unset)
