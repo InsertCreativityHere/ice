@@ -1990,7 +1990,7 @@ ServerI::update()
             if (_load->clearDir())
             {
                 //
-                // The server was explicitely destroyed then updated,
+                // The server was explicitly destroyed then updated,
                 // we first need to cleanup the directory to remove
                 // any user created files.
                 //
