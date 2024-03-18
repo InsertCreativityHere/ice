@@ -701,6 +701,14 @@ tagged_type_id
 
     m->type = ts->v.first;
     m->name = ts->v.second;
+
+    // It's okay to perform this check here because the only types that can be forward declared (classes and interfaces)
+    // also have constant values for `usesClasses` (true and false respectfully).
+    if (m->type->usesClasses())
+    {
+        currentUnit->error("types that use classes cannot be marked with 'tag'");
+    }
+
     $$ = m;
 }
 | optional type_id
@@ -710,6 +718,14 @@ tagged_type_id
 
     m->type = ts->v.first;
     m->name = ts->v.second;
+
+    // It's okay to perform this check here because the only types that can be forward declared (classes and interfaces)
+    // also have constant values for `usesClasses` (true and false respectfully).
+    if (m->type->usesClasses())
+    {
+        currentUnit->error("types that use classes cannot be marked with 'optional'");
+    }
+
     $$ = m;
 }
 | type_id
@@ -1171,12 +1187,28 @@ return_type
 {
     auto m = dynamic_pointer_cast<TaggedDefTok>($1);
     m->type = dynamic_pointer_cast<Type>($2);
+
+    // It's okay to perform this check here because the only types that can be forward declared (classes and interfaces)
+    // also have constant values for `usesClasses` (true and false respectfully).
+    if (m->type->usesClasses())
+    {
+        currentUnit->error("types that use classes cannot be marked with 'tag'");
+    }
+
     $$ = m;
 }
 | optional type
 {
     auto m = dynamic_pointer_cast<TaggedDefTok>($1);
     m->type = dynamic_pointer_cast<Type>($2);
+
+    // It's okay to perform this check here because the only types that can be forward declared (classes and interfaces)
+    // also have constant values for `usesClasses` (true and false respectfully).
+    if (m->type->usesClasses())
+    {
+        currentUnit->error("types that use classes cannot be marked with 'optional'");
+    }
+
     $$ = m;
 }
 | type
