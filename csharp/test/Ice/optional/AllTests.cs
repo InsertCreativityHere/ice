@@ -1037,55 +1037,6 @@ namespace Ice
                 }
 
                 {
-                    Optional<Test.OneOptional> p1 = new Optional<Test.OneOptional>();
-                    Optional<Test.OneOptional> p3;
-                    Optional<Test.OneOptional> p2 = initial.opOneOptional(p1, out p3);
-                    test(!p2.HasValue && !p3.HasValue);
-                    p2 = initial.opOneOptional(Util.None, out p3);
-                    test(!p2.HasValue && !p3.HasValue);
-                    if (initial.supportsNullOptional())
-                    {
-                        p2 = initial.opOneOptional(null, out p3); // Implicitly converts to Optional<OneOptional>(null)
-                        test(p2.HasValue && p2.Value == null && p3.HasValue && p3.Value == null);
-
-                        p2 = initial.opOneOptional(new Optional<Test.OneOptional>((Test.OneOptional)null), out p3);
-                        test(p2.HasValue && p3.HasValue && p2.Value == null && p3.Value == null);
-                    }
-
-                    p1 = new Test.OneOptional(58);
-                    p2 = initial.opOneOptional(p1, out p3);
-                    test(p2.Value.a.Value == 58 && p3.Value.a.Value == 58);
-
-                    var result = await initial.opOneOptionalAsync(p1);
-                    test(result.returnValue.Value.a.Value == 58 && result.p3.Value.a.Value == 58);
-
-                    p2 = initial.opOneOptional(new Optional<Test.OneOptional>(), out p3);
-                    test(!p2.HasValue && !p3.HasValue); // Ensure out parameter is cleared.
-
-                    os = new OutputStream(communicator);
-                    os.startEncapsulation();
-                    os.writeOptional(2, OptionalFormat.Class);
-                    os.writeValue(p1.Value);
-                    os.endEncapsulation();
-                    inEncaps = os.finished();
-                    initial.ice_invoke("opOneOptional", OperationMode.Normal, inEncaps, out outEncaps);
-                    @in = new InputStream(communicator, outEncaps);
-                    @in.startEncapsulation();
-                    test(@in.readOptional(1, OptionalFormat.Class));
-                    ReadValueCallbackI p2cb = new ReadValueCallbackI();
-                    @in.readValue(p2cb.invoke);
-                    test(@in.readOptional(3, OptionalFormat.Class));
-                    ReadValueCallbackI p3cb = new ReadValueCallbackI();
-                    @in.readValue(p3cb.invoke);
-                    @in.endEncapsulation();
-                    test(((Test.OneOptional)p2cb.obj).a.Value == 58 && ((Test.OneOptional)p3cb.obj).a.Value == 58);
-
-                    @in = new InputStream(communicator, outEncaps);
-                    @in.startEncapsulation();
-                    @in.endEncapsulation();
-                }
-
-                {
                     Ice.Optional<Test.MyInterfacePrx> p1 = new Ice.Optional<Test.MyInterfacePrx>();
                     Ice.Optional<Test.MyInterfacePrx> p3;
                     Ice.Optional<Test.MyInterfacePrx> p2 = initial.opMyInterfaceProxy(p1, out p3);

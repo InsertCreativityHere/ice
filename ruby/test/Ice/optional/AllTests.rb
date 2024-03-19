@@ -485,16 +485,6 @@ def allTests(helper, communicator)
     p2, p3 = initial.opVarStruct(p1)
     test(p2 == p1 && p3 == p1)
 
-    p2, p3 = initial.opOneOptional(Ice::Unset)
-    test(p2 == Ice::Unset && p3 == Ice::Unset)
-    if initial.supportsNullOptional() then
-        p2, p3 = initial.opOneOptional(nil)
-        test(p2 == nil && p3 == nil)
-    end
-    p1 = Test::OneOptional.new(58)
-    p2, p3 = initial.opOneOptional(p1)
-    test(p2.a == p1.a && p3.a == p1.a)
-
     p2, p3 = initial.opMyInterfaceProxy(Ice::Unset)
     test(p2 == Ice::Unset && p3 == Ice::Unset)
     p1 = Test::MyInterfacePrx::uncheckedCast(communicator.stringToProxy("test"))

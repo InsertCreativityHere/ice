@@ -1212,41 +1212,6 @@ allTests(Test::TestHelper* helper, bool)
     }
 
     {
-        // TODO: remove this testing for tagged classes alongside the tagged class support.
-        optional<OneOptionalPtr> p1;
-        optional<OneOptionalPtr> p3;
-        optional<OneOptionalPtr> p2 = initial->opOneOptional(p1, p3);
-        test(!p2 && !p3);
-
-        if (initial->supportsNullOptional())
-        {
-            p2 = initial->opOneOptional(OneOptionalPtr(), p3);
-            test(*p2 == nullptr && *p3 == nullptr);
-        }
-
-        p1 = make_shared<OneOptional>(58);
-        p2 = initial->opOneOptional(p1, p3);
-        test((*p2)->a == 58 && (*p3)->a == 58);
-
-        Ice::OutputStream out(communicator);
-        out.startEncapsulation();
-        out.write(2, p1);
-        out.endEncapsulation();
-        out.finished(inEncaps);
-        initial->ice_invoke("opOneOptional", Ice::OperationMode::Normal, inEncaps, outEncaps);
-        Ice::InputStream in(communicator, out.getEncoding(), outEncaps);
-        in.startEncapsulation();
-        in.read(1, p2);
-        in.read(3, p3);
-        in.endEncapsulation();
-        test((*p2)->a == 58 && (*p3)->a == 58);
-
-        Ice::InputStream in2(communicator, out.getEncoding(), outEncaps);
-        in2.startEncapsulation();
-        in2.endEncapsulation();
-    }
-
-    {
         optional<MyInterfacePrx> p1;
         optional<MyInterfacePrx> p3;
         optional<MyInterfacePrx> p2 = initial->opMyInterfaceProxy(p1, p3);

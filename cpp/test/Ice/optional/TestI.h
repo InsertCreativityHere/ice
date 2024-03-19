@@ -66,9 +66,6 @@ public:
     virtual std::optional<Test::VarStruct>
     opVarStruct(std::optional<Test::VarStruct>, std::optional<Test::VarStruct>&, const ::Ice::Current&);
 
-    virtual std::optional<Test::OneOptionalPtr>
-    opOneOptional(std::optional<Test::OneOptionalPtr>, std::optional<Test::OneOptionalPtr>&, const ::Ice::Current&);
-
     virtual std::optional<Test::MyInterfacePrx> opMyInterfaceProxy(
         std::optional<Test::MyInterfacePrx>,
         std::optional<Test::MyInterfacePrx>&,

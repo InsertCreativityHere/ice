@@ -70,9 +70,6 @@ class InitialI(Test.Initial):
     def opVarStruct(self, p1, current=None):
         return (p1, p1)
 
-    def opOneOptional(self, p1, current=None):
-        return (p1, p1)
-
     def opMyInterfaceProxy(self, p1, current=None):
         return (p1, p1)
 

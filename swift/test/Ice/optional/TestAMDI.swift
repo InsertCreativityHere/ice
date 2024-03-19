@@ -96,11 +96,6 @@ class InitialI: Initial {
         return Promise.value((p1, p1))
     }
 
-    func opOneOptionalAsync(p1: OneOptional?,
-                            current _: Current) -> Promise<(returnValue: OneOptional?, p3: OneOptional?)> {
-        return Promise.value((p1, p1))
-    }
-
     func opMyInterfaceProxyAsync(p1: MyInterfacePrx?,
                                  current _: Current) -> Promise<(returnValue: MyInterfacePrx?, p3: MyInterfacePrx?)> {
         return Promise.value((p1, p1))

@@ -238,9 +238,6 @@ interface Initial
     ["java:optional"] optional(1) VarStruct opVarStruct(optional(2) VarStruct p1, out optional(3) VarStruct p3);
     optional(1) VarStruct opVarStructReq(optional(2) VarStruct p1, out optional(3) VarStruct p3);
 
-    ["java:optional"] optional(1) OneOptional opOneOptional(optional(2) OneOptional p1, out optional(3) OneOptional p3);
-    optional(1) OneOptional opOneOptionalReq(optional(2) OneOptional p1, out optional(3) OneOptional p3);
-
     ["java:optional"] optional(1) MyInterface* opMyInterfaceProxy(optional(2) MyInterface* p1,
                                                                   out optional(3) MyInterface* p3);
     optional(1) MyInterface* opMyInterfaceProxyReq(optional(2) MyInterface* p1, out optional(3) MyInterface* p3);

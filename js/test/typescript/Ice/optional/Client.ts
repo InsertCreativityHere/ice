@@ -450,22 +450,6 @@ export class Client extends TestHelper
         }
 
         {
-            let [p1, p2] = await initial.opOneOptional();
-            test(p1 === undefined);
-            test(p2 === undefined);
-            if(await initial.supportsNullOptional())
-            {
-
-                [p1, p2] = await initial.opOneOptional(null);
-                test(p1 === null);
-                test(p2 === null);
-            }
-            [p1, p2] = await initial.opOneOptional(new Test.OneOptional(58));
-            test(p1 === p2);
-            test(p2.a === 58);
-        }
-
-        {
             let [p1, p2] = await initial.opMyInterfaceProxy();
             test(p1 === undefined);
             test(p2 === undefined);

@@ -153,11 +153,6 @@ export class AMDInitialI extends Test.Initial
         return [p1, p1];
     }
 
-    opOneOptional(p1:Test.OneOptional, current:Ice.Current):[Test.OneOptional, Test.OneOptional]
-    {
-        return [p1, p1];
-    }
-
     opMyInterfaceProxy(p1:Test.MyInterfacePrx, current:Ice.Current):[Test.MyInterfacePrx, Test.MyInterfacePrx]
     {
         return [p1, p1];

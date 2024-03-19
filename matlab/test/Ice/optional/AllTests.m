@@ -511,19 +511,6 @@ classdef AllTests
             [p2, p3] = f.fetchOutputs();
             assert(p2 == p1 && p3 == p1);
 
-            [p2, p3] = initial.opOneOptional(Ice.Unset);
-            assert(p2 == Ice.Unset && p3 == Ice.Unset);
-            if initial.supportsNullOptional()
-                [p2, p3] = initial.opOneOptional([]);
-                assert(isempty(p2) && isempty(p3));
-            end
-            p1 = OneOptional(58);
-            [p2, p3] = initial.opOneOptional(p1);
-            assert(p2.a == p1.a && p3.a == p1.a);
-            f = initial.opOneOptionalAsync(p1);
-            [p2, p3] = f.fetchOutputs();
-            assert(p2.a == p1.a && p3.a == p1.a);
-
             % [p2, p3] = initial.opMyInterfaceProxy(Ice.Unset);
             % assert(p2 == Ice.Unset && p3 == Ice.Unset);
             % p1 = communicator.stringToProxy('test');

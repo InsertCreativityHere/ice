@@ -153,14 +153,6 @@ namespace Ice
                 return p1;
             }
 
-            public override Ice.Optional<Test.OneOptional> opOneOptional(Ice.Optional<Test.OneOptional> p1,
-                                                                                 out Ice.Optional<Test.OneOptional> p3,
-                                                                                 Ice.Current current)
-            {
-                p3 = p1;
-                return p1;
-            }
-
             public override Ice.Optional<Test.MyInterfacePrx>
             opMyInterfaceProxy(Ice.Optional<Test.MyInterfacePrx> p1,
                                out Ice.Optional<Test.MyInterfacePrx> p3,

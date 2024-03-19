@@ -99,11 +99,6 @@ class InitialI: Initial {
         return (p1, p1)
     }
 
-    func opOneOptional(p1: OneOptional?, current _: Ice.Current) throws -> (returnValue: OneOptional?,
-                                                                            p3: OneOptional?) {
-        return (p1, p1)
-    }
-
     func opMyInterfaceProxy(p1: MyInterfacePrx?, current _: Ice.Current) throws -> (returnValue: MyInterfacePrx?,
                                                                                     p3: MyInterfacePrx?) {
         return (p1, p1)

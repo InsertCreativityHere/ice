@@ -76,9 +76,6 @@ class InitialI(Test.Initial):
     def opVarStruct(self, p1, current=None):
         return Ice.Future.completed((p1, p1))
 
-    def opOneOptional(self, p1, current=None):
-        return Ice.Future.completed((p1, p1))
-
     def opMyInterfaceProxy(self, p1, current=None):
         return Ice.Future.completed((p1, p1))
 

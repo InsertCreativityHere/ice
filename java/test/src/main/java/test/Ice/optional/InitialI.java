@@ -276,18 +276,6 @@ public final class InitialI implements Initial
     }
 
     @Override
-    public Initial.OpOneOptionalResult opOneOptional(Optional<OneOptional> p1, Current current)
-    {
-        return new Initial.OpOneOptionalResult(p1, p1);
-    }
-
-    @Override
-    public Initial.OpOneOptionalReqResult opOneOptionalReq(Optional<OneOptional> p1, Current current)
-    {
-        return new Initial.OpOneOptionalReqResult(p1, p1);
-    }
-
-    @Override
     public Initial.OpMyInterfaceProxyResult opMyInterfaceProxy(Optional<MyInterfacePrx> p1, Current current)
     {
         return new Initial.OpMyInterfaceProxyResult(p1, p1);
