@@ -241,17 +241,17 @@
             test(mo9.bos === undefined);
 
             //
-            // Use the 1.0 encoding with operations whose only class parameters are optional.
+            // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
             //
             const initial2 = initial.ice_encodingVersion(Ice.Encoding_1_0);
-            const oo = new Test.OneOptional(53);
+            const ofs = new Test.FixedStruct(53);
 
-            await initial.sendOptionalClass(true, oo);
-            await initial2.sendOptionalClass(true, oo);
-            oo1 = await initial.returnOptionalClass(true);
-            test(oo1 !== undefined && oo1.a == 53);
-            oo1 = await initial2.returnOptionalClass(true);
-            test(oo1 === undefined);
+            await initial.sendOptionalStruct(true, ofs);
+            await initial2.sendOptionalStruct(true, ofs);
+            ofs1 = await initial.returnOptionalStruct(true);
+            test(ofs1 !== undefined && ofs1.m == 53);
+            ofs1 = await initial2.returnOptionalStruct(true);
+            test(ofs1 === undefined);
 
             let g = new Test.G();
             g.gg1Opt = new Test.G1("gg1Opt");

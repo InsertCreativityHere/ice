@@ -372,17 +372,17 @@ public class AllTests
         factory.setEnabled(false);
 
         //
-        // Use the 1.0 encoding with operations whose only class parameters are optional.
+        // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
         //
-        Optional<OneOptional> oo = Optional.of(new OneOptional(53));
-        initial.sendOptionalClass(true, oo);
+        Optional<FixedStruct> ofs = Optional.of(new FixedStruct(53));
+        initial.sendOptionalStruct(true, ofs);
         InitialPrx initial2 = initial.ice_encodingVersion(com.zeroc.Ice.Util.Encoding_1_0);
-        initial2.sendOptionalClass(true, oo);
+        initial2.sendOptionalStruct(true, ofs);
 
-        oo = initial.returnOptionalClass(true);
-        test(oo.isPresent());
-        oo = initial2.returnOptionalClass(true);
-        test(!oo.isPresent());
+        ofs = initial.returnOptionalStruct(true);
+        test(ofs.isPresent());
+        ofs = initial2.returnOptionalStruct(true);
+        test(!ofs.isPresent());
 
         G g = new G();
         g.setGg1Opt(new G1("gg1Opt"));

@@ -310,17 +310,17 @@ namespace Ice
             {
             }
 
-            public override void sendOptionalClass(bool req,
-                                                   Ice.Optional<Test.OneOptional> o,
+            public override void sendOptionalStruct(bool req,
+                                                   Ice.Optional<Test.FixedStruct> o,
                                                    Ice.Current current)
             {
             }
 
-            public override void returnOptionalClass(bool req,
-                                                     out Ice.Optional<Test.OneOptional> o,
+            public override void returnOptionalStruct(bool req,
+                                                     out Ice.Optional<Test.FixedStruct> o,
                                                      Ice.Current current)
             {
-                o = new Test.OneOptional(53);
+                o = new Test.FixedStruct(53);
             }
 
             public override Test.G opG(Test.G g, Ice.Current current)

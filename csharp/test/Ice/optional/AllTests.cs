@@ -331,17 +331,17 @@ namespace Ice
                 factory.setEnabled(false);
 
                 //
-                // Use the 1.0 encoding with operations whose only class parameters are optional.
+                // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
                 //
-                var oo = new Ice.Optional<Test.OneOptional>(new Test.OneOptional(53));
-                initial.sendOptionalClass(true, oo);
+                var ofs = new Ice.Optional<Test.FixedStruct>(new Test.FixedStruct(53));
+                initial.sendOptionalStruct(true, ofs);
                 Test.InitialPrx initial2 =(Test.InitialPrx)initial.ice_encodingVersion(Ice.Util.Encoding_1_0);
-                initial2.sendOptionalClass(true, oo);
+                initial2.sendOptionalStruct(true, ofs);
 
-                initial.returnOptionalClass(true, out oo);
-                test(oo.HasValue);
-                initial2.returnOptionalClass(true, out oo);
-                test(!oo.HasValue);
+                initial.returnOptionalStruct(true, out ofs);
+                test(ofs.HasValue);
+                initial2.returnOptionalStruct(true, out ofs);
+                test(!ofs.HasValue);
 
                 Test.G g = new Test.G();
                 g.gg1Opt = new Ice.Optional<Test.G1>(new Test.G1("gg1Opt"));

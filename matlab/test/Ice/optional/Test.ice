@@ -274,10 +274,10 @@ interface Initial
 
     void opClassAndUnknownOptional(A p);
 
-    void sendOptionalClass(bool req, optional(1) OneOptional o);
+    void sendOptionalStruct(bool req, optional(1) FixedStruct o);
 
     ["java:optional"]
-    void returnOptionalClass(bool req, out optional(1) OneOptional o);
+    void returnOptionalStruct(bool req, out optional(1) FixedStruct o);
 
     G opG(G g);
 

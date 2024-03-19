@@ -278,14 +278,14 @@ def allTests(helper, communicator)
     test(mo9.bos == Ice::Unset)
 
     #
-    # Use the 1.0 encoding with operations whose only class parameters are optional.
+    # Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
     #
-    initial.sendOptionalClass(true, Test::OneOptional.new(53))
-    initial.ice_encodingVersion(Ice::Encoding_1_0).sendOptionalClass(true, Test::OneOptional.new(53))
+    initial.sendOptionalStruct(true, Test::FixedStruct.new(53))
+    initial.ice_encodingVersion(Ice::Encoding_1_0).sendOptionalStruct(true, Test::FixedStruct.new(53))
 
-    r = initial.returnOptionalClass(true)
+    r = initial.returnOptionalStruct(true)
     test(r != Ice::Unset)
-    r = initial.ice_encodingVersion(Ice::Encoding_1_0).returnOptionalClass(true)
+    r = initial.ice_encodingVersion(Ice::Encoding_1_0).returnOptionalStruct(true)
     test(r == Ice::Unset)
 
     g = Test::G.new

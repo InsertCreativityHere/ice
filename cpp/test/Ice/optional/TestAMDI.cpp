@@ -417,9 +417,9 @@ InitialI::opClassAndUnknownOptionalAsync(
 }
 
 void
-InitialI::sendOptionalClassAsync(
+InitialI::sendOptionalStructAsync(
     bool,
-    optional<shared_ptr<Test::OneOptional>>,
+    optional<Test::FixedStruct>,
     function<void()> response,
     function<void(exception_ptr)>,
     const Ice::Current&)
@@ -428,13 +428,13 @@ InitialI::sendOptionalClassAsync(
 }
 
 void
-InitialI::returnOptionalClassAsync(
+InitialI::returnOptionalStructAsync(
     bool,
-    function<void(const optional<shared_ptr<Test::OneOptional>>&)> response,
+    function<void(const optional<Test::FixedStruct>&)> response,
     function<void(exception_ptr)>,
     const Ice::Current&)
 {
-    response(make_shared<OneOptional>(53));
+    response(make_optional<FixedStruct>(53));
 }
 
 void

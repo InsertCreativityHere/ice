@@ -516,14 +516,14 @@ public final class InitialI implements Initial
     }
 
     @Override
-    public void sendOptionalClass(boolean req, Optional<OneOptional> o, Current current)
+    public void sendOptionalStruct(boolean req, Optional<FixedStruct> o, Current current)
     {
     }
 
     @Override
-    public Optional<OneOptional> returnOptionalClass(boolean req, Current current)
+    public Optional<FixedStruct> returnOptionalStruct(boolean req, Current current)
     {
-        return Optional.of(new OneOptional(53));
+        return Optional.of(new FixedStruct(53));
     }
 
     @Override

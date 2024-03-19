@@ -536,18 +536,18 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
     factory.setEnabled(enabled: false)
 
     //
-    // Use the 1.0 encoding with operations whose only class parameters are optional.
+    // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
     //
     do {
-        var oo: OneOptional? = OneOptional(a: 53)
-        try initial.sendOptionalClass(req: true, o: oo)
+        var ofs: FixedStruct? = FixedStruct(m: 53)
+        try initial.sendOptionalStruct(req: true, o: ofs)
         let initial2 = initial.ice_encodingVersion(Ice.Encoding_1_0)
-        try initial2.sendOptionalClass(req: true, o: oo)
+        try initial2.sendOptionalStruct(req: true, o: ofs)
 
-        oo = try initial.returnOptionalClass(true)
-        try test(oo != nil && oo!.a == 53)
-        oo = try initial2.returnOptionalClass(true)
-        try test(oo == nil)
+        ofs = try initial.returnOptionalStruct(true)
+        try test(ofs != nil && ofs!.m == 53)
+        ofs = try initial2.returnOptionalStruct(true)
+        try test(ofs == nil)
 
         var g: G! = G()
         g.gg1Opt = G1(a: "gg1Opt")

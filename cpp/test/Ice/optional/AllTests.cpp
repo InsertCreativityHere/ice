@@ -628,16 +628,17 @@ allTests(Test::TestHelper* helper, bool)
     }
 
     //
-    // Use the 1.0 encoding with operations whose only class parameters are optional.
+    // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
     //
-    optional<OneOptionalPtr> oo(make_shared<OneOptional>(53));
-    initial->sendOptionalClass(true, oo);
-    initial->ice_encodingVersion(Ice::Encoding_1_0)->sendOptionalClass(true, oo);
+    optional<FixedStruct> ofs{ in_place, 53 };
 
-    initial->returnOptionalClass(true, oo);
-    test(oo);
-    initial->ice_encodingVersion(Ice::Encoding_1_0)->returnOptionalClass(true, oo);
-    test(!oo);
+    initial->sendOptionalStruct(true, ofs);
+    initial->ice_encodingVersion(Ice::Encoding_1_0)->sendOptionalStruct(true, ofs);
+
+    initial->returnOptionalStruct(true, ofs);
+    test(ofs);
+    initial->ice_encodingVersion(Ice::Encoding_1_0)->returnOptionalStruct(true, ofs);
+    test(!ofs);
 
     GPtr g = make_shared<G>();
     g->gg1Opt = make_shared<G1>("gg1Opt");
