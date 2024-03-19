@@ -67,6 +67,8 @@ dictionary<int, MyInterface*> IntMyInterfacePrxDict;
 
 ["cpp:type:Test::CustomMap<std::int32_t, std::string>"] dictionary<int, string> IntStringDict;
 
+class MultiOptional
+{
     optional(1) byte a;
     optional(2) bool b;
     optional(3) short c;
@@ -96,6 +98,7 @@ dictionary<int, MyInterface*> IntMyInterfacePrxDict;
     optional(25) IntMyInterfacePrxDict imipd;
 
     optional(26) BoolSeq bos;
+}
 
 class A
 {
