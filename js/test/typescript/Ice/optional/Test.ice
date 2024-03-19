@@ -294,8 +294,6 @@ interface Initial
     bool supportsJavaSerializable();
 
     bool supportsCsharpSerializable();
-
-    bool supportsNullOptional();
 }
 
 interface Echo

@@ -319,9 +319,4 @@ export class AMDInitialI extends Test.Initial
     {
         return false;
     }
-
-    supportsNullOptional(current:Ice.Current):boolean
-    {
-        return true;
-    }
 }

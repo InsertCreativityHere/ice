@@ -177,8 +177,6 @@ public:
     virtual bool supportsJavaSerializable(const Ice::Current&);
 
     virtual bool supportsCsharpSerializable(const Ice::Current&);
-
-    virtual bool supportsNullOptional(const Ice::Current&);
 };
 
 #endif

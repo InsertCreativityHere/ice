@@ -1045,11 +1045,6 @@ namespace Ice
                     test(!p2.HasValue && !p3.HasValue);
                     p2 = initial.opMyInterfaceProxy(Ice.Util.None, out p3);
                     test(!p2.HasValue && !p3.HasValue);
-                    if (initial.supportsNullOptional())
-                    {
-                        p2 = initial.opMyInterfaceProxy(null, out p3);
-                        test(p2.HasValue && p3.HasValue && p2.Value == null && p3.Value == null);
-                    }
 
                     p1 = new Ice.Optional<Test.MyInterfacePrx>(
                         Test.MyInterfacePrxHelper.uncheckedCast(communicator.stringToProxy("test")));

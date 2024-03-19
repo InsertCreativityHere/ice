@@ -320,11 +320,6 @@
         {
             return false;
         }
-
-        supportsNullOptional(current)
-        {
-            return true;
-        }
     }
 
     exports.AMDInitialI = AMDInitialI;

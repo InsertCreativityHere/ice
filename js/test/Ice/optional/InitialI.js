@@ -320,11 +320,6 @@
         {
             return false;
         }
-
-        supportsNullOptional(current)
-        {
-            return true;
-        }
     }
     exports.InitialI = InitialI;
 }(typeof global !== "undefined" && typeof global.process !== "undefined" ? module : undefined,

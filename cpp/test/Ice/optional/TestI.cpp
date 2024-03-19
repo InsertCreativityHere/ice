@@ -419,9 +419,3 @@ InitialI::supportsCsharpSerializable(const Ice::Current&)
 {
     return true;
 }
-
-bool
-InitialI::supportsNullOptional(const Ice::Current&)
-{
-    return true;
-}
