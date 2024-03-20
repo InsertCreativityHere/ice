@@ -248,7 +248,7 @@
 
             await initial.sendOptionalStruct(true, ofs);
             await initial2.sendOptionalStruct(true, ofs);
-            ofs1 = await initial.returnOptionalStruct(true);
+            let ofs1 = await initial.returnOptionalStruct(true);
             test(ofs1 !== undefined && ofs1.m == 53);
             ofs1 = await initial2.returnOptionalStruct(true);
             test(ofs1 === undefined);
@@ -316,12 +316,12 @@
             test(b.md == 13);
             out.writeLine("ok");
 
-            out.write("testing marshaling of objects with optional objects... ");
+            out.write("testing marshaling of objects with optional members... ");
             let f = new Test.F();
-            f.af = new Test.A();
-            f.ae = f.af;
+            f.fsf = new Test.FixedStruct(56);
+            f.fse = f.fsf;
             f = await initial.pingPong(f);
-            test(f.ae === f.af);
+            test(f.fse.m == f.fsf.m);
             out.writeLine("ok");
 
             out.write("testing optional with default values... ");

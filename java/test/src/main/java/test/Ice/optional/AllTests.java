@@ -490,16 +490,16 @@ public class AllTests
         }
         out.println("ok");
 
-        out.print("testing marshalling of objects with optional objects...");
+        out.print("testing marshalling of objects with optional members...");
         out.flush();
         {
             F f = new F();
 
-            f.setAf(new A());
-            f.ae = f.getAf();
+            f.setFsf(new FixedStruct(56));
+            f.fse = f.getFsf();
 
             F rf = (F)initial.pingPong(f);
-            test(rf.ae == rf.getAf());
+            test(rf.fse.m == rf.getFsf().m);
 
             factory.setEnabled(true);
             os = new OutputStream(communicator);
@@ -513,7 +513,7 @@ public class AllTests
             in.readValue(v -> w.value = v.getF(), FObjectReader.class);
             in.endEncapsulation();
             factory.setEnabled(false);
-            test(w.value.ae != null && !w.value.hasAf());
+            test(w.value.fse != null && !w.value.hasFsf());
         }
         out.println("ok");
 
@@ -1943,25 +1943,24 @@ public class AllTests
 
         {
             F f = new F();
-            f.setAf(new A());
-            f.getAf().requiredA = 56;
-            f.ae = f.getAf();
+            f.setFsf(new FixedStruct());
+            f.getFsf().m = 56;
+            f.fse = f.getFsf();
 
             os = new OutputStream(communicator);
             os.startEncapsulation();
             os.writeOptional(1, OptionalFormat.Class);
             os.writeValue(f);
-            os.writeOptional(2, OptionalFormat.Class);
-            os.writeValue(f.ae);
+            os.writeOptional(2, OptionalFormat.F4);
+            os.writeInt(f.fse.m);
             os.endEncapsulation();
             inEncaps = os.finished();
 
             in = new InputStream(communicator, inEncaps);
             in.startEncapsulation();
-            final Wrapper<java.util.Optional<A>> w = new Wrapper<>();
-            in.readValue(2, v -> w.value = v, A.class);
+            java.util.OptionalInt fse_m = in.readInt(2);
             in.endEncapsulation();
-            test(w.value.get() != null && w.value.get().requiredA == 56);
+            test(fse_m.isPresent() && fse_m.getAsInt() == 56);
         }
         out.println("ok");
 
@@ -2272,11 +2271,11 @@ public class AllTests
             _f = new F();
             in.startValue();
             in.startSlice();
-            // Don't read af on purpose
-            //in.read(1, _f.af);
+            // Don't read fsf on purpose
+            //in.read(1, _f.fsf);
             in.endSlice();
             in.startSlice();
-            in.readValue(v -> _f.ae = v, A.class);
+            _f.fse = new FixedStruct(in.readInt());
             in.endSlice();
             in.endValue();
         }

@@ -313,12 +313,12 @@ export class Client extends TestHelper
         test(b.md == 13);
         out.writeLine("ok");
 
-        out.write("testing marshaling of objects with optional objects... ");
+        out.write("testing marshaling of objects with optional members... ");
         let f = new Test.F();
-        f.af = new Test.A();
-        f.ae = f.af;
+        f.fsf = new Test.FixedStruct(56);
+        f.fse = f.fsf;
         f = await initial.pingPong(f) as Test.F;
-        test(f.ae === f.af);
+        test(f.fse.m == f.fsf.m);
         out.writeLine("ok");
 
         out.write("testing optional with default values... ");

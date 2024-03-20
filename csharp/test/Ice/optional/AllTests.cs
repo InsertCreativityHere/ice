@@ -445,16 +445,16 @@ namespace Ice
                 }
                 output.WriteLine("ok");
 
-                output.Write("testing marshalling of objects with optional objects...");
+                output.Write("testing marshalling of objects with optional members...");
                 output.Flush();
                 {
                     Test.F f = new Test.F();
 
-                    f.af = new Test.A();
-                    f.ae =(Test.A)f.af;
+                    f.fsf = new Test.FixedStruct(56);
+                    f.fse = f.fsf.Value;
 
-                    Test.F rf =(Test.F)initial.pingPong(f);
-                    test(rf.ae == rf.af.Value);
+                    Test.F rf = (Test.F)initial.pingPong(f);
+                    test(rf.fse == rf.fsf.Value);
 
                     factory.setEnabled(true);
                     os = new Ice.OutputStream(communicator);
@@ -469,7 +469,7 @@ namespace Ice
                     @in.endEncapsulation();
                     factory.setEnabled(false);
                     rf =((FValueReader)rocb.obj).getF();
-                    test(rf.ae != null && !rf.af.HasValue);
+                    test(rf.fse != null && !rf.fsf.HasValue);
                 }
                 output.WriteLine("ok");
 
@@ -1807,27 +1807,24 @@ namespace Ice
                     @in.endEncapsulation();
 
                     Test.F f = new Test.F();
-                    f.af = new Test.A();
-                    f.af.Value.requiredA = 56;
-                    f.ae = f.af.Value;
+                    f.fsf = new Test.FixedStruct(56);
+                    f.fse = f.fsf.Value;
 
                     os = new OutputStream(communicator);
                     os.startEncapsulation();
                     os.writeOptional(1, OptionalFormat.Class);
                     os.writeValue(f);
-                    os.writeOptional(2, OptionalFormat.Class);
-                    os.writeValue(f.ae);
+                    os.writeOptional(2, OptionalFormat.VSize);
+                    os.writeInt(f.fse.m);
                     os.endEncapsulation();
                     inEncaps = os.finished();
 
                     @in = new InputStream(communicator, inEncaps);
                     @in.startEncapsulation();
-                    test(@in.readOptional(2, OptionalFormat.Class));
-                    ReadValueCallbackI rocb = new ReadValueCallbackI();
-                    @in.readValue(rocb.invoke);
+                    test(@in.readOptional(2, OptionalFormat.VSize));
+                    int fse_m = @in.readInt();
                     @in.endEncapsulation();
-                    Test.A a = (Test.A)rocb.obj;
-                    test(a != null && a.requiredA == 56);
+                    test(fse_m == 56);
                 }
 
                 {
@@ -2273,15 +2270,14 @@ namespace Ice
                     _f = new Test.F();
                     @in.startValue();
                     @in.startSlice();
-                    // Don't read af on purpose
-                    //in.read(1, _f.af);
+                    // Don't read fsf on purpose
+                    //in.read(1, _f.fsf);
                     @in.endSlice();
                     @in.startSlice();
-                    ReadValueCallbackI rocb = new ReadValueCallbackI();
-                    @in.readValue(rocb.invoke);
+                    int m = @in.readInt();
                     @in.endSlice();
                     @in.endValue();
-                    _f.ae =(Test.A)rocb.obj;
+                    _f.fse = new Test.FixedStruct(m);
                 }
 
                 public Test.F getF()

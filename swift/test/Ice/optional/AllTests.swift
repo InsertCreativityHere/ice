@@ -132,11 +132,11 @@ class FValueReader: Ice.Value {
         _f = F()
         istr.startValue()
         _ = try istr.startSlice()
-        // Don't read af on purpose
-        // in.read(1, _f.af);
+        // Don't read fsf on purpose
+        // in.read(1, _f.fsf);
         try istr.endSlice()
         _ = try istr.startSlice()
-        try istr.read(A.self) { self._f.ae = $0 }
+        try istr.read(FixedStruct.self) { self._f.fse = $0 }
         try istr.endSlice()
         _ = try istr.endValue()
     }
@@ -649,15 +649,15 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
     }
     output.writeLine("ok")
 
-    output.write("testing marshalling of objects with optional objects...")
+    output.write("testing marshalling of objects with optional members...")
     do {
         let f = F()
 
-        f.af = A()
-        f.ae = f.af
+        f.fsf = FixedStruct(m: 79)
+        f.fse = f.fsf
 
         var rf = try initial.pingPong(f) as! F
-        try test(rf.ae === rf.af)
+        try test(rf.fse === rf.fsf)
 
         factory.setEnabled(enabled: true)
         let ostr = Ice.OutputStream(communicator: communicator)
@@ -672,7 +672,7 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
         try istr.endEncapsulation()
         factory.setEnabled(enabled: false)
         rf = (v as! FValueReader).getF()!
-        try test(rf.ae != nil && rf.af == nil)
+        try test(rf.fse != nil && rf.fsf == nil)
     }
     output.writeLine("ok")
 
@@ -2967,23 +2967,23 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
         try istr.endEncapsulation()
 
         let f = F()
-        f.af = A()
-        f.af!.requiredA = 56
-        f.ae = f.af
+        f.fsf = FixedStruct()
+        f.fsf!.m = 56
+        f.fse = f.fsf
 
         ostr = Ice.OutputStream(communicator: communicator)
         ostr.startEncapsulation()
         ostr.write(tag: 1, value: f)
-        ostr.write(tag: 2, value: f.ae)
+        ostr.write(tag: 2, value: f.fse)
         ostr.endEncapsulation()
         inEncaps = ostr.finished()
 
         istr = Ice.InputStream(communicator: communicator, bytes: inEncaps)
         _ = try istr.startEncapsulation()
-        var a: Value?
+        var ofs: FixedStruct?
         try istr.read(tag: 2) { a = $0 }
         try istr.endEncapsulation()
-        try test(a != nil && (a as! A).requiredA == 56)
+        try test(ofs != nil && ofs.m == 56)
     }
 
     do {

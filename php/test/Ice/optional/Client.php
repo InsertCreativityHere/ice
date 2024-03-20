@@ -362,16 +362,16 @@ function allTests($helper)
 
     echo "ok\n";
 
-    echo "testing marshalling of objects with optional objects...";
+    echo "testing marshalling of objects with optional members...";
     flush();
 
     $f = new Test\F;
 
-    $f->af = new Test\A;
-    $f->ae = $f->af;
+    $f->fsf = new Test\FixedStruct(53);
+    $f->fse = $f->fsf;
 
     $rf = $initial->pingPong($f);
-    test($rf->ae == $rf->af);
+    test($rf->fse == $rf->fsf);
 
     echo "ok\n";
 

@@ -353,15 +353,15 @@ classdef AllTests
 
             fprintf('ok\n');
 
-            fprintf('testing marshalling of objects with optional objects... ');
+            fprintf('testing marshalling of objects with optional members... ');
 
             f = F();
 
-            f.af = A();
-            f.ae = f.af;
+            f.fsf = FixedStruct(56);
+            f.fse = f.fsf;
 
             rf = initial.pingPong(f);
-            assert(rf.ae == rf.af);
+            assert(rf.fse == rf.fsf);
 
             fprintf('ok\n');
 

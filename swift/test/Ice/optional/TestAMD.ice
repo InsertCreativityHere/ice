@@ -165,12 +165,12 @@ class OptionalWithCustom
 
 class E
 {
-    A ae;
+    FixedStruct fse;
 }
 
 class F extends E
 {
-    optional(1) A af;
+    optional(1) FixedStruct fsf;
 }
 
 class G1

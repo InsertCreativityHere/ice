@@ -204,11 +204,11 @@ public:
         _f = make_shared<F>();
         in->startValue();
         in->startSlice();
-        // Don't read af on purpose
-        // in.read(1, _f->af);
+        // Don't read fsf on purpose
+        // in.read(1, _f->fsf);
         in->endSlice();
         in->startSlice();
-        in->read(_f->ae);
+        in->read(_f->fse);
         in->endSlice();
         in->endValue();
     }
@@ -749,15 +749,15 @@ allTests(Test::TestHelper* helper, bool)
 
     cout << "ok" << endl;
 
-    cout << "testing marshalling of objects with optional objects..." << flush;
+    cout << "testing marshalling of objects with optional members..." << flush;
     {
         FPtr f = make_shared<F>();
 
-        f->af = make_shared<A>();
-        f->ae = *f->af;
+        f->fsf = FixedStruct{56};
+        f->fse = *f->fsf;
 
         FPtr rf = dynamic_pointer_cast<F>(initial->pingPong(f));
-        test(rf->ae == *rf->af);
+        test(rf->fse == *rf->fsf);
 
         factory->setEnabled(true);
         Ice::OutputStream out(communicator);
@@ -773,7 +773,7 @@ allTests(Test::TestHelper* helper, bool)
         factory->setEnabled(false);
 
         rf = dynamic_cast<FObjectReader*>(obj.get())->getF();
-        test(rf->ae && !rf->af);
+        test(rf->fse.m == 56 && !rf->fsf);
     }
     cout << "ok" << endl;
 
@@ -1243,23 +1243,22 @@ allTests(Test::TestHelper* helper, bool)
 
     {
         FPtr f = make_shared<F>();
-        f->af = make_shared<A>();
-        (*f->af)->requiredA = 56;
-        f->ae = *f->af;
+        f->fsf = FixedStruct();
+        (*f->fsf).m = 56;
+        f->fse = *f->fsf;
 
         Ice::OutputStream out(communicator);
         out.startEncapsulation();
         out.write(1, make_optional(f));
-        out.write(2, make_optional(f->ae));
+        out.write(2, make_optional(f->fse));
         out.endEncapsulation();
         out.finished(inEncaps);
 
         Ice::InputStream in(communicator, out.getEncoding(), inEncaps);
         in.startEncapsulation();
-        optional<APtr> a;
-        in.read(2, a);
+        in.read(2, ofs);
         in.endEncapsulation();
-        test(a && *a && (*a)->requiredA == 56);
+        test(ofs && (*ofs).m == 56);
     }
     cout << "ok" << endl;
 

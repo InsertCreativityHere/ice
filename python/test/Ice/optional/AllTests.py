@@ -393,16 +393,16 @@ def allTests(helper, communicator):
 
     print("ok")
 
-    sys.stdout.write("testing marshalling of objects with optional objects...")
+    sys.stdout.write("testing marshalling of objects with optional members...")
     sys.stdout.flush()
 
     f = Test.F()
 
-    f.af = Test.A()
-    f.ae = f.af
+    f.fsf = Test.FixedStruct(56)
+    f.fse = f.fsf
 
     rf = initial.pingPong(f)
-    test(rf.ae == rf.af)
+    test(rf.fse == rf.fsf)
 
     print("ok")
 

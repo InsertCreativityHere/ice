@@ -358,16 +358,16 @@ def allTests(helper, communicator)
 
     puts "ok"
 
-    print "testing marshalling of objects with optional objects..."
+    print "testing marshalling of objects with optional members..."
     STDOUT.flush
 
     f = Test::F.new
 
-    f.af = Test::A.new
-    f.ae = f.af
+    f.fsf = Test::FixedStruct.new(56)
+    f.fse = f.fsf
 
     rf = initial.pingPong(f)
-    test(rf.ae == rf.af)
+    test(rf.fse == rf.fsf)
 
     puts "ok"
 
