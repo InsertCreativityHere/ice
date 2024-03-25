@@ -2003,7 +2003,10 @@ namespace Ice
                     test(initial.opMStruct1().HasValue);
                     test(initial.opMDict1().HasValue);
                     test(initial.opMSeq1().HasValue);
-                    test(initial.opMG1().HasValue);
+                    {
+                        Test.G p1 = initial.opMG1();
+                        test(!p1.gg1Opt.HasValue && !p1.gg2Opt.HasValue);
+                    }
 
                     {
                         Ice.Optional<Test.SmallStruct> p1, p2, p3;
@@ -2036,13 +2039,18 @@ namespace Ice
                              Ice.CollectionComparer.Equals(p3.Value, p1.Value));
                     }
                     {
-                        Ice.Optional<Test.G> p1, p2, p3;
-                        p3 = initial.opMG2(Ice.Util.None, out p2);
-                        test(!p2.HasValue && !p3.HasValue);
-
+                        Test.G p1, p2, p3;
                         p1 = new Test.G();
+                        p1.gg1 = new Test.G1("gg1");
+                        p1.gg2 = new Test.G2(10);
+                        p1.gg2Opt = new Ice.Optional<Test.G2>(new Test.G2(20));
+
                         p3 = initial.opMG2(p1, out p2);
-                        test(p2.HasValue && p3.HasValue && p3.Value == p2.Value);
+                        test(p3 == p2);
+                        test(p2.gg1.a == "gg1");
+                        test(!p2.gg1Opt.HasValue);
+                        test(p2.gg2.a == 10);
+                        test(p2.gg2Opt.HasValue && p2.gg2Opt.Value.a == 20);
                     }
                 }
                 output.WriteLine("ok");

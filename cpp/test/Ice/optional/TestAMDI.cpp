@@ -510,7 +510,7 @@ InitialI::opMG1Async(
 
 void
 InitialI::opMG2Async(
-    optional<GPtr> p1,
+    GPtr p1,
     function<void(OpMG2MarshaledResult)> response,
     function<void(exception_ptr)>,
     const Ice::Current& current)

@@ -779,7 +779,10 @@ export class Client extends TestHelper
         test(await initial.opMStruct1() !== undefined);
         test(await initial.opMDict1() !== undefined);
         test(await initial.opMSeq1() !== undefined);
-        test(await initial.opMG1() !== undefined);
+        {
+            const p1 = await initial.opMG1();
+            test(p1.gg1Opt === undefined && p1.gg2Opt === undefined);
+        }
 
         {
             let [p3, p2] = await initial.opMStruct2();
@@ -809,12 +812,17 @@ export class Client extends TestHelper
             test(Ice.MapUtil.equals(p2, p1) && Ice.MapUtil.equals(p3, p1));
         }
         {
-            let [p3, p2] = await initial.opMG2();
-            test(p2 === undefined && p3 === undefined);
-
-            const p1 = new Test.G();
-            [p3, p2] = await initial.opMG2(p1);
-            test(p3 !== undefined && p2 !== undefined && p3 === p2);
+            let p1 = new Test.G();
+            p1.gg1 = new Test.G1("gg1");
+            p1.gg2 = new Test.G2(new Ice.Long(0, 10));
+            p1.gg2Opt = new Test.G2(new Ice.Long(0, 20));
+            
+            let [p3, p2] = await initial.opMG2(p1);
+            test(p3 === p2);
+            test(p2.gg1.a == "gg1");
+            test(p2.gg1Opt === undefined);
+            test(p2.gg2.a.equals(new Ice.Long(0, 10)));
+            test(p2.gg2Opt.a.equals(new Ice.Long(0, 20)));
         }
 
         out.writeLine("ok");

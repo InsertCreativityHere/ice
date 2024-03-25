@@ -367,7 +367,7 @@ namespace Ice
             }
 
             public override Test.Initial_OpMG2MarshaledResult
-            opMG2(Ice.Optional<Test.G> p1, Ice.Current current)
+            opMG2(Test.G p1, Ice.Current current)
             {
                 return new Test.Initial_OpMG2MarshaledResult(p1, p1, current);
             }

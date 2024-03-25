@@ -196,7 +196,7 @@ class InitialI: Initial {
         return FixedStruct(m: 53)
     }
 
-    func opG(g: G?, current _: Ice.Current) throws -> G? {
+    func opG(g: G, current _: Ice.Current) throws -> G {
         return g
     }
 
@@ -238,11 +238,11 @@ class InitialI: Initial {
         return (p1, p1)
     }
 
-    func opMG1(current _: Current) throws -> G? {
+    func opMG1(current _: Current) throws -> G {
         return G()
     }
 
-    func opMG2(p1: G?, current _: Current) throws -> (returnValue: G?, p2: G?) {
+    func opMG2(p1: G, current _: Current) throws -> (returnValue: G, p2: G) {
         return (p1, p1)
     }
 }

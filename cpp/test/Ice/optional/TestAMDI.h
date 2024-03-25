@@ -313,7 +313,7 @@ public:
         const Ice::Current&) final;
 
     void opMG2Async(
-        std::optional<Test::GPtr>,
+        Test::GPtr,
         std::function<void(OpMG2MarshaledResult)>,
         std::function<void(std::exception_ptr)>,
         const Ice::Current&) final;

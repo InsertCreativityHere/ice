@@ -169,12 +169,12 @@ class F extends E
     optional(1) FixedStruct fsf;
 }
 
-class G1
+struct G1
 {
     string a;
 }
 
-class G2
+struct G2
 {
     long a;
 }
@@ -330,8 +330,8 @@ interface Initial
     ["marshaled-result", "java:optional"] optional(1) StringIntDict opMDict2(optional(2) StringIntDict p1,
                                                                              out optional(3) StringIntDict p2);
 
-    ["marshaled-result", "java:optional"] optional(1) G opMG1();
-    ["marshaled-result", "java:optional"] optional(1) G opMG2(optional(2) G p1, out optional(3) G p2);
+    ["marshaled-result", "java:optional"] G opMG1();
+    ["marshaled-result", "java:optional"] G opMG2(G p1, out G p2);
 
     bool supportsRequiredParams();
 

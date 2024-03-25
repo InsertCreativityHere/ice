@@ -170,7 +170,7 @@ public:
 
     virtual OpMG1MarshaledResult opMG1(const Ice::Current&);
 
-    virtual OpMG2MarshaledResult opMG2(std::optional<Test::GPtr>, const Ice::Current&);
+    virtual OpMG2MarshaledResult opMG2(Test::GPtr, const Ice::Current&);
 
     virtual bool supportsRequiredParams(const Ice::Current&);
 

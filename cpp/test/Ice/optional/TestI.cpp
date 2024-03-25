@@ -397,7 +397,7 @@ InitialI::opMG1(const Ice::Current& current)
 }
 
 InitialI::OpMG2MarshaledResult
-InitialI::opMG2(optional<Test::GPtr> p1, const Ice::Current& current)
+InitialI::opMG2(Test::GPtr p1, const Ice::Current& current)
 {
     return OpMG2MarshaledResult(p1, p1, current);
 }

@@ -318,7 +318,7 @@ namespace Ice
                 }
 
                 public async override Task<Test.Initial_OpMG2MarshaledResult>
-                opMG2Async(Ice.Optional<Test.G> p1, Ice.Current current)
+                opMG2Async(Test.G p1, Ice.Current current)
                 {
                     await Task.Delay(0);
                     return new Test.Initial_OpMG2MarshaledResult(p1, p1, current);

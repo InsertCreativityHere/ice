@@ -809,7 +809,10 @@ def allTests(helper, communicator):
     test(initial.opMStruct1() != Ice.Unset)
     test(initial.opMDict1() != Ice.Unset)
     test(initial.opMSeq1() != Ice.Unset)
-    test(initial.opMG1() != Ice.Unset)
+    {
+        p1 = initial.opMG1()
+        test(p1.gg1Opt == Ice.Unset and p1.gg2Opt == Ice.Unset)
+    }
 
     (p3, p2) = initial.opMStruct2(Ice.Unset)
     test(p2 == Ice.Unset and p3 == Ice.Unset)
@@ -832,12 +835,16 @@ def allTests(helper, communicator):
     (p3, p2) = initial.opMDict2(p1)
     test(p2["test"] == 54 and p3["test"] == 54)
 
-    (p3, p2) = initial.opMG2(Ice.Unset)
-    test(p2 == Ice.Unset and p3 == Ice.Unset)
-
     p1 = Test.G()
-    (p3, p2) = initial.opMG2(p1)
-    test(p2 != Ice.Unset and p3 != Ice.Unset and p3 == p2)
+    p1.gg1 = Test.G1("gg1")
+    p1.gg2 = Test.G2(10)
+    p1.gg2Opt = Test.G2(20)
+    (p3, p2) = initial.opMG2(Ice.Unset)
+    test(p3 == p2)
+    test(p2.gg1.a == "gg1")
+    test(p2.gg1Opt == Ice.Unset)
+    test(p2.gg2.a == 10)
+    test(p2.gg2Opt.a == 20)
 
     print("ok")
 
