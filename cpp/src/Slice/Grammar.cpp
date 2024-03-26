@@ -2225,7 +2225,7 @@ yyreduce:
             // interfaces) also have constant values for `usesClasses` (true and false respectfully).
             if (m->type->usesClasses())
             {
-                currentUnit->error("types that use classes cannot be marked with 'tag'");
+                //currentUnit->error("types that use classes cannot be marked with 'tag'");
             }
 
             yyval = m;
@@ -2246,7 +2246,7 @@ yyreduce:
             // interfaces) also have constant values for `usesClasses` (true and false respectfully).
             if (m->type->usesClasses())
             {
-                currentUnit->error("types that use classes cannot be marked with 'optional'");
+                //currentUnit->error("types that use classes cannot be marked with 'optional'");
             }
 
             yyval = m;
@@ -2782,7 +2782,7 @@ yyreduce:
             // interfaces) also have constant values for `usesClasses` (true and false respectfully).
             if (m->type->usesClasses())
             {
-                currentUnit->error("types that use classes cannot be marked with 'tag'");
+                //currentUnit->error("types that use classes cannot be marked with 'tag'");
             }
 
             yyval = m;
@@ -2800,7 +2800,7 @@ yyreduce:
             // interfaces) also have constant values for `usesClasses` (true and false respectfully).
             if (m->type->usesClasses())
             {
-                currentUnit->error("types that use classes cannot be marked with 'optional'");
+                //currentUnit->error("types that use classes cannot be marked with 'optional'");
             }
 
             yyval = m;
