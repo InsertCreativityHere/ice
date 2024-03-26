@@ -556,9 +556,9 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
         g.gg1 = G1(a: "gg1")
         g = try initial.opG(g)
         try test(g.gg1Opt!.a == "gg1Opt")
-        try test(g.gg2.a == 10)
+        try test(g.gg2!.a == 10)
         try test(g.gg2Opt!.a == 20)
-        try test(g.gg1.a == "gg1")
+        try test(g.gg1!.a == "gg1")
 
         try initial.opVoid()
 
@@ -653,11 +653,11 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
     do {
         let f = F()
 
-        f.fsf = FixedStruct(m: 79)
-        f.fse = f.fsf
+        f.fse = FixedStruct(m: 79)
+        f.fsf = f.fse
 
         var rf = try initial.pingPong(f) as! F
-        try test(rf.fse === rf.fsf)
+        try test(rf.fse == rf.fsf)
 
         factory.setEnabled(enabled: true)
         let ostr = Ice.OutputStream(communicator: communicator)
@@ -672,7 +672,7 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
         try istr.endEncapsulation()
         factory.setEnabled(enabled: false)
         rf = (v as! FValueReader).getF()!
-        try test(rf.fse != nil && rf.fsf == nil)
+        try test(rf.fse.m = 79 && rf.fsf == nil)
     }
     output.writeLine("ok")
 
@@ -2967,9 +2967,9 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
         try istr.endEncapsulation()
 
         let f = F()
-        f.fsf = FixedStruct()
-        f.fsf!.m = 56
-        f.fse = f.fsf
+        f.fse = FixedStruct()
+        f.fse.m = 56
+        f.fsf = f.fse
 
         ostr = Ice.OutputStream(communicator: communicator)
         ostr.startEncapsulation()
@@ -2980,10 +2980,9 @@ func allTests(_ helper: TestHelper) throws -> InitialPrx {
 
         istr = Ice.InputStream(communicator: communicator, bytes: inEncaps)
         _ = try istr.startEncapsulation()
-        var ofs: FixedStruct?
-        try istr.read(tag: 2) { a = $0 }
+        var ofs: FixedStruct? = try istr.read(tag: 2)
         try istr.endEncapsulation()
-        try test(ofs != nil && ofs.m == 56)
+        try test(ofs != nil && ofs!.m == 56)
     }
 
     do {

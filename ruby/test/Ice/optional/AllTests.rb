@@ -714,7 +714,7 @@ def allTests(helper, communicator)
     test(initial.opMDict1() != Ice::Unset)
     test(initial.opMSeq1() != Ice::Unset)
     p1 = initial.opMG1()
-    test(p1.gg1Opt == Ice.Unset && p1.gg2Opt == Ice.Unset)
+    test(p1.gg1Opt == Ice::Unset && p1.gg2Opt == Ice::Unset)
 
     (p3, p2) = initial.opMStruct2(Ice::Unset)
     test(p2 == Ice::Unset && p3 == Ice::Unset)
