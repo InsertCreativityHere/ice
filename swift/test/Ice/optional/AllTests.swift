@@ -136,7 +136,7 @@ class FValueReader: Ice.Value {
         // in.read(1, _f.fsf);
         try istr.endSlice()
         _ = try istr.startSlice()
-        try istr.read(FixedStruct.self) { self._f.fse = $0 }
+        self._f.fse = try istr.read()
         try istr.endSlice()
         _ = try istr.endValue()
     }

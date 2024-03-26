@@ -630,7 +630,7 @@ allTests(Test::TestHelper* helper, bool)
     //
     // Test that optional parameters are handled correctly (ignored) with the 1.0 encoding.
     //
-    optional<FixedStruct> ofs{ in_place, 53 };
+    optional<FixedStruct> ofs{{53}};
 
     initial->sendOptionalStruct(true, ofs);
     initial->ice_encodingVersion(Ice::Encoding_1_0)->sendOptionalStruct(true, ofs);

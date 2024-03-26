@@ -423,7 +423,7 @@ InitialI::returnOptionalStructAsync(
     function<void(exception_ptr)>,
     const Ice::Current&)
 {
-    response(make_optional<FixedStruct>(53));
+    response(make_optional(FixedStruct{53}));
 }
 
 void

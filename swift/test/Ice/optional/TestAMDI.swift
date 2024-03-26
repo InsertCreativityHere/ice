@@ -191,7 +191,7 @@ class InitialI: Initial {
         return Promise.value(FixedStruct(m: 53))
     }
 
-    func opGAsync(g: G, current _: Current) -> Promise<G> {
+    func opGAsync(g: G?, current _: Current) -> Promise<G?> {
         return Promise.value(g)
     }
 
@@ -225,11 +225,11 @@ class InitialI: Initial {
         return Promise.value((p1, p1))
     }
 
-    func opMG1Async(current _: Current) -> Promise<G> {
+    func opMG1Async(current _: Current) -> Promise<G?> {
         return Promise.value(G())
     }
 
-    func opMG2Async(p1: G, current _: Current) -> Promise<(returnValue: G, p2: G)> {
+    func opMG2Async(p1: G?, current _: Current) -> Promise<(returnValue: G?, p2: G?)> {
         return Promise.value((p1, p1))
     }
 
