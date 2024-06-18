@@ -711,8 +711,7 @@ public interface ObjectPrx {
       try {
         boolean ok = p.ice_isA(ice_staticId, context);
         assert (ok);
-        r = new _ObjectPrxI();
-        r._copyFrom(p);
+        r = new _ObjectPrxI(p);
       } catch (FacetNotExistException ex) {
       }
     }
@@ -741,8 +740,7 @@ public interface ObjectPrx {
     ObjectPrx r = null;
     if (obj != null) {
       ObjectPrx p = obj.ice_facet(facet);
-      r = new _ObjectPrxI();
-      r._copyFrom(p);
+      r = new _ObjectPrxI(p);
     }
     return r;
   }

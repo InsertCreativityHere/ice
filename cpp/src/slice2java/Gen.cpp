@@ -4355,6 +4355,7 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     close();
 
     string absolute = getUnqualified(p, "", "_", "PrxI");
+    string className = "_" + p->name() + "PrxI";
 
     open(absolute, p->file());
 
@@ -4366,10 +4367,28 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     {
         outi << nl << "@Deprecated";
     }
-    outi << nl << "public class _" << p->name() << "PrxI";
+    outi << nl << "public class " << className;
     outi << " extends com.zeroc.Ice._ObjectPrxIWrapper<" << p->name() << "Prx>";
     outi << " implements " << p->name() << "Prx";
     outi << sb;
+
+    // Default constructor. TODO: Do we still need this?
+    outi << sp;
+    outi << nl << "public " << className << "() {}";
+
+    // Reference constructor.
+    outi << sp;
+    outi << nl << "public " << className << "(com.zeroc.IceInternal.Reference ref)";
+    outi << sb;
+    outi << nl << "super(ref);";
+    outi << eb;
+
+    // Copy constructor.
+    outi << sp;
+    outi << nl << "public " << className << "(com.zeroc.Ice.ObjectPrx proxy)";
+    outi << sb;
+    outi << nl << "super(proxy);";
+    outi << eb;
 
     outi << sp;
     writeHiddenDocComment(outi);

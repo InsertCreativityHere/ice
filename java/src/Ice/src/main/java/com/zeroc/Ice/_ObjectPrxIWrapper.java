@@ -9,7 +9,18 @@ package com.zeroc.Ice;
  *     applications do not need to downcast to the derived proxy type.
  */
 @SuppressWarnings("unchecked")
-public class _ObjectPrxIWrapper<T extends ObjectPrx> extends _ObjectPrxI {
+public abstract class _ObjectPrxIWrapper<T extends ObjectPrx> extends _ObjectPrxI {
+  // Default constructor. TODO: Do we still need this?
+  protected _ObjectPrxIWrapper() {}
+
+  protected _ObjectPrxIWrapper(com.zeroc.IceInternal.Reference ref) {
+    super(ref);
+  }
+
+  protected _ObjectPrxIWrapper(ObjectPrx proxy) {
+    super(proxy);
+  }
+
   @Override
   public T ice_context(java.util.Map<String, String> newContext) {
     return (T) super.ice_context(newContext);
