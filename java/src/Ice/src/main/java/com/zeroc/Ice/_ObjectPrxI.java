@@ -342,15 +342,6 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
   }
 
   @Override
-  public void _copyFrom(ObjectPrx p) {
-    synchronized (p) {
-      _ObjectPrxI h = (_ObjectPrxI) p;
-      _reference = h._reference;
-      _requestHandler = h._requestHandler;
-    }
-  }
-
-  @Override
   public com.zeroc.IceInternal.Reference _getReference() {
     return _reference;
   }
