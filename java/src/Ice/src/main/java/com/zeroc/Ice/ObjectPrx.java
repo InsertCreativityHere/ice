@@ -772,13 +772,6 @@ public interface ObjectPrx {
   com.zeroc.IceInternal.Reference _getReference();
 
   /**
-   * @hidden
-   * @param r -
-   * @return -
-   */
-  ObjectPrx _newInstance(com.zeroc.IceInternal.Reference r);
-
-  /**
    * A special empty context that is indistinguishable from the absence of a context parameter. For
    * example, <code>prx.op(noExplicitContext)</code> is the same as <code>prx.op()</code> and does
    * not override the current implicit context (if any).

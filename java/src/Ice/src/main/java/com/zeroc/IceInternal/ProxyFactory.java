@@ -45,9 +45,7 @@ public final class ProxyFactory {
 
   public com.zeroc.Ice.ObjectPrx referenceToProxy(Reference ref) {
     if (ref != null) {
-      com.zeroc.Ice._ObjectPrxI proxy = new com.zeroc.Ice._ObjectPrxI();
-      proxy._setup(ref);
-      return proxy;
+      return new com.zeroc.Ice._ObjectPrxI(ref);
     } else {
       return null;
     }

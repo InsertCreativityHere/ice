@@ -21,6 +21,10 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
     _requestHandler = source._requestHandler;
   }
 
+  public _ObjectPrxI(com.zeroc.IceInternal.Reference ref) {
+    _reference = ref;
+  }
+
   public Communicator ice_getCommunicator() {
     return _reference.getCommunicator();
   }
@@ -160,9 +164,7 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
     if (newIdentity.equals(_reference.getIdentity())) {
       return this;
     } else {
-      _ObjectPrxI proxy = new _ObjectPrxI();
-      proxy._setup(_reference.changeIdentity(newIdentity));
-      return proxy;
+      return new _ObjectPrxI(_reference.changeIdentity(newIdentity));
     }
   }
 
@@ -182,9 +184,7 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
     if (newFacet.equals(_reference.getFacet())) {
       return this;
     } else {
-      _ObjectPrxI proxy = new _ObjectPrxI();
-      proxy._setup(_reference.changeFacet(newFacet));
-      return proxy;
+      return new _ObjectPrxI(_reference.changeFacet(newFacet));
     }
   }
 
@@ -356,41 +356,8 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
   }
 
   @Override
-  public ObjectPrx _newInstance(com.zeroc.IceInternal.Reference ref) {
-    try {
-      _ObjectPrxI proxy = getClass().getDeclaredConstructor().newInstance();
-      proxy._setup(ref);
-      return proxy;
-    } catch (NoSuchMethodException ex) {
-      //
-      // Impossible
-      //
-      assert false;
-      return null;
-    } catch (java.lang.reflect.InvocationTargetException ex) {
-      //
-      // Impossible
-      //
-      assert false;
-      return null;
-    } catch (InstantiationException e) {
-      //
-      // Impossible
-      //
-      assert false;
-      return null;
-    } catch (IllegalAccessException e) {
-      //
-      // Impossible
-      //
-      assert false;
-      return null;
-    }
-  }
-
-  @Override
   public ObjectPrx ice_context(java.util.Map<String, String> newContext) {
-    return _newInstance(_getReference().changeContext(newContext));
+    return new _ObjectPrxI(_reference.changeContext(newContext));
   }
 
   @Override
@@ -399,22 +366,22 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
       newAdapterId = "";
     }
 
-    if (newAdapterId.equals(_getReference().getAdapterId())) {
+    if (newAdapterId.equals(_reference.getAdapterId())) {
       return this;
     } else {
-      return _newInstance(_getReference().changeAdapterId(newAdapterId));
+      return new _ObjectPrxI(_reference.changeAdapterId(newAdapterId));
     }
   }
 
   @Override
   public ObjectPrx ice_endpoints(Endpoint[] newEndpoints) {
-    if (java.util.Arrays.equals(newEndpoints, _getReference().getEndpoints())) {
+    if (java.util.Arrays.equals(newEndpoints, _reference.getEndpoints())) {
       return this;
     } else {
       com.zeroc.IceInternal.EndpointI[] edpts =
           new com.zeroc.IceInternal.EndpointI[newEndpoints.length];
       edpts = java.util.Arrays.asList(newEndpoints).toArray(edpts);
-      return _newInstance(_getReference().changeEndpoints(edpts));
+      return new _ObjectPrxI(_reference.changeEndpoints(edpts));
     }
   }
 
@@ -426,10 +393,10 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
     if (!(connection instanceof com.zeroc.Ice.ConnectionI)) {
       throw new IllegalArgumentException("invalid connection passed to ice_fixed");
     }
-    if (connection == _getReference().getConnection()) {
+    if (connection == _reference.getConnection()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeConnection((com.zeroc.Ice.ConnectionI) connection));
+      return new _ObjectPrxI(_reference.changeConnection((com.zeroc.Ice.ConnectionI) connection));
     }
   }
 
@@ -439,10 +406,10 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
       throw new IllegalArgumentException(
           "invalid value passed to ice_locatorCacheTimeout: " + newTimeout);
     }
-    if (newTimeout == _getReference().getLocatorCacheTimeout()) {
+    if (newTimeout == _reference.getLocatorCacheTimeout()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeLocatorCacheTimeout(newTimeout));
+      return new _ObjectPrxI(_reference.changeLocatorCacheTimeout(newTimeout));
     }
   }
 
@@ -452,141 +419,141 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
       throw new IllegalArgumentException(
           "invalid value passed to ice_invocationTimeout: " + newTimeout);
     }
-    if (newTimeout == _getReference().getInvocationTimeout()) {
+    if (newTimeout == _reference.getInvocationTimeout()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeInvocationTimeout(newTimeout));
+      return new _ObjectPrxI(_reference.changeInvocationTimeout(newTimeout));
     }
   }
 
   @Override
   public ObjectPrx ice_connectionCached(boolean newCache) {
-    if (newCache == _getReference().getCacheConnection()) {
+    if (newCache == _reference.getCacheConnection()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeCacheConnection(newCache));
+      return new _ObjectPrxI(_reference.changeCacheConnection(newCache));
     }
   }
 
   @Override
   public ObjectPrx ice_endpointSelection(EndpointSelectionType newType) {
-    if (newType == _getReference().getEndpointSelection()) {
+    if (newType == _reference.getEndpointSelection()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeEndpointSelection(newType));
+      return new _ObjectPrxI(_reference.changeEndpointSelection(newType));
     }
   }
 
   @Override
   public ObjectPrx ice_secure(boolean b) {
-    if (b == _getReference().getSecure()) {
+    if (b == _reference.getSecure()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeSecure(b));
+      return new _ObjectPrxI(_reference.changeSecure(b));
     }
   }
 
   @Override
   public ObjectPrx ice_encodingVersion(EncodingVersion e) {
-    if (e.equals(_getReference().getEncoding())) {
+    if (e.equals(_reference.getEncoding())) {
       return this;
     } else {
-      return _newInstance(_getReference().changeEncoding(e));
+      return new _ObjectPrxI(_reference.changeEncoding(e));
     }
   }
 
   @Override
   public ObjectPrx ice_preferSecure(boolean b) {
-    if (b == _getReference().getPreferSecure()) {
+    if (b == _reference.getPreferSecure()) {
       return this;
     } else {
-      return _newInstance(_getReference().changePreferSecure(b));
+      return new _ObjectPrxI(_reference.changePreferSecure(b));
     }
   }
 
   @Override
   public ObjectPrx ice_router(RouterPrx router) {
-    com.zeroc.IceInternal.Reference ref = _getReference().changeRouter(router);
-    if (ref.equals(_getReference())) {
+    com.zeroc.IceInternal.Reference ref = _reference.changeRouter(router);
+    if (ref.equals(_reference)) {
       return this;
     } else {
-      return _newInstance(ref);
+      return new _ObjectPrxI(ref);
     }
   }
 
   @Override
   public ObjectPrx ice_locator(LocatorPrx locator) {
-    com.zeroc.IceInternal.Reference ref = _getReference().changeLocator(locator);
-    if (ref.equals(_getReference())) {
+    com.zeroc.IceInternal.Reference ref = _reference.changeLocator(locator);
+    if (ref.equals(_reference)) {
       return this;
     } else {
-      return _newInstance(ref);
+      return new _ObjectPrxI(ref);
     }
   }
 
   @Override
   public ObjectPrx ice_collocationOptimized(boolean b) {
-    if (b == _getReference().getCollocationOptimized()) {
+    if (b == _reference.getCollocationOptimized()) {
       return this;
     } else {
-      return _newInstance(_getReference().changeCollocationOptimized(b));
+      return new _ObjectPrxI(_reference.changeCollocationOptimized(b));
     }
   }
 
   @Override
   public ObjectPrx ice_twoway() {
-    if (_getReference().getMode() == com.zeroc.IceInternal.Reference.ModeTwoway) {
+    if (_reference.getMode() == com.zeroc.IceInternal.Reference.ModeTwoway) {
       return this;
     } else {
-      return _newInstance(_getReference().changeMode(com.zeroc.IceInternal.Reference.ModeTwoway));
+      return new _ObjectPrxI(_reference.changeMode(com.zeroc.IceInternal.Reference.ModeTwoway));
     }
   }
 
   @Override
   public ObjectPrx ice_oneway() {
-    if (_getReference().getMode() == com.zeroc.IceInternal.Reference.ModeOneway) {
+    if (_reference.getMode() == com.zeroc.IceInternal.Reference.ModeOneway) {
       return this;
     } else {
-      return _newInstance(_getReference().changeMode(com.zeroc.IceInternal.Reference.ModeOneway));
+      return new _ObjectPrxI(_reference.changeMode(com.zeroc.IceInternal.Reference.ModeOneway));
     }
   }
 
   @Override
   public ObjectPrx ice_batchOneway() {
-    if (_getReference().getMode() == com.zeroc.IceInternal.Reference.ModeBatchOneway) {
+    if (_reference.getMode() == com.zeroc.IceInternal.Reference.ModeBatchOneway) {
       return this;
     } else {
-      return _newInstance(
-          _getReference().changeMode(com.zeroc.IceInternal.Reference.ModeBatchOneway));
+      return new _ObjectPrxI(
+          _reference.changeMode(com.zeroc.IceInternal.Reference.ModeBatchOneway));
     }
   }
 
   @Override
   public ObjectPrx ice_datagram() {
-    if (_getReference().getMode() == com.zeroc.IceInternal.Reference.ModeDatagram) {
+    if (_reference.getMode() == com.zeroc.IceInternal.Reference.ModeDatagram) {
       return this;
     } else {
-      return _newInstance(_getReference().changeMode(com.zeroc.IceInternal.Reference.ModeDatagram));
+      return new _ObjectPrxI(_reference.changeMode(com.zeroc.IceInternal.Reference.ModeDatagram));
     }
   }
 
   @Override
   public ObjectPrx ice_batchDatagram() {
-    if (_getReference().getMode() == com.zeroc.IceInternal.Reference.ModeBatchDatagram) {
+    if (_reference.getMode() == com.zeroc.IceInternal.Reference.ModeBatchDatagram) {
       return this;
     } else {
-      return _newInstance(
-          _getReference().changeMode(com.zeroc.IceInternal.Reference.ModeBatchDatagram));
+      return new _ObjectPrxI(
+          _reference.changeMode(com.zeroc.IceInternal.Reference.ModeBatchDatagram));
     }
   }
 
   @Override
   public ObjectPrx ice_compress(boolean co) {
-    com.zeroc.IceInternal.Reference ref = _getReference().changeCompress(co);
-    if (ref.equals(_getReference())) {
+    com.zeroc.IceInternal.Reference ref = _reference.changeCompress(co);
+    if (ref.equals(_reference)) {
       return this;
     } else {
-      return _newInstance(ref);
+      return new _ObjectPrxI(ref);
     }
   }
 
@@ -595,21 +562,21 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
     if (t < 1 && t != -1) {
       throw new IllegalArgumentException("invalid value passed to ice_timeout: " + t);
     }
-    com.zeroc.IceInternal.Reference ref = _getReference().changeTimeout(t);
-    if (ref.equals(_getReference())) {
+    com.zeroc.IceInternal.Reference ref = _reference.changeTimeout(t);
+    if (ref.equals(_reference)) {
       return this;
     } else {
-      return _newInstance(ref);
+      return new _ObjectPrxI(ref);
     }
   }
 
   @Override
   public ObjectPrx ice_connectionId(String connectionId) {
-    com.zeroc.IceInternal.Reference ref = _getReference().changeConnectionId(connectionId);
-    if (ref.equals(_getReference())) {
+    com.zeroc.IceInternal.Reference ref = _reference.changeConnectionId(connectionId);
+    if (ref.equals(_reference)) {
       return this;
     } else {
-      return _newInstance(ref);
+      return new _ObjectPrxI(ref);
     }
   }
 
@@ -724,21 +691,6 @@ public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
         }
       }
     }
-  }
-
-  //
-  // Only for use by ProxyFactory
-  //
-  public void _setup(com.zeroc.IceInternal.Reference ref) {
-    //
-    // No need to synchronize, as this operation is only called
-    // upon initial initialization.
-    //
-
-    assert (_reference == null);
-    assert (_requestHandler == null);
-
-    _reference = ref;
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
