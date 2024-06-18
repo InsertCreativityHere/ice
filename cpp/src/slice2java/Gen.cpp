@@ -4259,13 +4259,13 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     out << sb;
     out << nl << "try";
     out << sb;
-    out << nl << "boolean ok = obj.ice_isA(ice_staticId(), ctx);";
+    out << nl << "boolean ok = obj.ice_isA(ice_staticId(), context);";
     out << nl << "if (ok)";
     out << sb;
     out << nl << "return new " << prxIName << "(obj);";
     out << eb;
     out << eb;
-    out << nl << "catch (FacetNotExistException ex)" << sb << eb;
+    out << nl << "catch (com.zeroc.Ice.FacetNotExistException ex)" << sb << eb;
     out << eb;
     out << nl << "return null;";
     out << eb;
@@ -4295,7 +4295,7 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     out << nl << "static " << prxName << " checkedCast(com.zeroc.Ice.ObjectPrx obj, String facet, " << contextParam
         << ')';
     out << sb;
-    out << nl << "return (obj == null) ? null : checkedCast(obj.ice_facet(facet), ctx);";
+    out << nl << "return (obj == null) ? null : checkedCast(obj.ice_facet(facet), context);";
     out << eb;
 
     out << sp;
@@ -4378,6 +4378,19 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     outi << " extends com.zeroc.Ice._ObjectPrxIWrapper<" << prxName << ">";
     outi << " implements " << prxName;
     outi << sb;
+
+    // TODO: do we even need a default constructor anymore?
+    outi << sp;
+    outi << nl << "public " << prxIName << "()";
+    outi << sb;
+    outi << nl << "super();";
+    outi << eb;
+
+    outi << sp;
+    outi << nl << "public " << prxIName << "(com.zeroc.Ice.ObjectPrx obj)";
+    outi << sb;
+    outi << nl << "super(obj);";
+    outi << eb;
 
     outi << sp;
     writeHiddenDocComment(outi);

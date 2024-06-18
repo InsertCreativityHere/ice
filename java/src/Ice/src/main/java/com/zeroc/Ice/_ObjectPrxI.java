@@ -12,6 +12,15 @@ import java.util.concurrent.CompletableFuture;
 
 /** Concrete proxy implementation. */
 public class _ObjectPrxI implements ObjectPrx, java.io.Serializable {
+  // TODO: do we need a default constructor anymore?
+  public _ObjectPrxI() {}
+
+  public _ObjectPrxI(ObjectPrx obj) {
+    _ObjectPrxI source = (_ObjectPrxI) obj;
+    _reference = source._reference;
+    _requestHandler = source._requestHandler;
+  }
+
   public Communicator ice_getCommunicator() {
     return _reference.getCommunicator();
   }
