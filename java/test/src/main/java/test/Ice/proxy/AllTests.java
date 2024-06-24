@@ -755,20 +755,16 @@ public class AllTests {
     test(compObj.ice_timeout(10).ice_getTimeout().getAsInt() == 10);
     test(compObj.ice_timeout(20).ice_getTimeout().getAsInt() == 20);
 
-    com.zeroc.Ice.LocatorPrx loc1 =
-        com.zeroc.Ice.LocatorPrx.uncheckedCast(communicator.stringToProxy("loc1:tcp -p 10000"));
-    com.zeroc.Ice.LocatorPrx loc2 =
-        com.zeroc.Ice.LocatorPrx.uncheckedCast(communicator.stringToProxy("loc2:tcp -p 10000"));
+    var loc1 = com.zeroc.Ice.LocatorPrx.createProxy(communicator, "loc1:tcp -p 10000");
+    var loc2 = com.zeroc.Ice.LocatorPrx.createProxy(communicator, "loc2:tcp -p 10000");
     test(compObj.ice_locator(null).equals(compObj.ice_locator(null)));
     test(compObj.ice_locator(loc1).equals(compObj.ice_locator(loc1)));
     test(!compObj.ice_locator(loc1).equals(compObj.ice_locator(null)));
     test(!compObj.ice_locator(null).equals(compObj.ice_locator(loc2)));
     test(!compObj.ice_locator(loc1).equals(compObj.ice_locator(loc2)));
 
-    com.zeroc.Ice.RouterPrx rtr1 =
-        com.zeroc.Ice.RouterPrx.uncheckedCast(communicator.stringToProxy("rtr1:tcp -p 10000"));
-    com.zeroc.Ice.RouterPrx rtr2 =
-        com.zeroc.Ice.RouterPrx.uncheckedCast(communicator.stringToProxy("rtr2:tcp -p 10000"));
+    var rtr1 = com.zeroc.Ice.RouterPrx.createProxy(communicator, "rtr1:tcp -p 10000");
+    var rtr2 = com.zeroc.Ice.RouterPrx.createProxy(communicator, "rtr2:tcp -p 10000");
     test(compObj.ice_router(null).equals(compObj.ice_router(null)));
     test(compObj.ice_router(rtr1).equals(compObj.ice_router(rtr1)));
     test(!compObj.ice_router(rtr1).equals(compObj.ice_router(null)));
@@ -914,7 +910,7 @@ public class AllTests {
     out.print("testing encoding versioning... ");
     out.flush();
     String ref20 = "test -e 2.0:" + helper.getTestEndpoint(0);
-    MyClassPrx cl20 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref20));
+    var cl20 = MyClassPrx.createProxy(communicator, ref20);
     try {
       cl20.ice_ping();
       test(false);
@@ -923,7 +919,7 @@ public class AllTests {
     }
 
     String ref10 = "test -e 1.0:" + helper.getTestEndpoint(0);
-    MyClassPrx cl10 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref10));
+    var cl10 = MyClassPrx.createProxy(communicator, ref10);
     cl10.ice_ping();
     cl10.ice_encodingVersion(Util.Encoding_1_0).ice_ping();
     cl.ice_encodingVersion(Util.Encoding_1_0).ice_ping();
@@ -931,7 +927,7 @@ public class AllTests {
     // 1.3 isn't supported but since a 1.3 proxy supports 1.1, the
     // call will use the 1.1 encoding
     String ref13 = "test -e 1.3:" + helper.getTestEndpoint(0);
-    MyClassPrx cl13 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref13));
+    var cl13 = MyClassPrx.createProxy(communicator, ref13);
     cl13.ice_ping();
     cl13.ice_pingAsync().join();
 
@@ -972,7 +968,7 @@ public class AllTests {
     out.print("testing protocol versioning... ");
     out.flush();
     ref20 = "test -p 2.0:" + helper.getTestEndpoint(0);
-    cl20 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref20));
+    cl20 = MyClassPrx.createProxy(communicator, ref20);
     try {
       cl20.ice_ping();
       test(false);
@@ -981,13 +977,13 @@ public class AllTests {
     }
 
     ref10 = "test -p 1.0:" + helper.getTestEndpoint(0);
-    cl10 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref10));
+    cl10 = MyClassPrx.createProxy(communicator, ref10);
     cl10.ice_ping();
 
     // 1.3 isn't supported but since a 1.3 proxy supports 1.1, the
     // call will use the 1.1 protocol
     ref13 = "test -p 1.3:" + helper.getTestEndpoint(0);
-    cl13 = MyClassPrx.uncheckedCast(communicator.stringToProxy(ref13));
+    cl13 = MyClassPrx.createProxy(communicator, ref13);
     cl13.ice_ping();
     cl13.ice_pingAsync().join();
     out.println("ok");

@@ -284,7 +284,7 @@ public class AllTests {
       properties.setProperty("Ice.Override.ConnectTimeout", "250");
       properties.setProperty("Ice.Override.Timeout", "100");
       try (com.zeroc.Ice.Communicator comm = helper.initialize(properties)) {
-        TimeoutPrx to = TimeoutPrx.uncheckedCast(comm.stringToProxy(sref));
+        var to = TimeoutPrx.createProxy(comm, sref);
         connect(to);
         controller.holdAdapter(-1);
         try {
@@ -324,7 +324,7 @@ public class AllTests {
       }
 
       try (com.zeroc.Ice.Communicator comm = helper.initialize(properties)) {
-        TimeoutPrx to = TimeoutPrx.uncheckedCast(comm.stringToProxy(sref));
+        var to = TimeoutPrx.createProxy(comm, sref);
         controller.holdAdapter(-1);
         try {
           to.op();
