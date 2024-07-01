@@ -76,9 +76,9 @@ module Glacier2
         ["amd", "format:sliced"] Session* createSessionFromSecureConnection()
             throws PermissionDeniedException, CannotCreateSessionException;
 
-        /// Keep the session with this router alive. This operation is provided for backward compatibility with Ice 3.7
-        /// and earlier and does nothing in newer versions of Glacier2.
+        /// Keep the session with this router alive.
         /// @throws SessionNotExistException Raised if no session exists for the caller (client).
+        ["deprecated:This operation is provided for backward compatibility with Ice 3.5 and earlier and does nothing in newer versions of Glacier2."]
         void refreshSession()
             throws SessionNotExistException;
 
