@@ -193,7 +193,8 @@ IceInternal::Options::split(const string& line)
                     {
                         if (i < l.size() - 1 && l[i + 1] == '\'')
                         {
-                            state = ANSIQuote; // Bash uses $'<text>' to allow ANSI escape sequences within <text>.
+                            // Bash uses $'<text>' to allow ANSI escape sequences within <text>.
+                            state = ANSIQuote;
                             ++i;
                         }
                         else
