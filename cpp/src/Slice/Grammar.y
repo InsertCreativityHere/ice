@@ -1660,7 +1660,6 @@ enumerator_list
     {
         enumerator->setMetaData(metaData->v);
     }
-    $$ = enumerator;
 }
 | meta_data enumerator
 {
@@ -1670,7 +1669,6 @@ enumerator_list
     {
         enumerator->setMetaData(metaData->v);
     }
-    $$ = enumerator;
 }
 | %empty
 {
