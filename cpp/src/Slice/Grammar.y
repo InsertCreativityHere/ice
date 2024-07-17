@@ -1652,11 +1652,25 @@ ICE_ENUM
 // ----------------------------------------------------------------------
 enumerator_list
 // ----------------------------------------------------------------------
-: enumerator ',' enumerator_list
+: meta_data enumerator ',' enumerator_list
 {
+    auto metaData = dynamic_pointer_cast<StringListTok>($1);
+    auto enumerator = dynamic_pointer_cast<Enumerator>($2);
+    if (enumerator && !metaData->v.empty())
+    {
+        enumerator->setMetaData(metaData->v);
+    }
+    $$ = enumerator;
 }
-| enumerator
+| meta_data enumerator
 {
+    auto metaData = dynamic_pointer_cast<StringListTok>($1);
+    auto enumerator = dynamic_pointer_cast<Enumerator>($2);
+    if (enumerator && !metaData->v.empty())
+    {
+        enumerator->setMetaData(metaData->v);
+    }
+    $$ = enumerator;
 }
 | %empty
 {
