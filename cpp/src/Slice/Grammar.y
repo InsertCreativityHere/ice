@@ -1625,8 +1625,7 @@ enum_def
     auto en = dynamic_pointer_cast<Enum>($2);
     if (en)
     {
-        auto enumerators = dynamic_pointer_cast<EnumeratorListTok>($4);
-        if (enumerators->v.empty())
+        if (en->contents().empty())
         {
             currentUnit->error("enum `" + en->name() + "' must have at least one enumerator");
         }
@@ -1655,11 +1654,11 @@ enumerator_list
 // ----------------------------------------------------------------------
 : enumerator ',' enumerator_list
 {
-    auto ens = dynamic_pointer_cast<EnumeratorListTok>($1);
-    ens->v.splice(ens->v.end(), dynamic_pointer_cast<EnumeratorListTok>($3)->v);
-    $$ = ens;
 }
 | enumerator
+{
+}
+| %empty
 {
 }
 ;
@@ -1670,46 +1669,36 @@ enumerator
 : ICE_IDENTIFIER
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
-    auto ens = make_shared<EnumeratorListTok>();
     ContainerPtr cont = currentUnit->currentContainer();
     EnumeratorPtr en = cont->createEnumerator(ident->v);
-    if (en)
-    {
-        ens->v.push_front(en);
-    }
-    $$ = ens;
+    $$ = en;
 }
 | ICE_IDENTIFIER '=' enumerator_initializer
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
-    auto ens = make_shared<EnumeratorListTok>();
     ContainerPtr cont = currentUnit->currentContainer();
     auto intVal = dynamic_pointer_cast<IntegerTok>($3);
+
+    EnumeratorPtr en;
     if (intVal)
     {
         if (intVal->v < 0 || intVal->v > std::numeric_limits<int32_t>::max())
         {
             currentUnit->error("value for enumerator `" + ident->v + "' is out of range");
+            en = cont->createEnumerator(ident->v); // Dummy
         }
         else
         {
-            EnumeratorPtr en = cont->createEnumerator(ident->v, static_cast<int>(intVal->v));
-            ens->v.push_front(en);
+            en = cont->createEnumerator(ident->v, static_cast<int>(intVal->v));
         }
     }
-    $$ = ens;
+    $$ = en;
 }
 | keyword
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
     currentUnit->error("keyword `" + ident->v + "' cannot be used as enumerator");
-    auto ens = make_shared<EnumeratorListTok>(); // Dummy
-    $$ = ens;
-}
-| %empty
-{
-    auto ens = make_shared<EnumeratorListTok>();
-    $$ = ens; // Dummy
+    $$ = cont->createEnumerator(ident->v); // Dummy
 }
 ;
 
