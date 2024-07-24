@@ -1,8 +1,4 @@
-//
-// Copyright (c) ZeroC, Inc. All rights reserved.
-//
+// Copyright (c) ZeroC, Inc.
 
-/**
- * Ice Instrumentation API, used to observe Ice internal components such as threads and connections.
- */
+/** Ice Instrumentation API, used to observe Ice internal components such as threads and connections. */
 package com.zeroc.Ice.Instrumentation;
