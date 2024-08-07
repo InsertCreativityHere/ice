@@ -1697,7 +1697,7 @@ enumerator
         if (intVal->v < 0 || intVal->v > std::numeric_limits<int32_t>::max())
         {
             currentUnit->error("value for enumerator `" + ident->v + "' is out of range");
-            en = cont->createEnumerator(ident->v); // Dummy
+            en = cont->createEnumerator(ident->v, -1); // Dummy
         }
         else
         {

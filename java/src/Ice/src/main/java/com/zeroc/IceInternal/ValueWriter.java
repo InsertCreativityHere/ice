@@ -10,10 +10,10 @@ public final class ValueWriter {
   }
 
   private static void writeValue(
-      String name,
-      java.lang.Object value,
-      java.util.Map<java.lang.Object, java.lang.Object> objectTable,
-      com.zeroc.IceUtilInternal.OutputBase out) {
+      String name,                                                          null
+      java.lang.Object value,                                               this
+      java.util.Map<java.lang.Object, java.lang.Object> objectTable,        null
+      com.zeroc.IceUtilInternal.OutputBase out) {                           out
     if (value == null) {
       writeName(name, out);
       out.print("(null)");
