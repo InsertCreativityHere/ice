@@ -1710,6 +1710,7 @@ enumerator
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
     currentUnit->error("keyword `" + ident->v + "' cannot be used as enumerator");
+    ContainerPtr cont = currentUnit->currentContainer();
     $$ = cont->createEnumerator(ident->v); // Dummy
 }
 ;
