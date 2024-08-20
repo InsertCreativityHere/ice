@@ -12,8 +12,7 @@ package com.zeroc.Ice;
 public class OutputStream {
   /**
    * Constructing an OutputStream without providing a communicator means the stream will use the
-   * default encoding version, the default format for class encoding, and a non-direct buffer. You
-   * can supply a communicator later by calling initialize().
+   * default encoding version, the default format for class encoding, and a non-direct buffer.
    */
   public OutputStream() {
     this(false);
@@ -21,8 +20,7 @@ public class OutputStream {
 
   /**
    * Constructing an OutputStream without providing a communicator means the stream will use the
-   * default encoding version and the default format for class encoding. You can supply a
-   * communicator later by calling initialize().
+   * default encoding version and the default format for class encoding.
    *
    * @param direct Indicates whether to use a direct buffer.
    */
@@ -100,34 +98,6 @@ public class OutputStream {
       com.zeroc.IceInternal.Buffer buf,
       boolean adopt) {
     initialize(instance, encoding, new com.zeroc.IceInternal.Buffer(buf, adopt));
-  }
-
-  /**
-   * Initializes the stream to use the communicator's default encoding version and class encoding
-   * format.
-   *
-   * @param communicator The communicator to use when initializing the stream.
-   */
-  public void initialize(Communicator communicator) {
-    assert (communicator != null);
-    final com.zeroc.IceInternal.Instance instance = communicator.getInstance();
-    initialize(
-        instance,
-        instance.defaultsAndOverrides().defaultEncoding,
-        instance.cacheMessageBuffers() > 1);
-  }
-
-  /**
-   * Initializes the stream to use the given encoding version and the communicator's default class
-   * encoding format.
-   *
-   * @param communicator The communicator to use when initializing the stream.
-   * @param encoding The desired Ice encoding version.
-   */
-  public void initialize(Communicator communicator, EncodingVersion encoding) {
-    assert (communicator != null);
-    final com.zeroc.IceInternal.Instance instance = communicator.getInstance();
-    initialize(instance, encoding, instance.cacheMessageBuffers() > 1);
   }
 
   private void initialize(
@@ -1696,13 +1666,7 @@ public class OutputStream {
           //
           _stream.writeInt(p.getValue().intValue());
 
-          try {
-            p.getKey().ice_preMarshal();
-          } catch (java.lang.Exception ex) {
-            String s =
-                "exception raised by ice_preMarshal:\n" + com.zeroc.IceInternal.Ex.toString(ex);
-            _stream.instance().initializationData().logger.warning(s);
-          }
+          p.getKey().ice_preMarshal();
 
           p.getKey()._iceWrite(_stream);
         }
@@ -1986,12 +1950,7 @@ public class OutputStream {
       //
       _marshaledMap.put(v, ++_valueIdIndex);
 
-      try {
-        v.ice_preMarshal();
-      } catch (java.lang.Exception ex) {
-        String s = "exception raised by ice_preMarshal:\n" + com.zeroc.IceInternal.Ex.toString(ex);
-        _stream.instance().initializationData().logger.warning(s);
-      }
+      v.ice_preMarshal();
 
       _stream.writeSize(1); // Class instance marker.
       v._iceWrite(_stream);
