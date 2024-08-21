@@ -8,7 +8,10 @@ import com.zeroc.Ice.ReplyStatus;
 
 public final class TraceUtil {
   public static void traceSend(
-      com.zeroc.Ice.OutputStream str, Instance instace, com.zeroc.Ice.Logger logger, TraceLevels tl) {
+      com.zeroc.Ice.OutputStream str,
+      Instance instace,
+      com.zeroc.Ice.Logger logger,
+      TraceLevels tl) {
     if (tl.protocol >= 1) {
       int p = str.pos();
       com.zeroc.Ice.InputStream is =

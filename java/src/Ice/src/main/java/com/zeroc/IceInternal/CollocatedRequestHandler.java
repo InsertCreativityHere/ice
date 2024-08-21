@@ -168,7 +168,8 @@ public final class CollocatedRequestHandler implements RequestHandler {
     }
 
     com.zeroc.Ice.InputStream is =
-        new com.zeroc.Ice.InputStream(_reference.getInstance(), os.getEncoding(), os.getBuffer(), false);
+        new com.zeroc.Ice.InputStream(
+            _reference.getInstance(), os.getEncoding(), os.getBuffer(), false);
 
     if (requestCount > 0) {
       is.pos(Protocol.requestBatchHdr.length);

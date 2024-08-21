@@ -103,11 +103,10 @@ public final class EndpointFactoryManager {
         // and ask the factory to read the endpoint data from that stream to create
         // the actual endpoint.
         //
-        com.zeroc.Ice.OutputStream os =
-            new com.zeroc.Ice.OutputStream(_instance, Protocol.currentProtocolEncoding, false);
+        var os = new com.zeroc.Ice.OutputStream(Protocol.currentProtocolEncoding);
         os.writeShort(ue.type());
         ue.streamWrite(os);
-        com.zeroc.Ice.InputStream is =
+        var is =
             new com.zeroc.Ice.InputStream(
                 _instance, Protocol.currentProtocolEncoding, os.getBuffer(), true);
         is.pos(0);

@@ -190,7 +190,8 @@ public final class Current implements Cloneable {
     OutputStream ostr;
 
     if (requestId != 0) {
-      ostr = new OutputStream(adapter.getCommunicator(), Protocol.currentProtocolEncoding);
+      // The class format doesn't matter since we always encode user exceptions in Sliced format.
+      ostr = new OutputStream(Protocol.currentProtocolEncoding);
       ostr.writeBlob(Protocol.replyHdr);
       ostr.writeInt(requestId);
     } else {

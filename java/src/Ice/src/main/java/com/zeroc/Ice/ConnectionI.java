@@ -1206,7 +1206,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
       // As a result of this optimization, the only possible heartbeat in _sendStreams is the
       // first _sendStreams message.
       if (_sendStreams.isEmpty()) {
-        OutputStream os = new OutputStream(_instance, Protocol.currentProtocolEncoding);
+        OutputStream os = new OutputStream(Protocol.currentProtocolEncoding);
         os.writeBlob(Protocol.magic);
         Protocol.currentProtocol.ice_writeMembers(os);
         Protocol.currentProtocolEncoding.ice_writeMembers(os);
@@ -1261,7 +1261,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
     _readStream = new InputStream(instance, Protocol.currentProtocolEncoding);
     _readHeader = false;
     _readStreamPos = -1;
-    _writeStream = new OutputStream(instance, Protocol.currentProtocolEncoding);
+    _writeStream = new OutputStream(Protocol.currentProtocolEncoding);
     _writeStreamPos = -1;
     _upcallCount = 0;
     _state = StateNotInitialized;
@@ -1543,7 +1543,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
       //
       // Before we shut down, we send a close connection message.
       //
-      OutputStream os = new OutputStream(_instance, Protocol.currentProtocolEncoding);
+      OutputStream os = new OutputStream(Protocol.currentProtocolEncoding);
       os.writeBlob(Protocol.magic);
       Protocol.currentProtocol.ice_writeMembers(os);
       Protocol.currentProtocolEncoding.ice_writeMembers(os);
@@ -1935,8 +1935,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
           com.zeroc.IceInternal.BZip2.compress(
               uncompressed.getBuffer(), Protocol.headerSize, _compressionLevel);
       if (cbuf != null) {
-        OutputStream cstream =
-            new OutputStream(uncompressed.instance(), uncompressed.getEncoding(), cbuf, true);
+        var cstream = new OutputStream(uncompressed.getEncoding(), new Buffer(cbuf, true));
 
         //
         // Set compression status.
@@ -2499,8 +2498,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
 
     public void adopt() {
       if (adopt) {
-        OutputStream stream =
-            new OutputStream(this.stream.instance(), Protocol.currentProtocolEncoding);
+        var stream = new OutputStream(Protocol.currentProtocolEncoding);
         stream.swap(this.stream);
         this.stream = stream;
         adopt = false;

@@ -82,6 +82,28 @@ public class OutputStream {
     initialize(instance, encoding, direct);
   }
 
+  public OutputStream(com.zeroc.IceInternal.Instance instance, EncodingVersion encoding) {
+    initialize(instance, encoding, instance.cacheMessageBuffers() > 1);
+  }
+
+  public OutputStream(
+      com.zeroc.IceInternal.Instance instance, EncodingVersion encoding, boolean direct) {
+    initialize(instance, encoding, direct);
+  }
+
+  public OutputStream(EncodingVersion encoding) {
+    this(encoding, FormatType.CompactFormat, new com.zeroc.IceInternal.Buffer(false));
+  }
+
+  public OutputStream(EncodingVersion encoding, com.zeroc.IceInternal.Buffer buf) {
+    initialize(encoding, FormatType.CompactFormat, buf);
+  }
+
+  public OutputStream(
+      EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
+    initialize(encoding, format, buf);
+  }
+
   private void initialize(
       com.zeroc.IceInternal.Instance instance, EncodingVersion encoding, boolean direct) {
     initialize(instance, encoding, new com.zeroc.IceInternal.Buffer(direct));
@@ -95,11 +117,8 @@ public class OutputStream {
     initialize(encoding, instance.defaultsAndOverrides().defaultFormat, buf);
   }
 
-  public OutputStream(EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
-    initialize(encoding, format, buf);
-  }
-
-  private void initialize(EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
+  private void initialize(
+      EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
     _buf = buf;
     _closure = null;
     _encoding = encoding;
