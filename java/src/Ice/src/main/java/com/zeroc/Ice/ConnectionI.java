@@ -1630,7 +1630,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
           // (always zero for
           // validate connection).
           _writeStream.writeInt(Protocol.headerSize); // Message size.
-          TraceUtil.traceSend(_writeStream, _logger, _traceLevels);
+          TraceUtil.traceSend(_writeStream, _instance, _logger, _traceLevels);
           _writeStream.prepareWrite();
         }
 
@@ -1815,7 +1815,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
         message.stream.prepareWrite();
         message.prepared = true;
 
-        TraceUtil.traceSend(stream, _logger, _traceLevels);
+        TraceUtil.traceSend(stream, _instance, _logger, _traceLevels);
 
         //
         // Send the message.
@@ -1881,7 +1881,7 @@ public final class ConnectionI extends com.zeroc.IceInternal.EventHandler
     message.stream.prepareWrite();
     message.prepared = true;
     int op;
-    TraceUtil.traceSend(stream, _logger, _traceLevels);
+    TraceUtil.traceSend(stream, _instance, _logger, _traceLevels);
 
     // Send the message without blocking.
     if (_observer != null) {

@@ -164,11 +164,11 @@ public final class CollocatedRequestHandler implements RequestHandler {
       } else if (requestCount > 0) {
         fillInValue(os, Protocol.headerSize, requestCount);
       }
-      TraceUtil.traceSend(os, _logger, _traceLevels);
+      TraceUtil.traceSend(os, _reference.getInstance(), _logger, _traceLevels);
     }
 
     com.zeroc.Ice.InputStream is =
-        new com.zeroc.Ice.InputStream(os.instance(), os.getEncoding(), os.getBuffer(), false);
+        new com.zeroc.Ice.InputStream(_reference.getInstance(), os.getEncoding(), os.getBuffer(), false);
 
     if (requestCount > 0) {
       is.pos(Protocol.requestBatchHdr.length);
@@ -251,7 +251,7 @@ public final class CollocatedRequestHandler implements RequestHandler {
         // Adopt the OutputStream's buffer.
         var inputStream =
             new InputStream(
-                outputStream.instance(),
+                _reference.getInstance(),
                 outputStream.getEncoding(),
                 outputStream.getBuffer(),
                 true); // adopt: true

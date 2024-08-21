@@ -26,7 +26,6 @@ public class OutputStream {
    */
   public OutputStream(boolean direct) {
     _buf = new com.zeroc.IceInternal.Buffer(direct);
-    _instance = null;
     _closure = null;
     _encoding = com.zeroc.IceInternal.Protocol.currentEncoding;
     _format = FormatType.CompactFormat;
@@ -83,23 +82,6 @@ public class OutputStream {
     initialize(instance, encoding, direct);
   }
 
-  public OutputStream(com.zeroc.IceInternal.Instance instance, EncodingVersion encoding) {
-    initialize(instance, encoding, instance.cacheMessageBuffers() > 1);
-  }
-
-  public OutputStream(
-      com.zeroc.IceInternal.Instance instance, EncodingVersion encoding, boolean direct) {
-    initialize(instance, encoding, direct);
-  }
-
-  public OutputStream(
-      com.zeroc.IceInternal.Instance instance,
-      EncodingVersion encoding,
-      com.zeroc.IceInternal.Buffer buf,
-      boolean adopt) {
-    initialize(instance, encoding, new com.zeroc.IceInternal.Buffer(buf, adopt));
-  }
-
   private void initialize(
       com.zeroc.IceInternal.Instance instance, EncodingVersion encoding, boolean direct) {
     initialize(instance, encoding, new com.zeroc.IceInternal.Buffer(direct));
@@ -110,13 +92,18 @@ public class OutputStream {
       EncodingVersion encoding,
       com.zeroc.IceInternal.Buffer buf) {
     assert (instance != null);
+    initialize(encoding, instance.defaultsAndOverrides().defaultFormat, buf);
+  }
 
-    _instance = instance;
+  public OutputStream(EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
+    initialize(encoding, format, buf);
+  }
+
+  private void initialize(EncodingVersion encoding, FormatType format, com.zeroc.IceInternal.Buffer buf) {
     _buf = buf;
     _closure = null;
     _encoding = encoding;
-
-    _format = _instance.defaultsAndOverrides().defaultFormat;
+    _format = format;
 
     _encapsStack = null;
     _encapsCache = null;
@@ -143,10 +130,6 @@ public class OutputStream {
       _encapsCache.reset();
       _encapsStack = null;
     }
-  }
-
-  public com.zeroc.IceInternal.Instance instance() {
-    return _instance;
   }
 
   /**
@@ -197,8 +180,6 @@ public class OutputStream {
    * @param other The other stream.
    */
   public void swap(OutputStream other) {
-    assert (_instance == other._instance);
-
     com.zeroc.IceInternal.Buffer tmpBuf = other._buf;
     other._buf = _buf;
     _buf = tmpBuf;
@@ -1491,7 +1472,6 @@ public class OutputStream {
     _buf.expand(n);
   }
 
-  private com.zeroc.IceInternal.Instance _instance;
   private com.zeroc.IceInternal.Buffer _buf;
   private Object _closure;
   private FormatType _format;
