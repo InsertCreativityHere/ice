@@ -11,8 +11,7 @@ namespace Slice
     std::string fullPath(const std::string& path);
     std::string changeInclude(const std::string& path, const std::vector<std::string>& includePaths);
     std::string removeExtension(const std::string& path);
-    void emitError(const std::string& file, int line, const std::string& message);
-    void emitWarning(const std::string& file, int line, const std::string& message);
+    void emitDiagnostic(bool isWarning, const std::string& file, int line, const std::string& message);
     void emitRaw(const char* message);
     std::vector<std::string> filterMcppWarnings(const std::string& message);
     void

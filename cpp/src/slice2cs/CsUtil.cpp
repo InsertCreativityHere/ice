@@ -2010,7 +2010,7 @@ Slice::CsGenerator::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                 static const string csAttributePrefix = csPrefix + "attribute:";
                 if (!(s.find(csAttributePrefix) == 0 && s.size() > csAttributePrefix.size()))
                 {
-                    dc->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + oldS + "'");
+                    unit->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + oldS + "'");
                     continue;
                 }
             }
@@ -2113,8 +2113,6 @@ Slice::CsGenerator::MetadataVisitor::validate(const ContainedPtr& cont)
     StringList newLocalMetadata;
 
     const UnitPtr ut = cont->unit();
-    const DefinitionContextPtr dc = ut->findDefinitionContext(cont->file());
-    assert(dc);
 
     for (StringList::iterator p = localMetadata.begin(); p != localMetadata.end(); ++p)
     {
@@ -2220,7 +2218,7 @@ Slice::CsGenerator::MetadataVisitor::validate(const ContainedPtr& cont)
                 continue;
             }
 
-            dc->warning(InvalidMetadata, cont->file(), cont->line(), msg + " `" + oldS + "'");
+            ut->warning(InvalidMetadata, cont->file(), cont->line(), msg + " `" + oldS + "'");
             continue;
         }
         newLocalMetadata.push_back(s);

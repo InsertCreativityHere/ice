@@ -3,7 +3,6 @@
 #ifndef SLICE_PARSER_H
 #define SLICE_PARSER_H
 
-#include "Ice/LocalException.h"
 #include <array>
 #include <cstdint>
 #include <list>
@@ -19,14 +18,6 @@
 
 namespace Slice
 {
-    class CompilerException final : public Ice::LocalException
-    {
-    public:
-        using Ice::LocalException::LocalException;
-
-        const char* ice_id() const noexcept final;
-    };
-
     enum NodeType
     {
         Dummy,
@@ -198,15 +189,9 @@ namespace Slice
         std::string findMetadata(const std::string&) const;
         StringList getMetadata() const;
 
-        //
-        // Emit warning unless filtered out by [["suppress-warning"]]
-        //
-        void warning(WarningCategory, const std::string&, int, const std::string&) const;
-
-        void error(const std::string&, int, const std::string&) const;
+        bool suppressWarning(WarningCategory) const;
 
     private:
-        bool suppressWarning(WarningCategory) const;
         void initSuppressedWarnings();
 
         int _includeLevel;
@@ -987,8 +972,10 @@ namespace Slice
 
         void setSeenDefinition();
 
-        void error(const std::string&); // Not const because error count is increased
-        void warning(WarningCategory, const std::string&) const;
+        void error(const std::string& message);
+        void error(const std::string& file, int line, const std::string& message);
+        void warning(WarningCategory category, const std::string& message) const;
+        void warning(WarningCategory category, const std::string& file, int line, const std::string& message) const;
 
         ContainerPtr currentContainer() const;
         void pushContainer(const ContainerPtr&);

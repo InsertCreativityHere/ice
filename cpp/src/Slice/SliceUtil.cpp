@@ -210,7 +210,7 @@ Slice::removeExtension(const string& path)
 }
 
 void
-Slice::emitError(const string& file, int line, const string& message)
+Slice::emitDiagnostic(bool isWarning, const string& file, int line, const string& message)
 {
     if (!file.empty())
     {
@@ -220,23 +220,12 @@ Slice::emitError(const string& file, int line, const string& message)
             consoleErr << ':' << line;
         }
         consoleErr << ": ";
+    }
+    if (isWarning)
+    {
+        consoleErr << "warning: ";
     }
     consoleErr << message << endl;
-}
-
-void
-Slice::emitWarning(const string& file, int line, const string& message)
-{
-    if (!file.empty())
-    {
-        consoleErr << file;
-        if (line != -1)
-        {
-            consoleErr << ':' << line;
-        }
-        consoleErr << ": ";
-    }
-    consoleErr << "warning: " << message << endl;
 }
 
 void

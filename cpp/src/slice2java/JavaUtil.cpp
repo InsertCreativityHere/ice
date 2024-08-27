@@ -100,7 +100,7 @@ namespace
                         }
                         else
                         {
-                            dc->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + s + "'");
+                            unit->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + s + "'");
                             fileMetadata.remove(s);
                             continue;
                         }
@@ -160,9 +160,7 @@ namespace
             TypePtr returnType = p->returnType();
             StringList metadata = getMetadata(p);
 
-            UnitPtr unt = p->unit();
-            string file = p->file();
-            DefinitionContextPtr dc = unt->findDefinitionContext(p->file());
+            UnitPtr unit = p->unit();
 
             if (!returnType)
             {
@@ -171,7 +169,7 @@ namespace
                     string s = *q++;
                     if (s.find("java:type:", 0) == 0)
                     {
-                        dc->warning(
+                        unit->warning(
                             InvalidMetadata,
                             p->file(),
                             p->line(),
@@ -215,8 +213,7 @@ namespace
 
             const string file = p->file();
             int line = p->line();
-            const UnitPtr unt = p->unit();
-            const DefinitionContextPtr dc = unt->findDefinitionContext(file);
+            const UnitPtr unit = p->unit();
 
             for (StringList::const_iterator q = metadata.begin(); q != metadata.end();)
             {
@@ -231,7 +228,7 @@ namespace
                     BuiltinPtr builtin = dynamic_pointer_cast<Builtin>(p->type());
                     if (!builtin || builtin->kind() != Builtin::KindByte)
                     {
-                        dc->warning(
+                        unit->warning(
                             InvalidMetadata,
                             file,
                             line,
@@ -250,7 +247,7 @@ namespace
                                      builtin->kind() != Builtin::KindInt && builtin->kind() != Builtin::KindLong &&
                                      builtin->kind() != Builtin::KindFloat && builtin->kind() != Builtin::KindDouble))
                     {
-                        dc->warning(
+                        unit->warning(
                             InvalidMetadata,
                             file,
                             line,
@@ -301,10 +298,8 @@ namespace
             StringList metadata = cont->getMetadata();
             StringList result;
 
-            UnitPtr unt = cont->container()->unit();
+            UnitPtr unit = cont->container()->unit();
             string file = cont->file();
-            DefinitionContextPtr dc = unt->findDefinitionContext(file);
-            assert(dc);
 
             for (StringList::const_iterator p = metadata.begin(); p != metadata.end(); ++p)
             {
@@ -370,7 +365,7 @@ namespace
                         continue;
                     }
 
-                    dc->warning(InvalidMetadata, cont->file(), cont->line(), "ignoring invalid metadata `" + s + "'");
+                    unit->warning(InvalidMetadata, cont->file(), cont->line(), "ignoring invalid metadata `" + s + "'");
                 }
                 else
                 {
@@ -384,9 +379,7 @@ namespace
 
         StringList validateType(const SyntaxTreeBasePtr& p, const StringList& metadata, const string& file, int line)
         {
-            const UnitPtr unt = p->unit();
-            const DefinitionContextPtr dc = unt->findDefinitionContext(file);
-            assert(dc);
+            const UnitPtr unit = p->unit();
             StringList newMetadata;
             for (StringList::const_iterator i = metadata.begin(); i != metadata.end(); ++i)
             {
@@ -408,7 +401,7 @@ namespace
                         assert(b);
                         str = b->typeId();
                     }
-                    dc->warning(InvalidMetadata, file, line, "invalid metadata for " + str);
+                    unit->warning(InvalidMetadata, file, line, "invalid metadata for " + str);
                 }
                 else if (i->find("java:buffer") == 0)
                 {
@@ -426,18 +419,18 @@ namespace
                         }
                     }
 
-                    dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
+                    unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
                 }
                 else if (i->find("java:serializable:") == 0)
                 {
                     //
                     // Only valid in sequence definition which is checked in visitSequence
                     //
-                    dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
+                    unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
                 }
                 else if (i->find("delegate") == 0)
                 {
-                    dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
+                    unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
                 }
                 else if (i->find("java:implements:") == 0)
                 {
@@ -447,7 +440,7 @@ namespace
                     }
                     else
                     {
-                        dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
+                        unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
                     }
                 }
                 else if (i->find("java:package:") == 0)
@@ -459,7 +452,7 @@ namespace
                     }
                     else
                     {
-                        dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
+                        unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + *i + "'");
                     }
                 }
                 else
@@ -472,9 +465,7 @@ namespace
 
         StringList validateGetSet(const SyntaxTreeBasePtr& p, const StringList& metadata, const string& file, int line)
         {
-            const UnitPtr unt = p->unit();
-            const DefinitionContextPtr dc = unt->findDefinitionContext(file);
-            assert(dc);
+            const UnitPtr unit = p->unit();
             StringList newMetadata;
             for (StringList::const_iterator i = metadata.begin(); i != metadata.end(); ++i)
             {
@@ -497,7 +488,7 @@ namespace
                         assert(b);
                         str = b->typeId();
                     }
-                    dc->warning(InvalidMetadata, file, line, "invalid metadata for " + str);
+                    unit->warning(InvalidMetadata, file, line, "invalid metadata for " + str);
                     continue;
                 }
                 newMetadata.push_back(*i);
@@ -522,8 +513,7 @@ Slice::getSerialVersionUID(const ContainedPtr& p)
             ostringstream os;
             os << "missing serialVersionUID value for " << p->kindOf() << " `" << p->scoped()
                << "'; generating default value";
-            const DefinitionContextPtr dc = p->unit()->findDefinitionContext(p->file());
-            dc->warning(InvalidMetadata, "", -1, os.str());
+            p->unit()->warning(InvalidMetadata, "", -1, os.str());
         }
         else
         {
@@ -537,8 +527,7 @@ Slice::getSerialVersionUID(const ContainedPtr& p)
                 ostringstream os;
                 os << "ignoring invalid serialVersionUID for " << p->kindOf() << " `" << p->scoped()
                    << "'; generating default value";
-                const DefinitionContextPtr dc = p->unit()->findDefinitionContext(p->file());
-                dc->warning(InvalidMetadata, "", -1, os.str());
+                p->unit()->warning(InvalidMetadata, "", -1, os.str());
             }
         }
     }

@@ -819,10 +819,8 @@ CodeVisitor::visitDictionary(const DictionaryPtr& p)
 {
     TypePtr keyType = p->keyType();
     BuiltinPtr b = dynamic_pointer_cast<Builtin>(keyType);
-
     const UnitPtr unit = p->unit();
-    const DefinitionContextPtr dc = unit->findDefinitionContext(p->file());
-    assert(dc);
+
     if (b)
     {
         switch (b->kind())
@@ -849,7 +847,7 @@ CodeVisitor::visitDictionary(const DictionaryPtr& p)
     {
         // TODO: using 'InvalidMetadata' as our warning category for an unsupported key type feels weird.
         // See https://github.com/zeroc-ice/ice/issues/254
-        dc->warning(InvalidMetadata, p->file(), p->line(), "dictionary key type not supported in PHP");
+        unit->warning(InvalidMetadata, p->file(), p->line(), "dictionary key type not supported in PHP");
     }
 
     string type = getTypeVar(p);

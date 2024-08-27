@@ -39,12 +39,6 @@ compareTag(const T& lhs, const T& rhs)
     return lhs->tag() < rhs->tag();
 }
 
-const char*
-Slice::CompilerException::ice_id() const noexcept
-{
-    return "::Slice::CompilerException";
-}
-
 // Forward declare things from Bison and Flex the parser can use.
 extern int slice_parse();
 extern int slice_lineno;
@@ -171,22 +165,6 @@ Slice::DefinitionContext::getMetadata() const
     return _metadata;
 }
 
-void
-Slice::DefinitionContext::warning(WarningCategory category, const string& file, int line, const string& msg) const
-{
-    if (!suppressWarning(category))
-    {
-        emitWarning(file, line, msg);
-    }
-}
-
-void
-Slice::DefinitionContext::error(const string& file, int line, const string& msg) const
-{
-    emitError(file, line, msg);
-    throw CompilerException(__FILE__, __LINE__, msg);
-}
-
 bool
 Slice::DefinitionContext::suppressWarning(WarningCategory category) const
 {
@@ -231,7 +209,7 @@ Slice::DefinitionContext::initSuppressedWarnings()
                 {
                     ostringstream os;
                     os << "invalid category `" << s << "' in file metadata suppress-warning";
-                    warning(InvalidMetadata, "", -1, os.str());
+                    warning(InvalidMetadata, "", -1, os.str()); // TODO HERE
                 }
             }
         }
@@ -4869,20 +4847,29 @@ Slice::Unit::setSeenDefinition()
 void
 Slice::Unit::error(const string& s)
 {
-    emitError(currentFile(), currentLine(), s);
+    error(currentFile(), currentLine(), s);
+}
+
+void
+Slice::Unit::error(const string& file, int line, const string& message)
+{
+    emitDiagnostic(false, file, line, message);
     _errors++;
 }
 
 void
-Slice::Unit::warning(WarningCategory category, const string& msg) const
+Slice::Unit::warning(WarningCategory category, const string& message) const
 {
-    if (_definitionContextStack.empty())
+    warning(category, currentFile(), currentLine(), message);
+}
+
+void
+Slice::Unit::warning(WarningCategory category, const string& file, int line, const string& message) const
+{
+    // Only emit the warning if it isn't being suppressed in whatever context the parser is currently in.
+    if (_definitionContextStack.empty() || !_definitionContextStack.top()->suppressWarning(category))
     {
-        emitWarning(currentFile(), currentLine(), msg);
-    }
-    else
-    {
-        _definitionContextStack.top()->warning(category, currentFile(), currentLine(), msg);
+        emitDiagnostic(true, file, line, message);
     }
 }
 

@@ -772,7 +772,7 @@ Slice::Gen::generate(const UnitPtr& p)
                 {
                     ostringstream ostr;
                     ostr << "ignoring invalid file metadata `" << metadata << "'";
-                    dc->warning(InvalidMetadata, file, -1, ostr.str());
+                    p->warning(InvalidMetadata, file, -1, ostr.str());
                     fileMetadata.remove(metadata);
                 }
             }
@@ -786,7 +786,7 @@ Slice::Gen::generate(const UnitPtr& p)
                 {
                     ostringstream ostr;
                     ostr << "ignoring invalid file metadata `" << metadata << "'";
-                    dc->warning(InvalidMetadata, file, -1, ostr.str());
+                    p->warning(InvalidMetadata, file, -1, ostr.str());
                     fileMetadata.remove(metadata);
                 }
             }
@@ -895,8 +895,8 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
     for (const string& file : unit->allFiles())
     {
         DefinitionContextPtr dc = unit->findDefinitionContext(file);
-        StringList fileMetadata = dc->getMetadata();
         assert(dc);
+        StringList fileMetadata = dc->getMetadata();
         int headerExtension = 0;
         int sourceExtension = 0;
         int dllExport = 0;
@@ -933,7 +933,7 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                     {
                         ostringstream ostr;
                         ostr << "ignoring invalid file metadata `" << s << "': directive can appear only once per file";
-                        dc->warning(InvalidMetadata, file, -1, ostr.str());
+                        unit->warning(InvalidMetadata, file, -1, ostr.str());
                         fileMetadata.remove(s);
                     }
                     continue;
@@ -945,7 +945,7 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                     {
                         ostringstream ostr;
                         ostr << "ignoring invalid file metadata `" << s << "': directive can appear only once per file";
-                        dc->warning(InvalidMetadata, file, -1, ostr.str());
+                        unit->warning(InvalidMetadata, file, -1, ostr.str());
                         fileMetadata.remove(s);
                     }
                     continue;
@@ -957,7 +957,7 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                     {
                         ostringstream ostr;
                         ostr << "ignoring invalid file metadata `" << s << "': directive can appear only once per file";
-                        dc->warning(InvalidMetadata, file, -1, ostr.str());
+                        unit->warning(InvalidMetadata, file, -1, ostr.str());
 
                         fileMetadata.remove(s);
                     }
@@ -970,7 +970,7 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
 
                 ostringstream ostr;
                 ostr << "ignoring invalid file metadata `" << s << "'";
-                dc->warning(InvalidMetadata, file, -1, ostr.str());
+                unit->warning(InvalidMetadata, file, -1, ostr.str());
                 fileMetadata.remove(s);
             }
         }
@@ -1025,15 +1025,13 @@ Slice::Gen::MetadataVisitor::visitOperation(const OperationPtr& p)
     TypePtr returnType = p->returnType();
     if (!returnType)
     {
-        const DefinitionContextPtr dc = p->unit()->findDefinitionContext(p->file());
-        assert(dc);
         StringList metadata = p->getMetadata();
         for (StringList::const_iterator q = metadata.begin(); q != metadata.end();)
         {
             string s = *q++;
             if (s.find("cpp:type:") == 0 || s.find("cpp:view-type:") == 0 || s == "cpp:array")
             {
-                dc->warning(
+                p->unit()->warning(
                     InvalidMetadata,
                     p->file(),
                     p->line(),
@@ -1099,9 +1097,7 @@ Slice::Gen::MetadataVisitor::validate(
 {
     static const string cppPrefix = "cpp:";
 
-    const UnitPtr ut = cont->unit();
-    const DefinitionContextPtr dc = ut->findDefinitionContext(file);
-    assert(dc);
+    const UnitPtr unit = cont->unit();
     StringList newMetadata = metadata;
     for (const string& s : metadata)
     {
@@ -1109,7 +1105,7 @@ Slice::Gen::MetadataVisitor::validate(
         // for unknown "top-level" metadata.
         if (s.find("cpp11:") == 0 || s.find("cpp98:") == 0)
         {
-            dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
+            unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
             newMetadata.remove(s);
             continue;
         }
@@ -1167,7 +1163,7 @@ Slice::Gen::MetadataVisitor::validate(
             }
         }
 
-        dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
+        unit->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
         newMetadata.remove(s);
     }
     return newMetadata;

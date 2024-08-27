@@ -2987,7 +2987,7 @@ Slice::Python::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                     continue;
                 }
 
-                dc->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + s + "'");
+                unit->warning(InvalidMetadata, file, -1, "ignoring invalid file metadata `" + s + "'");
                 fileMetadata.remove(s);
             }
         }
@@ -3018,7 +3018,7 @@ Slice::Python::MetadataVisitor::visitModuleStart(const ModulePtr& p)
 
         if (s.find("python:") == 0)
         {
-            p->definitionContext()->warning(InvalidMetadata, p->file(), -1, "ignoring invalid metadata `" + s + "'");
+            p->unit()->warning(InvalidMetadata, p->file(), -1, "ignoring invalid metadata `" + s + "'");
             metadata.remove(s);
         }
     }
@@ -3122,8 +3122,6 @@ Slice::Python::MetadataVisitor::validateSequence(
     const StringList& metadata)
 {
     const UnitPtr ut = type->unit();
-    const DefinitionContextPtr dc = ut->findDefinitionContext(file);
-    assert(dc);
 
     static const string prefix = "python:";
     StringList newMetadata = metadata;
@@ -3181,7 +3179,7 @@ Slice::Python::MetadataVisitor::validateSequence(
                     }
                 }
             }
-            dc->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
+            ut->warning(InvalidMetadata, file, line, "ignoring invalid metadata `" + s + "'");
             newMetadata.remove(s);
         }
     }
@@ -3195,15 +3193,13 @@ Slice::Python::MetadataVisitor::reject(const ContainedPtr& cont)
     static const string prefix = "python:";
 
     const UnitPtr ut = cont->unit();
-    const DefinitionContextPtr dc = ut->findDefinitionContext(cont->file());
-    assert(dc);
 
     for (StringList::const_iterator p = localMetadata.begin(); p != localMetadata.end();)
     {
         string s = *p++;
         if (s.find(prefix) == 0)
         {
-            dc->warning(InvalidMetadata, cont->file(), cont->line(), "ignoring invalid metadata `" + s + "'");
+            ut->warning(InvalidMetadata, cont->file(), cont->line(), "ignoring invalid metadata `" + s + "'");
             localMetadata.remove(s);
         }
     }
