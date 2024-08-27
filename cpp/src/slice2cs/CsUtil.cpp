@@ -2017,7 +2017,7 @@ Slice::CsGenerator::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
             newFileMetadata.push_back(oldS);
         }
 
-        dc->setMetadata(newFileMetadata);
+        dc->setMetadata(newFileMetadata, unit);
     }
     return true;
 }
@@ -2111,8 +2111,6 @@ Slice::CsGenerator::MetadataVisitor::validate(const ContainedPtr& cont)
 
     StringList localMetadata = cont->getMetadata();
     StringList newLocalMetadata;
-
-    const UnitPtr ut = cont->unit();
 
     for (StringList::iterator p = localMetadata.begin(); p != localMetadata.end(); ++p)
     {
@@ -2218,7 +2216,7 @@ Slice::CsGenerator::MetadataVisitor::validate(const ContainedPtr& cont)
                 continue;
             }
 
-            ut->warning(InvalidMetadata, cont->file(), cont->line(), msg + " `" + oldS + "'");
+            cont->unit()->warning(InvalidMetadata, cont->file(), cont->line(), msg + " `" + oldS + "'");
             continue;
         }
         newLocalMetadata.push_back(s);

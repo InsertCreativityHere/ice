@@ -791,7 +791,7 @@ Slice::Gen::generate(const UnitPtr& p)
                 }
             }
         }
-        dc->setMetadata(fileMetadata);
+        dc->setMetadata(fileMetadata, p);
     }
 
     if (!dc->hasMetadata("cpp:no-default-include"))
@@ -974,7 +974,7 @@ Slice::Gen::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                 fileMetadata.remove(s);
             }
         }
-        dc->setMetadata(fileMetadata);
+        dc->setMetadata(fileMetadata, unit);
     }
 
     return true;

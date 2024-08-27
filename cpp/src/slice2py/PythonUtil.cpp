@@ -2991,7 +2991,7 @@ Slice::Python::MetadataVisitor::visitUnitStart(const UnitPtr& unit)
                 fileMetadata.remove(s);
             }
         }
-        dc->setMetadata(fileMetadata);
+        dc->setMetadata(fileMetadata, unit);
     }
     return true;
 }

@@ -106,7 +106,7 @@ namespace
                         }
                     };
                 }
-                dc->setMetadata(fileMetadata);
+                dc->setMetadata(fileMetadata, unit);
             }
             return true;
         }

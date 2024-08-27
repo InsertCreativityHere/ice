@@ -175,24 +175,24 @@ namespace Slice
     class DefinitionContext final
     {
     public:
-        DefinitionContext(int, const StringList&);
+        DefinitionContext(const UnitPtr& unit, int includeLevel, const StringList& metadata);
 
         std::string filename() const;
         int includeLevel() const;
         bool seenDefinition() const;
 
-        void setFilename(const std::string&);
+        void setFilename(const std::string& filename);
         void setSeenDefinition();
 
-        bool hasMetadata(const std::string&) const;
-        void setMetadata(const StringList&);
-        std::string findMetadata(const std::string&) const;
+        bool hasMetadata(const std::string& directive) const;
+        void setMetadata(const StringList& metadata, const UnitPtr& unit);
+        std::string findMetadata(const std::string& prefix) const;
         StringList getMetadata() const;
 
-        bool suppressWarning(WarningCategory) const;
+        bool suppressWarning(WarningCategory category) const;
 
     private:
-        void initSuppressedWarnings();
+        void initSuppressedWarnings(const UnitPtr& unit);
 
         int _includeLevel;
         StringList _metadata;
@@ -217,10 +217,11 @@ namespace Slice
         StringList seeAlso() const;  // Targets of @see tags.
 
         StringList returns() const; // Description of an operation's return value.
-        std::map<std::string, StringList>
-        parameters() const; // Parameter descriptions for an op. Key is parameter name.
-        std::map<std::string, StringList>
-        exceptions() const; // Exception descriptions for an op. Key is exception name.
+
+        // Parameter descriptions for an op. Key is parameter name.
+        std::map<std::string, StringList> parameters() const;
+        // Exception descriptions for an op. Key is exception name.
+        std::map<std::string, StringList> exceptions() const;
 
     private:
         bool _isDeprecated;

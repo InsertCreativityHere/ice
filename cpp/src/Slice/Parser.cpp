@@ -95,12 +95,12 @@ namespace Slice
 // DefinitionContext
 // ----------------------------------------------------------------------
 
-Slice::DefinitionContext::DefinitionContext(int includeLevel, const StringList& metadata)
+Slice::DefinitionContext::DefinitionContext(const UnitPtr& unit, int includeLevel, const StringList& metadata)
     : _includeLevel(includeLevel),
       _metadata(metadata),
       _seenDefinition(false)
 {
-    initSuppressedWarnings();
+    initSuppressedWarnings(unit);
 }
 
 string
@@ -140,10 +140,10 @@ Slice::DefinitionContext::hasMetadata(const string& directive) const
 }
 
 void
-Slice::DefinitionContext::setMetadata(const StringList& metadata)
+Slice::DefinitionContext::setMetadata(const StringList& metadata, const UnitPtr& unit)
 {
     _metadata = metadata;
-    initSuppressedWarnings();
+    initSuppressedWarnings(unit);
 }
 
 string
@@ -173,7 +173,7 @@ Slice::DefinitionContext::suppressWarning(WarningCategory category) const
 }
 
 void
-Slice::DefinitionContext::initSuppressedWarnings()
+Slice::DefinitionContext::initSuppressedWarnings(const UnitPtr& unit)
 {
     _suppressedWarnings.clear();
     const string prefix = "suppress-warning";
@@ -209,7 +209,7 @@ Slice::DefinitionContext::initSuppressedWarnings()
                 {
                     ostringstream os;
                     os << "invalid category `" << s << "' in file metadata suppress-warning";
-                    warning(InvalidMetadata, "", -1, os.str()); // TODO HERE
+                    unit->warning(InvalidMetadata, "", -1, os.str());
                 }
             }
         }
@@ -4832,7 +4832,7 @@ Slice::Unit::addFileMetadata(const StringList& metadata)
         // Append the file metadata to any existing metadata (e.g., default file metadata).
         StringList l = dc->getMetadata();
         copy(metadata.begin(), metadata.end(), back_inserter(l));
-        dc->setMetadata(l);
+        dc->setMetadata(l, _unit);
     }
 }
 
@@ -4907,7 +4907,7 @@ Slice::Unit::currentDefinitionContext() const
 void
 Slice::Unit::pushDefinitionContext()
 {
-    _definitionContextStack.push(make_shared<DefinitionContext>(_currentIncludeLevel, _defaultFileMetadata));
+    _definitionContextStack.push(make_shared<DefinitionContext>(_unit, _currentIncludeLevel, _defaultFileMetadata));
 }
 
 void
