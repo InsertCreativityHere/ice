@@ -1550,7 +1550,7 @@ SwiftGenerator::writeMarshalUnmarshalCode(
                 alias = m->name() + "_" + memberType;
                 out << nl << "typealias " << alias << " = " << memberType;
             }
-            args += (alias.empty() ? memberType : alias) + ".self";
+            args += fixIdent(alias.empty() ? memberType : alias) + ".self";
             out << nl << "try " << stream << ".read(" << args << ") { " << param << " = $0 "
                 << "}";
         }

@@ -94,8 +94,6 @@ namespace Slice
     using TypeList = std::list<TypePtr>;
     using StringSet = std::set<std::string>;
     using StringList = std::list<std::string>;
-    using TypeString = std::pair<TypePtr, std::string>;
-    using TypeStringList = std::list<TypeString>;
     using ContainedList = std::list<ContainedPtr>;
     using ModuleList = std::list<ModulePtr>;
     using ClassList = std::list<ClassDefPtr>;
@@ -163,6 +161,24 @@ namespace Slice
         virtual void visitConst(const ConstPtr& /*constDef*/) {}
 
         virtual bool shouldVisitIncludedDefinitions() const { return false; }
+    };
+
+    // ----------------------------------------------------------------------
+    // Metadata
+    // ----------------------------------------------------------------------
+
+    class Metadata final
+    {
+    public:
+        Metadata(const std::string& directive, const UnitPtr& unit);
+        std::string_view directive() const;
+        std::string_view file() const;
+        int line() const;
+
+    private:
+        std::string _directive;
+        std::string _file;
+        int _line;
     };
 
     // ----------------------------------------------------------------------
