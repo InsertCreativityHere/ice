@@ -57,8 +57,8 @@ exception as extends return
 
 interface friend
 {
-    guard goto(continue if, guard d, defer inline, switch private, do mutable, break* namespace,
-              func* new, switch* not, do* operator, int or, int protected, int public, int register)
+    guard goto(continue if, guard d, defer inline, switch private, do* mutable, break* namespace,
+              func* new, switch not, do* operator, int or, int protected, int public, int register)
         throws return, as;
 }
 
