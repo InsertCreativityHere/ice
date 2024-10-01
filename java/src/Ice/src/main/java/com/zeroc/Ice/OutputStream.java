@@ -10,6 +10,30 @@ package com.zeroc.Ice;
  * @see InputStream
  */
 public class OutputStream {
+
+
+
+
+
+    // TODO NEW THING
+    // equivalent to the old when `instance.defaultsAndOverrides().defaultFormat`
+    public OutputStream(EncodingVersion encoding, FormatType format, boolean direct) {
+        _buf = new Buffer(direct);
+        _encoding = encoding != null ? encoding : Protocol.currentEncoding;
+        _format = format != null ? format : FormatType.CompactFormat;
+    }
+
+    // TODO NEW THING
+    // equivalent to the old when `instance.defaultsAndOverrides().defaultFormat`
+    public OutputStream(Buffer buf, EncodingVersion encoding, FormatType format) {
+        _buf = new Buffer(buf, true);
+        _encoding = encoding != null ? encoding : Protocol.currentEncoding;
+        _format = format != null ? format : FormatType.CompactFormat;
+    }
+    // Is adopt always going to be true for this function??
+
+
+
     /**
      * Constructing an OutputStream without providing a communicator means the stream will use the
      * default encoding version, the default format for class encoding, and a non-direct buffer.
@@ -91,24 +115,15 @@ public class OutputStream {
     }
 
     public OutputStream(Instance instance, EncodingVersion encoding, Buffer buf, boolean adopt) {
-        initialize(instance, encoding, new Buffer(buf, adopt));
+        _buf = new Buffer(buf, adopt);
+        _encoding = encoding;
+        _format = instance.defaultsAndOverrides().defaultFormat;
     }
 
     private void initialize(Instance instance, EncodingVersion encoding, boolean direct) {
-        initialize(instance, encoding, new Buffer(direct));
-    }
-
-    private void initialize(Instance instance, EncodingVersion encoding, Buffer buf) {
-        assert (instance != null);
-
-        _buf = buf;
-        _closure = null;
+        _buf = new Buffer(direct);
         _encoding = encoding;
-
         _format = instance.defaultsAndOverrides().defaultFormat;
-
-        _encapsStack = null;
-        _encapsCache = null;
     }
 
     /**
