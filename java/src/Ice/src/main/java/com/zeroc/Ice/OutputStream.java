@@ -26,7 +26,6 @@ public class OutputStream {
      */
     public OutputStream(boolean direct) {
         _buf = new Buffer(direct);
-        _instance = null;
         _closure = null;
         _encoding = Protocol.currentEncoding;
         _format = FormatType.CompactFormat;
@@ -102,12 +101,11 @@ public class OutputStream {
     private void initialize(Instance instance, EncodingVersion encoding, Buffer buf) {
         assert (instance != null);
 
-        _instance = instance;
         _buf = buf;
         _closure = null;
         _encoding = encoding;
 
-        _format = _instance.defaultsAndOverrides().defaultFormat;
+        _format = instance.defaultsAndOverrides().defaultFormat;
 
         _encapsStack = null;
         _encapsCache = null;
@@ -135,10 +133,6 @@ public class OutputStream {
             _encapsCache.reset();
             _encapsStack = null;
         }
-    }
-
-    public Instance instance() {
-        return _instance;
     }
 
     /**
@@ -189,8 +183,6 @@ public class OutputStream {
      * @param other The other stream.
      */
     public void swap(OutputStream other) {
-        assert (_instance == other._instance);
-
         Buffer tmpBuf = other._buf;
         other._buf = _buf;
         _buf = tmpBuf;
@@ -1483,7 +1475,6 @@ public class OutputStream {
         _buf.expand(n);
     }
 
-    private Instance _instance;
     private Buffer _buf;
     private Object _closure;
     private FormatType _format;

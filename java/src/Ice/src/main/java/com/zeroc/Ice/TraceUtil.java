@@ -5,10 +5,10 @@
 package com.zeroc.Ice;
 
 final class TraceUtil {
-    public static void traceSend(OutputStream str, Logger logger, TraceLevels tl) {
+    public static void traceSend(OutputStream str, Instance instance, Logger logger, TraceLevels tl) {
         if (tl.protocol >= 1) {
             int p = str.pos();
-            var is = new InputStream(str.instance(), str.getEncoding(), str.getBuffer(), false);
+            var is = new InputStream(instance, str.getEncoding(), str.getBuffer(), false);
             is.pos(0);
 
             java.io.StringWriter s = new java.io.StringWriter();
