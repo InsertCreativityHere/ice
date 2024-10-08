@@ -1986,12 +1986,7 @@ namespace
 {
     string getDefinedIn(const ContainedPtr& p)
     {
-        const string prefix = "js:defined-in:";
-        if (auto meta = p->findMetadata(prefix))
-        {
-            return meta->substr(prefix.size());
-        }
-        return "";
+        return p->getMetadataArgs("js:defined-in").value_or("");
     }
 }
 
@@ -2057,7 +2052,7 @@ Slice::Gen::TypeScriptImportVisitor::visitUnitStart(const UnitPtr& unit)
     // Iterate all the included files and generate an import statement for each top-level module in the included file.
     for (const auto& included : includes)
     {
-        // The JavaScript module corresponding to the "js:module:" metadata in the included file.
+        // The JavaScript module corresponding to the `js:module` metadata in the included file.
         string jsImportedModule = getJavaScriptModule(unit->findDefinitionContext(included));
 
         if (_module != jsImportedModule)

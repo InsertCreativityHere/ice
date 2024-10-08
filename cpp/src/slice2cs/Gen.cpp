@@ -420,17 +420,15 @@ Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
 string
 Slice::CsVisitor::getParamAttributes(const ParamDeclPtr& p)
 {
-    string result;
-    StringList metadata = p->getMetadata();
-    for (StringList::const_iterator i = metadata.begin(); i != metadata.end(); ++i)
+    ostringstream ostr;
+    for (const auto& metadata : p->getMetadata())
     {
-        static const string prefix = "cs:attribute:";
-        if (i->find(prefix) == 0)
+        if (metadata->directive() == "cs:attribute")
         {
-            result += "[" + i->substr(prefix.size()) + "] ";
+            ostr << "[" << metadata->arguments() << "] ";
         }
     }
-    return result;
+    return ostr.str();
 }
 
 vector<string>
@@ -575,13 +573,11 @@ Slice::CsVisitor::getDispatchParams(
 void
 Slice::CsVisitor::emitAttributes(const ContainedPtr& p)
 {
-    StringList metadata = p->getMetadata();
-    for (StringList::const_iterator i = metadata.begin(); i != metadata.end(); ++i)
+    for (const auto& metadata : p->getMetadata())
     {
-        static const string prefix = "cs:attribute:";
-        if (i->find(prefix) == 0)
+        if (metadata->directive() == "cs:attribute")
         {
-            _out << nl << '[' << i->substr(prefix.size()) << ']';
+            _out << nl << '[' << metadata->arguments() << ']';
         }
     }
 }
@@ -1512,21 +1508,17 @@ Slice::Gen::UnitVisitor::visitUnitStart(const UnitPtr& unit)
     DefinitionContextPtr dc = unit->findDefinitionContext(unit->topLevelFile());
     assert(dc);
 
-    static const string attributePrefix = "cs:attribute:";
-
     bool sep = false;
     for (const auto& metadata : dc->getMetadata())
     {
-        string::size_type pos = metadata.find(attributePrefix);
-        if (pos == 0 && metadata.size() > attributePrefix.size())
+        if (metadata->directive() == "cs:attribute")
         {
             if (!sep)
             {
                 _out << sp;
                 sep = true;
             }
-            string attrib = metadata.substr(pos + attributePrefix.size());
-            _out << nl << '[' << attrib << ']';
+            _out << nl << '[' << metadata->arguments() << ']';
         }
     }
     return false;
@@ -1718,7 +1710,7 @@ Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     string ns = getNamespace(p);
     InterfaceList bases = p->bases();
 
-    StringList baseNames;
+    list<string_view> baseNames;
 
     _out << sp;
     emitAttributes(p);
@@ -1736,27 +1728,25 @@ Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
         baseNames.push_back("Ice.Object");
     }
 
-    //
-    // Check for cs:implements metadata.
-    //
-    const StringList metadata = p->getMetadata();
-    static const string prefix = "cs:implements:";
-    for (StringList::const_iterator q = metadata.begin(); q != metadata.end(); ++q)
+    // Check for `cs:implements` metadata.
+    for (const auto& metadata : p->getMetadata())
     {
-        if (q->find(prefix) == 0)
+        if (metadata->directive() == "cs:implements")
         {
-            baseNames.push_back(q->substr(prefix.size()));
+            baseNames.push_back(metadata->arguments());
         }
     }
 
     _out << " : ";
-    for (StringList::const_iterator q = baseNames.begin(); q != baseNames.end(); ++q)
+    bool emitSep = false;
+    for (const auto& baseName : baseNames)
     {
-        if (q != baseNames.begin())
+        if (emitSep)
         {
             _out << ", ";
         }
-        _out << *q;
+        emitSep = true;
+        _out << baseName;
     }
 
     _out << sb;
@@ -2012,30 +2002,28 @@ Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
     emitAttributes(p);
     _out << nl << "public " << (classMapping ? "sealed partial record class" : "partial record struct") << ' ' << name;
 
-    //
     // Check for cs:implements metadata.
-    //
-    StringList baseNames;
-    const StringList metadata = p->getMetadata();
-    static const string prefix = "cs:implements:";
-    for (StringList::const_iterator q = metadata.begin(); q != metadata.end(); ++q)
+    list<string_view> baseNames;
+    for (const auto& metadata : p->getMetadata())
     {
-        if (q->find(prefix) == 0)
+        if (metadata->directive() == "cs:implements")
         {
-            baseNames.push_back(q->substr(prefix.size()));
+            baseNames.push_back(metadata->arguments());
         }
     }
 
     if (!baseNames.empty())
     {
         _out << " : ";
-        for (StringList::const_iterator q = baseNames.begin(); q != baseNames.end(); ++q)
+        bool emitSep = false;
+        for (const auto& baseName : baseNames)
         {
-            if (q != baseNames.begin())
+            if (emitSep)
             {
                 _out << ", ";
             }
-            _out << getUnqualified(*q, ns);
+            emitSep = true;
+            _out << getUnqualified(baseName, ns);
         }
     }
 
@@ -3162,10 +3150,9 @@ Slice::Gen::HelperVisitor::visitSequence(const SequencePtr& p)
     _out << eb;
     _out << eb;
 
-    string prefix = "cs:generic:";
-    if (auto meta = p->findMetadata(prefix))
+    if (auto metadata = p->getMetadataArgs("cs:generic"))
     {
-        string type = meta->substr(prefix.size());
+        string_view type = *metadata;
         if (type == "List" || type == "LinkedList" || type == "Queue" || type == "Stack")
         {
             return;
@@ -3199,16 +3186,7 @@ Slice::Gen::HelperVisitor::visitDictionary(const DictionaryPtr& p)
     TypePtr key = p->keyType();
     TypePtr value = p->valueType();
 
-    string prefix = "cs:generic:";
-    string genericType;
-    if (auto meta = p->findMetadata(prefix))
-    {
-        genericType = meta->substr(prefix.size());
-    }
-    else
-    {
-        genericType = "Dictionary";
-    }
+    string genericType = p->getMetadataArgs("cs:generic").value_or("Dictionary");
 
     string ns = getNamespace(p);
     string keyS = typeToString(key, ns);

@@ -42,6 +42,7 @@ namespace Slice
 
     class GrammarBase;
     class SyntaxTreeBase;
+    class Metadata;
     class Type;
     class Builtin;
     class Contained;
@@ -66,6 +67,7 @@ namespace Slice
 
     using GrammarBasePtr = std::shared_ptr<GrammarBase>;
     using SyntaxTreeBasePtr = std::shared_ptr<SyntaxTreeBase>;
+    using MetadataPtr = std::shared_ptr<Metadata>;
     using TypePtr = std::shared_ptr<Type>;
     using BuiltinPtr = std::shared_ptr<Builtin>;
     using ContainedPtr = std::shared_ptr<Contained>;
@@ -91,8 +93,9 @@ namespace Slice
     bool containedCompare(const ContainedPtr& lhs, const ContainedPtr& rhs);
     bool containedEqual(const ContainedPtr& lhs, const ContainedPtr& rhs);
 
-    using TypeList = std::list<TypePtr>;
     using StringList = std::list<std::string>;
+    using MetadataList = std::list<MetadataPtr>;
+    using TypeList = std::list<TypePtr>;
     using ContainedList = std::list<ContainedPtr>;
     using ModuleList = std::list<ModulePtr>;
     using ClassList = std::list<ClassDefPtr>;
@@ -159,13 +162,48 @@ namespace Slice
     };
 
     // ----------------------------------------------------------------------
+    // GrammarBase
+    // ----------------------------------------------------------------------
+
+    class GrammarBase : public virtual std::enable_shared_from_this<GrammarBase>
+    {
+    public:
+        virtual ~GrammarBase() = default;
+    };
+
+    // ----------------------------------------------------------------------
+    // Metadata
+    // ----------------------------------------------------------------------
+
+    class Metadata final : public virtual GrammarBase
+    {
+    public:
+        Metadata(const std::string& rawMetadata, const UnitPtr& unit);
+        std::string_view directive() const;
+        std::string_view arguments() const;
+
+        std::string_view file() const;
+        int line() const;
+
+    private:
+        /// Parses a metadata string into a pair of (directive, arguments) strings.
+        static std::pair<std::string, std::string> parseRawMetadata(const std::string& rawMetadata);
+
+        std::string _directive;
+        std::string _arguments;
+
+        std::string _file;
+        int _line;
+    };
+
+    // ----------------------------------------------------------------------
     // DefinitionContext
     // ----------------------------------------------------------------------
 
     class DefinitionContext final
     {
     public:
-        DefinitionContext(int includeLevel, const StringList& metadata);
+        DefinitionContext(int includeLevel, const MetadataList& metadata);
 
         std::string filename() const;
         int includeLevel() const;
@@ -174,10 +212,10 @@ namespace Slice
         void setFilename(const std::string& filename);
         void setSeenDefinition();
 
-        bool hasMetadata(const std::string& directive) const;
-        void setMetadata(const StringList& metadata);
-        std::optional<std::string> findMetadata(const std::string& prefix) const;
-        StringList getMetadata() const;
+        MetadataList getMetadata() const;
+        void setMetadata(MetadataList metadata);
+        bool hasMetadata(std::string_view directive) const;
+        std::optional<std::string> getMetadataArgs(std::string_view directive) const;
 
         /// Emits a warning unless it should be filtered out by a [["suppress-warning"]].
         void warning(WarningCategory category, const std::string& file, int line, const std::string& message) const;
@@ -187,7 +225,7 @@ namespace Slice
         void initSuppressedWarnings();
 
         int _includeLevel;
-        StringList _metadata;
+        MetadataList _metadata;
         std::string _filename;
         bool _seenDefinition;
         std::set<WarningCategory> _suppressedWarnings;
@@ -232,16 +270,6 @@ namespace Slice
         friend class Contained;
     };
     using CommentPtr = std::shared_ptr<Comment>;
-
-    // ----------------------------------------------------------------------
-    // GrammarBase
-    // ----------------------------------------------------------------------
-
-    class GrammarBase : public virtual std::enable_shared_from_this<GrammarBase>
-    {
-    public:
-        virtual ~GrammarBase() = default;
-    };
 
     // ----------------------------------------------------------------------
     // SyntaxTreeBase
@@ -346,12 +374,12 @@ namespace Slice
 
         int includeLevel() const;
 
-        bool hasMetadata(const std::string& directive) const;
-        std::optional<std::string> findMetadata(const std::string& prefix) const;
-        StringList getMetadata() const;
-        void setMetadata(const StringList& metadata);
+        MetadataList getMetadata() const;
+        void setMetadata(MetadataList metadata);
+        bool hasMetadata(std::string_view directive) const;
+        std::optional<std::string> getMetadataArgs(std::string_view directive) const;
 
-        static std::optional<FormatType> parseFormatMetadata(const StringList& metadata);
+        std::optional<FormatType> parseFormatMetadata() const;
 
         /// Returns true if this item is deprecated (due to the presence of 'deprecated' metadata).
         /// @param checkParent If true, this item's immediate container will also be checked for 'deprecated' metadata.
@@ -377,7 +405,7 @@ namespace Slice
         int _line;
         std::string _comment;
         int _includeLevel;
-        std::list<std::string> _metadata;
+        MetadataList _metadata;
     };
 
     // ----------------------------------------------------------------------
@@ -399,20 +427,20 @@ namespace Slice
         SequencePtr createSequence(
             const std::string& name,
             const TypePtr& type,
-            const StringList& metadata,
+            MetadataList metadata,
             NodeType nodeType = Real);
         DictionaryPtr createDictionary(
             const std::string& name,
             const TypePtr& keyType,
-            const StringList& keyMetadata,
+            MetadataList keyMetadata,
             const TypePtr& valueType,
-            const StringList& valueMetadata,
+            MetadataList valueMetadata,
             NodeType nodeType = Real);
         EnumPtr createEnum(const std::string& name, NodeType nodeType = Real);
         ConstPtr createConst(
             const std::string name,
             const TypePtr& constType,
-            const StringList& metadata,
+            MetadataList metadata,
             const SyntaxTreeBasePtr& valueType,
             const std::string& value,
             NodeType nodeType = Real);
@@ -551,7 +579,7 @@ namespace Slice
         DataMemberList classDataMembers() const;
         DataMemberList allClassDataMembers() const;
         bool canBeCyclic() const;
-        bool inheritsMetadata(const std::string& metadata) const;
+        bool inheritsMetadata(string_view directive) const;
         bool hasBaseDataMembers() const;
         void visit(ParserVisitor* visitor) final;
         int compactId() const;
@@ -689,7 +717,7 @@ namespace Slice
         OperationList operations() const;
         OperationList allOperations() const;
         bool hasOperations() const;
-        bool inheritsMetadata(const std::string& metadata) const;
+        bool inheritsMetadata(string_view directive) const;
         std::string kindOf() const final;
         void visit(ParserVisitor* visitor) final;
 
@@ -730,7 +758,7 @@ namespace Slice
         ExceptionList allBases() const;
         bool isBaseOf(const ExceptionPtr& otherException) const;
         bool usesClasses() const;
-        bool inheritsMetadata(const std::string& metadata) const;
+        bool inheritsMetadata(string_view metadata) const;
         bool hasBaseDataMembers() const;
         std::string kindOf() const final;
         void visit(ParserVisitor* visitor) final;
@@ -779,9 +807,9 @@ namespace Slice
             const ContainerPtr& container,
             const std::string& name,
             const TypePtr& type,
-            const StringList& typeMetadata);
+            MetadataList typeMetadata);
         TypePtr type() const;
-        StringList typeMetadata() const;
+        MetadataList typeMetadata() const;
         bool usesClasses() const final;
         size_t minWireSize() const final;
         std::string getOptionalFormat() const final;
@@ -793,7 +821,7 @@ namespace Slice
         friend class Container;
 
         TypePtr _type;
-        StringList _typeMetadata;
+        MetadataList _typeMetadata;
     };
 
     // ----------------------------------------------------------------------
@@ -807,13 +835,13 @@ namespace Slice
             const ContainerPtr& container,
             const std::string& name,
             const TypePtr& keyType,
-            const StringList& keyMetadata,
+            MetadataList keyMetadata,
             const TypePtr& valueType,
-            const StringList& valueMetadata);
+            MetadataList valueMetadata);
         TypePtr keyType() const;
         TypePtr valueType() const;
-        StringList keyMetadata() const;
-        StringList valueMetadata() const;
+        MetadataList keyMetadata() const;
+        MetadataList valueMetadata() const;
         bool usesClasses() const final;
         size_t minWireSize() const final;
         std::string getOptionalFormat() const final;
@@ -828,8 +856,8 @@ namespace Slice
 
         TypePtr _keyType;
         TypePtr _valueType;
-        StringList _keyMetadata;
-        StringList _valueMetadata;
+        MetadataList _keyMetadata;
+        MetadataList _valueMetadata;
     };
 
     // ----------------------------------------------------------------------
@@ -893,11 +921,11 @@ namespace Slice
             const ContainerPtr& container,
             const std::string& name,
             const TypePtr& type,
-            const StringList& typeMetadata,
+            MetadataList typeMetadata,
             const SyntaxTreeBasePtr& valueType,
             const std::string& valueString);
         TypePtr type() const;
-        StringList typeMetadata() const;
+        MetadataList typeMetadata() const;
         SyntaxTreeBasePtr valueType() const;
         std::string value() const;
         std::string kindOf() const final;
@@ -907,7 +935,7 @@ namespace Slice
         friend class Container;
 
         TypePtr _type;
-        StringList _typeMetadata;
+        MetadataList _typeMetadata;
         SyntaxTreeBasePtr _valueType;
         std::string _value;
     };
