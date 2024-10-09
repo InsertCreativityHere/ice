@@ -4662,7 +4662,13 @@ Slice::DataMember::DataMember(
 UnitPtr
 Slice::Unit::createUnit(bool all, const StringList& defaultFileMetadata)
 {
-    auto unit = make_shared<Unit>(all, defaultFileMetadata);
+    MetadataList defaultMetadata;
+    for (const auto& metadataString : defaultFileMetadata)
+    {
+        defaultMetadata.push_back(make_shared<Metadata>(metadataString));
+    }
+
+    auto unit = make_shared<Unit>(all, defaultMetadata);
     unit->init();
     return unit;
 }
@@ -4847,7 +4853,7 @@ Slice::Unit::currentIncludeLevel() const
 }
 
 void
-Slice::Unit::addFileMetadata(const StringList& metadata)
+Slice::Unit::addFileMetadata(const MetadataList& metadata)
 {
     DefinitionContextPtr dc = currentDefinitionContext();
     assert(dc);
@@ -4858,7 +4864,7 @@ Slice::Unit::addFileMetadata(const StringList& metadata)
     else
     {
         // Append the file metadata to any existing metadata (e.g., default file metadata).
-        StringList l = dc->getMetadata();
+        MetadataList l = dc->getMetadata();
         copy(metadata.begin(), metadata.end(), back_inserter(l));
         dc->setMetadata(l);
     }
@@ -5120,7 +5126,7 @@ Slice::Unit::getTopLevelModules(const string& file) const
     }
 }
 
-Slice::Unit::Unit(bool all, const StringList& defaultFileMetadata)
+Slice::Unit::Unit(bool all, MetadataList defaultFileMetadata)
     : SyntaxTreeBase(nullptr),
       Container(nullptr),
       _all(all),
