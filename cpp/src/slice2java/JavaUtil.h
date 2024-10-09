@@ -255,3 +255,8 @@ namespace Slice
 }
 
 #endif
+
+meta.?data|string.?list
+cpp/src/slice*, cpp/src/Slice, cpp/src/ice2slice
+
+WE ONLY NEED TO FINISH slice2java Gen.cpp, JavaUtil.cpp, JavaUtil.h
