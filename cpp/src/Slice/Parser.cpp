@@ -635,76 +635,6 @@ namespace
         }
     }
 
-    StringList splitComment(string comment, function<string(string, string)> linkFormatter, bool stripMarkup)
-    {
-        string::size_type pos = 0;
-
-        if (stripMarkup)
-        {
-            // Strip HTML markup.
-            do
-            {
-                pos = comment.find('<', pos);
-                if (pos != string::npos)
-                {
-                    string::size_type endpos = comment.find('>', pos);
-                    if (endpos == string::npos)
-                    {
-                        break;
-                    }
-                    comment.erase(pos, endpos - pos + 1);
-                }
-            } while (pos != string::npos);
-        }
-
-        // Fix any link tags using the provided link formatter.
-        const string link = "{@link ";
-        pos = comment.find(link);
-        while (pos != string::npos)
-        {
-            string::size_type endpos = comment.find('}', pos);
-            if (endpos != string::npos)
-            {
-                // Extract the linked to identifier.
-                string::size_type identStart = comment.find_first_not_of(" \t", pos + link.size());
-                string::size_type identEnd = comment.find_last_not_of(" \t", endpos);
-                string ident = comment.substr(identStart, identEnd - identStart);
-
-                // Then erase the entire '{@link foo}' tag from the comment.
-                comment.erase(pos, endpos - pos + 1);
-
-                // Split the link into 'class' and 'member' components (links are of the form 'class#member').
-                string memberComponent = "";
-                string::size_type hashPos = ident.find('#');
-                if (hashPos != string::npos)
-                {
-                    memberComponent = ident.substr(hashPos + 1);
-                    ident.erase(hashPos);
-                }
-
-                // In it's place, insert the correctly formatted link.
-                string formattedLink = linkFormatter(ident, memberComponent);
-                comment.insert(pos, formattedLink);
-                pos += formattedLink.length();
-            }
-            pos = comment.find(link, pos);
-        }
-
-        // Split the comment into separate lines, and removing any trailing whitespace and lines from it.
-        StringList result;
-        pos = 0;
-        string::size_type nextPos;
-        while ((nextPos = comment.find_first_of('\n', pos)) != string::npos)
-        {
-            result.push_back(IceInternal::trim(comment.substr(pos, nextPos - pos)));
-            pos = nextPos + 1;
-        }
-        result.push_back(IceInternal::trim(comment.substr(pos)));
-        trimLines(result);
-
-        return result;
-    }
-
     bool parseCommentLine(const string& l, const string& tag, bool namedTag, string& name, string& doc)
     {
         doc.clear();
@@ -749,6 +679,77 @@ namespace
 
         return false;
     }
+}
+
+StringList
+Slice::Contained::splitComment(string comment, function<string(string, string)> linkFormatter, bool stripMarkup)
+{
+    string::size_type pos = 0;
+
+    if (stripMarkup)
+    {
+        // Strip HTML markup.
+        do
+        {
+            pos = comment.find('<', pos);
+            if (pos != string::npos)
+            {
+                string::size_type endpos = comment.find('>', pos);
+                if (endpos == string::npos)
+                {
+                    break;
+                }
+                comment.erase(pos, endpos - pos + 1);
+            }
+        } while (pos != string::npos);
+    }
+
+    // Fix any link tags using the provided link formatter.
+    const string link = "{@link ";
+    pos = comment.find(link);
+    while (pos != string::npos)
+    {
+        string::size_type endpos = comment.find('}', pos);
+        if (endpos != string::npos)
+        {
+            // Extract the linked to identifier.
+            string::size_type identStart = comment.find_first_not_of(" \t", pos + link.size());
+            string::size_type identEnd = comment.find_last_not_of(" \t", endpos);
+            string ident = comment.substr(identStart, identEnd - identStart);
+
+            // Then erase the entire '{@link foo}' tag from the comment.
+            comment.erase(pos, endpos - pos + 1);
+
+            // Split the link into 'class' and 'member' components (links are of the form 'class#member').
+            string memberComponent = "";
+            string::size_type hashPos = ident.find('#');
+            if (hashPos != string::npos)
+            {
+                memberComponent = ident.substr(hashPos + 1);
+                ident.erase(hashPos);
+            }
+
+            // In it's place, insert the correctly formatted link.
+            string formattedLink = linkFormatter(ident, memberComponent);
+            comment.insert(pos, formattedLink);
+            pos += formattedLink.length();
+        }
+        pos = comment.find(link, pos);
+    }
+
+    // Split the comment into separate lines, and removing any trailing whitespace and lines from it.
+    StringList result;
+    pos = 0;
+    string::size_type nextPos;
+    while ((nextPos = comment.find_first_of('\n', pos)) != string::npos)
+    {
+        result.push_back(IceInternal::trim(comment.substr(pos, nextPos - pos)));
+        pos = nextPos + 1;
+    }
+    result.push_back(IceInternal::trim(comment.substr(pos)));
+    trimLines(result);
+
+    return result;
 }
 
 CommentPtr
