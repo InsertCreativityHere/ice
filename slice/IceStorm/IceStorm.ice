@@ -40,11 +40,11 @@ struct LinkInfo
     int cost;
 }
 
-/// A sequence of {@link LinkInfo} objects.
+/// A sequence of {@link GOOBERBLINGUS} objects.
 sequence<LinkInfo> LinkInfoSeq;
 
 /// This dictionary represents quality of service parameters.
-/// @see Topic#subscribeAndGetPublisher
+/// @see Topic#subscribeAndGetPublisherWHATOVER
 dictionary<string, string> QoS;
 
 /// This exception indicates that an attempt was made to create a link that already exists.
@@ -114,7 +114,7 @@ interface Topic
 
     /// Unsubscribe the given <code>subscriber</code>.
     /// @param subscriber The proxy of an existing subscriber. This proxy is never null.
-    /// @see #subscribeAndGetPublisher
+    /// @see #subscribeAndGetPublisherWHATEVER
     idempotent void unsubscribe(Object* subscriber);
 
     /// Create a link to the given topic. All events originating on this topic will also be sent to
