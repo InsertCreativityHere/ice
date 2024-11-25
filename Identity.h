@@ -33,9 +33,7 @@ namespace Ice
 {
     struct Identity;
 
-    /**
-     * A sequence of identities.
-     */
+    /// A sequence of identities.
     using IdentitySeq = ::std::vector<Identity>;
 
 }
@@ -43,28 +41,20 @@ namespace Ice
 namespace Ice
 {
 
-/**
- * The identity of an Ice object. In a proxy, an empty {@link Identity#name} denotes a nil proxy. An identity with
- * an empty {@link Identity#name} and a non-empty {@link Identity#category} is illegal. You cannot add a servant
- * with an empty name to the Active Servant Map.
- * @see ServantLocator
- * @see ObjectAdapter#addServantLocator
- */
+/// The identity of an Ice object. In a proxy, an empty {@link Identity#name} denotes a nil proxy. An identity with
+/// an empty {@link Identity#name} and a non-empty {@link Identity#category} is illegal. You cannot add a servant
+/// with an empty name to the Active Servant Map.
+/// @see ServantLocator
+/// @see ObjectAdapter#addServantLocator
 struct Identity
 {
-    /**
-     * The name of the Ice object.
-     */
+    /// The name of the Ice object.
     ::std::string name;
-    /**
-     * The Ice object category.
-     */
+    /// The Ice object category.
     ::std::string category;
 
-    /**
-     * Obtains a tuple containing all of the struct's data members.
-     * @return The data members in a tuple.
-     */
+    /// Obtains a tuple containing all of the struct's data members.
+    /// @return The data members in a tuple.
     std::tuple<const ::std::string&, const ::std::string&> ice_tuple() const
     {
         return std::tie(name, category);

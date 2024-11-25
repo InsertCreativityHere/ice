@@ -210,11 +210,11 @@ Ice::LocatorRegistryPrx::_iceI_setAdapterDirectProxy(const ::std::shared_ptr<::I
             {
                 ex.ice_throw();
             }
-            catch(const AdapterAlreadyActiveException&)
+            catch(const AdapterNotFoundException&)
             {
                 throw;
             }
-            catch(const AdapterNotFoundException&)
+            catch(const AdapterAlreadyActiveException&)
             {
                 throw;
             }
@@ -259,7 +259,7 @@ Ice::LocatorRegistryPrx::_iceI_setReplicatedAdapterDirectProxy(const ::std::shar
             {
                 ex.ice_throw();
             }
-            catch(const AdapterAlreadyActiveException&)
+            catch(const AdapterNotFoundException&)
             {
                 throw;
             }
@@ -267,7 +267,7 @@ Ice::LocatorRegistryPrx::_iceI_setReplicatedAdapterDirectProxy(const ::std::shar
             {
                 throw;
             }
-            catch(const AdapterNotFoundException&)
+            catch(const AdapterAlreadyActiveException&)
             {
                 throw;
             }

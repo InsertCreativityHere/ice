@@ -29,39 +29,25 @@
 
 namespace Ice
 {
-    /**
-     * An enumeration representing the different types of log messages.
-     */
+    /// An enumeration representing the different types of log messages.
     enum class LogMessageType : ::std::uint8_t
     {
-        /**
-         * The {@link RemoteLogger} received a print message.
-         */
+        /// The {@link RemoteLogger} received a print message.
         PrintMessage,
-        /**
-         * The {@link RemoteLogger} received a trace message.
-         */
+        /// The {@link RemoteLogger} received a trace message.
         TraceMessage,
-        /**
-         * The {@link RemoteLogger} received a warning message.
-         */
+        /// The {@link RemoteLogger} received a warning message.
         WarningMessage,
-        /**
-         * The {@link RemoteLogger} received an error message.
-         */
+        /// The {@link RemoteLogger} received an error message.
         ErrorMessage
     };
 
-    /**
-     * A sequence of {@link LogMessageType}.
-     */
+    /// A sequence of {@link LogMessageType}.
     using LogMessageTypeSeq = ::std::vector<LogMessageType>;
 
     struct LogMessage;
 
-    /**
-     * A sequence of {@link LogMessage}.
-     */
+    /// A sequence of {@link LogMessage}.
     using LogMessageSeq = std::list<LogMessage>;
 
     class RemoteLoggerPrx;
@@ -73,41 +59,33 @@ namespace Ice
 namespace Ice
 {
 
-/**
- * The Ice remote logger interface. An application can implement a RemoteLogger to receive the log messages sent
- * to the local {@link RemoteLogger} of another Ice application.
- */
+/// The Ice remote logger interface. An application can implement a RemoteLogger to receive the log messages sent
+/// to the local {@link RemoteLogger} of another Ice application.
 class ICE_API RemoteLoggerPrx : public Proxy<RemoteLoggerPrx, ObjectPrx>
 {
 public:
 
-    /**
-     * init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
-     * @param prefix The prefix of the associated local Logger.
-     * @param logMessages Old log messages generated before "now".
-     * @param context The Context map to send with the invocation.
-     */
+    /// init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
+    /// @param prefix The prefix of the associated local Logger.
+    /// @param logMessages Old log messages generated before "now".
+    /// @param context The Context map to send with the invocation.
     void init(::std::string_view prefix, const LogMessageSeq& logMessages, const Context& context = noExplicitContext) const;
 
-    /**
-     * init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
-     * @param prefix The prefix of the associated local Logger.
-     * @param logMessages Old log messages generated before "now".
-     * @param context The Context map to send with the invocation.
-     * @return The future object for the invocation.
-     */
+    /// init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
+    /// @param prefix The prefix of the associated local Logger.
+    /// @param logMessages Old log messages generated before "now".
+    /// @param context The Context map to send with the invocation.
+    /// @return The future object for the invocation.
     [[nodiscard]] ::std::future<void> initAsync(::std::string_view prefix, const LogMessageSeq& logMessages, const Context& context = noExplicitContext) const;
 
-    /**
-     * init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
-     * @param prefix The prefix of the associated local Logger.
-     * @param logMessages Old log messages generated before "now".
-     * @param response The response callback.
-     * @param ex The exception callback.
-     * @param sent The sent callback.
-     * @param context The Context map to send with the invocation.
-     * @return A function that can be called to cancel the invocation locally.
-     */
+    /// init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
+    /// @param prefix The prefix of the associated local Logger.
+    /// @param logMessages Old log messages generated before "now".
+    /// @param response The response callback.
+    /// @param ex The exception callback.
+    /// @param sent The sent callback.
+    /// @param context The Context map to send with the invocation.
+    /// @return A function that can be called to cancel the invocation locally.
     ::std::function<void()>
     initAsync(::std::string_view prefix, const LogMessageSeq& logMessages, ::std::function<void()> response, ::std::function<void(::std::exception_ptr)> ex = nullptr, ::std::function<void(bool)> sent = nullptr, const Context& context = noExplicitContext) const;
 
@@ -115,30 +93,24 @@ public:
     void _iceI_init(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, ::std::string_view, const LogMessageSeq&, const Context&) const;
     /// \endcond
 
-    /**
-     * Log a LogMessage. Note that log may be called by LoggerAdmin before init.
-     * @param message The message to log.
-     * @param context The Context map to send with the invocation.
-     */
+    /// Log a LogMessage. Note that log may be called by LoggerAdmin before init.
+    /// @param message The message to log.
+    /// @param context The Context map to send with the invocation.
     void log(const LogMessage& message, const Context& context = noExplicitContext) const;
 
-    /**
-     * Log a LogMessage. Note that log may be called by LoggerAdmin before init.
-     * @param message The message to log.
-     * @param context The Context map to send with the invocation.
-     * @return The future object for the invocation.
-     */
+    /// Log a LogMessage. Note that log may be called by LoggerAdmin before init.
+    /// @param message The message to log.
+    /// @param context The Context map to send with the invocation.
+    /// @return The future object for the invocation.
     [[nodiscard]] ::std::future<void> logAsync(const LogMessage& message, const Context& context = noExplicitContext) const;
 
-    /**
-     * Log a LogMessage. Note that log may be called by LoggerAdmin before init.
-     * @param message The message to log.
-     * @param response The response callback.
-     * @param ex The exception callback.
-     * @param sent The sent callback.
-     * @param context The Context map to send with the invocation.
-     * @return A function that can be called to cancel the invocation locally.
-     */
+    /// Log a LogMessage. Note that log may be called by LoggerAdmin before init.
+    /// @param message The message to log.
+    /// @param response The response callback.
+    /// @param ex The exception callback.
+    /// @param sent The sent callback.
+    /// @param context The Context map to send with the invocation.
+    /// @return A function that can be called to cancel the invocation locally.
     ::std::function<void()>
     logAsync(const LogMessage& message, ::std::function<void()> response, ::std::function<void(::std::exception_ptr)> ex = nullptr, ::std::function<void(bool)> sent = nullptr, const Context& context = noExplicitContext) const;
 
@@ -146,10 +118,8 @@ public:
     void _iceI_log(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const LogMessage&, const Context&) const;
     /// \endcond
 
-    /**
-     * Obtains the Slice type ID of this interface.
-     * @return The fully-scoped type ID.
-     */
+    /// Obtains the Slice type ID of this interface.
+    /// @return The fully-scoped type ID.
     static const char* ice_staticId() noexcept;
     RemoteLoggerPrx(const RemoteLoggerPrx& other) noexcept : ::Ice::ObjectPrx(other)
     {
@@ -189,64 +159,56 @@ protected:
     /// \endcond
 };
 
-/**
- * The interface of the admin object that allows an Ice application the attach its
- * {@link RemoteLogger} to the {@link RemoteLogger} of this admin object's Ice communicator.
- */
+/// The interface of the admin object that allows an Ice application the attach its
+/// {@link RemoteLogger} to the {@link RemoteLogger} of this admin object's Ice communicator.
 class ICE_API LoggerAdminPrx : public Proxy<LoggerAdminPrx, ObjectPrx>
 {
 public:
 
-    /**
-     * Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
-     * RemoteLogger proxy.
-     * @param prx A proxy to the remote logger.
-     * @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
-     * no filtering (send all message types).
-     * @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
-     * ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
-     * trace categories).
-     * @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
-     * value requests all messages available.
-     * @param context The Context map to send with the invocation.
-     * @throws Ice::RemoteLoggerAlreadyAttachedException Raised if this remote logger is already attached to this admin
-     * object.
-     */
+    /// Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
+    /// RemoteLogger proxy.
+    /// @param prx A proxy to the remote logger.
+    /// @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
+    /// no filtering (send all message types).
+    /// @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
+    /// ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
+    /// trace categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
+    /// value requests all messages available.
+    /// @param context The Context map to send with the invocation.
+    /// @throws Ice::RemoteLoggerAlreadyAttachedException Raised if this remote logger is already attached to this admin
+    /// object.
     void attachRemoteLogger(const ::std::optional<RemoteLoggerPrx>& prx, const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, const Context& context = noExplicitContext) const;
 
-    /**
-     * Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
-     * RemoteLogger proxy.
-     * @param prx A proxy to the remote logger.
-     * @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
-     * no filtering (send all message types).
-     * @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
-     * ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
-     * trace categories).
-     * @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
-     * value requests all messages available.
-     * @param context The Context map to send with the invocation.
-     * @return The future object for the invocation.
-     */
+    /// Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
+    /// RemoteLogger proxy.
+    /// @param prx A proxy to the remote logger.
+    /// @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
+    /// no filtering (send all message types).
+    /// @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
+    /// ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
+    /// trace categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
+    /// value requests all messages available.
+    /// @param context The Context map to send with the invocation.
+    /// @return The future object for the invocation.
     [[nodiscard]] ::std::future<void> attachRemoteLoggerAsync(const ::std::optional<RemoteLoggerPrx>& prx, const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, const Context& context = noExplicitContext) const;
 
-    /**
-     * Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
-     * RemoteLogger proxy.
-     * @param prx A proxy to the remote logger.
-     * @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
-     * no filtering (send all message types).
-     * @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
-     * ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
-     * trace categories).
-     * @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
-     * value requests all messages available.
-     * @param response The response callback.
-     * @param ex The exception callback.
-     * @param sent The sent callback.
-     * @param context The Context map to send with the invocation.
-     * @return A function that can be called to cancel the invocation locally.
-     */
+    /// Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
+    /// RemoteLogger proxy.
+    /// @param prx A proxy to the remote logger.
+    /// @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
+    /// no filtering (send all message types).
+    /// @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
+    /// ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
+    /// trace categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
+    /// value requests all messages available.
+    /// @param response The response callback.
+    /// @param ex The exception callback.
+    /// @param sent The sent callback.
+    /// @param context The Context map to send with the invocation.
+    /// @return A function that can be called to cancel the invocation locally.
     ::std::function<void()>
     attachRemoteLoggerAsync(const ::std::optional<RemoteLoggerPrx>& prx, const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, ::std::function<void()> response, ::std::function<void(::std::exception_ptr)> ex = nullptr, ::std::function<void(bool)> sent = nullptr, const Context& context = noExplicitContext) const;
 
@@ -254,31 +216,25 @@ public:
     void _iceI_attachRemoteLogger(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<void>>&, const ::std::optional<RemoteLoggerPrx>&, const LogMessageTypeSeq&, const StringSeq&, ::std::int32_t, const Context&) const;
     /// \endcond
 
-    /**
-     * Detaches a RemoteLogger object from the local logger.
-     * @param prx A proxy to the remote logger.
-     * @param context The Context map to send with the invocation.
-     * @return True if the provided remote logger proxy was detached, and false otherwise.
-     */
+    /// Detaches a RemoteLogger object from the local logger.
+    /// @param prx A proxy to the remote logger.
+    /// @param context The Context map to send with the invocation.
+    /// @return True if the provided remote logger proxy was detached, and false otherwise.
     bool detachRemoteLogger(const ::std::optional<RemoteLoggerPrx>& prx, const Context& context = noExplicitContext) const;
 
-    /**
-     * Detaches a RemoteLogger object from the local logger.
-     * @param prx A proxy to the remote logger.
-     * @param context The Context map to send with the invocation.
-     * @return The future object for the invocation.
-     */
+    /// Detaches a RemoteLogger object from the local logger.
+    /// @param prx A proxy to the remote logger.
+    /// @param context The Context map to send with the invocation.
+    /// @return The future object for the invocation.
     [[nodiscard]] ::std::future<bool> detachRemoteLoggerAsync(const ::std::optional<RemoteLoggerPrx>& prx, const Context& context = noExplicitContext) const;
 
-    /**
-     * Detaches a RemoteLogger object from the local logger.
-     * @param prx A proxy to the remote logger.
-     * @param response The response callback.
-     * @param ex The exception callback.
-     * @param sent The sent callback.
-     * @param context The Context map to send with the invocation.
-     * @return A function that can be called to cancel the invocation locally.
-     */
+    /// Detaches a RemoteLogger object from the local logger.
+    /// @param prx A proxy to the remote logger.
+    /// @param response The response callback.
+    /// @param ex The exception callback.
+    /// @param sent The sent callback.
+    /// @param context The Context map to send with the invocation.
+    /// @return A function that can be called to cancel the invocation locally.
     ::std::function<void()>
     detachRemoteLoggerAsync(const ::std::optional<RemoteLoggerPrx>& prx, ::std::function<void(bool)> response, ::std::function<void(::std::exception_ptr)> ex = nullptr, ::std::function<void(bool)> sent = nullptr, const Context& context = noExplicitContext) const;
 
@@ -286,50 +242,44 @@ public:
     void _iceI_detachRemoteLogger(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<bool>>&, const ::std::optional<RemoteLoggerPrx>&, const Context&) const;
     /// \endcond
 
-    /**
-     * Retrieves log messages recently logged.
-     * @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
-     * filtering (send all message types).
-     * @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
-     * messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
-     * categories).
-     * @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
-     * requests all messages available.
-     * @param prefix The prefix of the associated local logger.
-     * @param context The Context map to send with the invocation.
-     * @return The Log messages.
-     */
+    /// Retrieves log messages recently logged.
+    /// @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
+    /// filtering (send all message types).
+    /// @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
+    /// messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
+    /// categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
+    /// requests all messages available.
+    /// @param prefix The prefix of the associated local logger.
+    /// @param context The Context map to send with the invocation.
+    /// @return The Log messages.
     LogMessageSeq getLog(const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, ::std::string& prefix, const Context& context = noExplicitContext) const;
 
-    /**
-     * Retrieves log messages recently logged.
-     * @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
-     * filtering (send all message types).
-     * @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
-     * messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
-     * categories).
-     * @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
-     * requests all messages available.
-     * @param context The Context map to send with the invocation.
-     * @return The future object for the invocation.
-     */
+    /// Retrieves log messages recently logged.
+    /// @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
+    /// filtering (send all message types).
+    /// @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
+    /// messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
+    /// categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
+    /// requests all messages available.
+    /// @param context The Context map to send with the invocation.
+    /// @return The future object for the invocation.
     [[nodiscard]] ::std::future<::std::tuple<LogMessageSeq, ::std::string>> getLogAsync(const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, const Context& context = noExplicitContext) const;
 
-    /**
-     * Retrieves log messages recently logged.
-     * @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
-     * filtering (send all message types).
-     * @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
-     * messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
-     * categories).
-     * @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
-     * requests all messages available.
-     * @param response The response callback.
-     * @param ex The exception callback.
-     * @param sent The sent callback.
-     * @param context The Context map to send with the invocation.
-     * @return A function that can be called to cancel the invocation locally.
-     */
+    /// Retrieves log messages recently logged.
+    /// @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
+    /// filtering (send all message types).
+    /// @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
+    /// messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
+    /// categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
+    /// requests all messages available.
+    /// @param response The response callback.
+    /// @param ex The exception callback.
+    /// @param sent The sent callback.
+    /// @param context The Context map to send with the invocation.
+    /// @return A function that can be called to cancel the invocation locally.
     ::std::function<void()>
     getLogAsync(const LogMessageTypeSeq& messageTypes, const StringSeq& traceCategories, ::std::int32_t messageMax, ::std::function<void(::Ice::LogMessageSeq, ::std::string)> response, ::std::function<void(::std::exception_ptr)> ex = nullptr, ::std::function<void(bool)> sent = nullptr, const Context& context = noExplicitContext) const;
 
@@ -337,10 +287,8 @@ public:
     void _iceI_getLog(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::std::tuple<LogMessageSeq, ::std::string>>>&, const LogMessageTypeSeq&, const StringSeq&, ::std::int32_t, const Context&) const;
     /// \endcond
 
-    /**
-     * Obtains the Slice type ID of this interface.
-     * @return The fully-scoped type ID.
-     */
+    /// Obtains the Slice type ID of this interface.
+    /// @return The fully-scoped type ID.
     static const char* ice_staticId() noexcept;
     LoggerAdminPrx(const LoggerAdminPrx& other) noexcept : ::Ice::ObjectPrx(other)
     {
@@ -385,49 +333,33 @@ protected:
 namespace Ice
 {
 
-/**
- * A complete log message.
- */
+/// A complete log message.
 struct LogMessage
 {
-    /**
-     * The type of message sent to the {@link RemoteLogger}.
-     */
+    /// The type of message sent to the {@link RemoteLogger}.
     ::Ice::LogMessageType type;
-    /**
-     * The date and time when the {@link RemoteLogger} received this message, expressed as the number of microseconds
-     * since the Unix Epoch (00:00:00 UTC on 1 January 1970)
-     */
+    /// The date and time when the {@link RemoteLogger} received this message, expressed as the number of microseconds
+    /// since the Unix Epoch (00:00:00 UTC on 1 January 1970)
     ::std::int64_t timestamp;
-    /**
-     * For a message of type trace, the trace category of this log message; otherwise, the empty string.
-     */
+    /// For a message of type trace, the trace category of this log message; otherwise, the empty string.
     ::std::string traceCategory;
-    /**
-     * The log message itself.
-     */
+    /// The log message itself.
     ::std::string message;
 
-    /**
-     * Obtains a tuple containing all of the struct's data members.
-     * @return The data members in a tuple.
-     */
+    /// Obtains a tuple containing all of the struct's data members.
+    /// @return The data members in a tuple.
     std::tuple<const ::Ice::LogMessageType&, const ::std::int64_t&, const ::std::string&, const ::std::string&> ice_tuple() const
     {
         return std::tie(type, timestamp, traceCategory, message);
     }
 };
 
-/**
- * Thrown when the provided RemoteLogger was previously attached to a LoggerAdmin.
- */
+/// Thrown when the provided RemoteLogger was previously attached to a LoggerAdmin.
 class ICE_CLASS(ICE_API) RemoteLoggerAlreadyAttachedException : public UserException
 {
 public:
-    /**
-     * Obtains the Slice type ID of this exception.
-     * @return The fully-scoped type ID.
-     */
+    /// Obtains the Slice type ID of this exception.
+    /// @return The fully-scoped type ID.
     ICE_MEMBER(ICE_API) static const char* ice_staticId() noexcept;
 
     ICE_MEMBER(ICE_API) const char* ice_id() const noexcept override;
@@ -452,52 +384,40 @@ using Ice::Tuple::operator!=;
 namespace Ice
 {
 
-/**
- * The Ice remote logger interface. An application can implement a RemoteLogger to receive the log messages sent
- * to the local {@link RemoteLogger} of another Ice application.
- */
+/// The Ice remote logger interface. An application can implement a RemoteLogger to receive the log messages sent
+/// to the local {@link RemoteLogger} of another Ice application.
 class ICE_API RemoteLogger : public virtual Object
 {
 public:
 
     using ProxyType = RemoteLoggerPrx;
 
-    /**
-     * Obtains a list of the Slice type IDs representing the interfaces supported by this object.
-     * @param current The Current object for the invocation.
-     * @return A list of fully-scoped type IDs.
-     */
+    /// Obtains a list of the Slice type IDs representing the interfaces supported by this object.
+    /// @param current The Current object for the invocation.
+    /// @return A list of fully-scoped type IDs.
     ::std::vector<::std::string> ice_ids(const Current& current) const override;
 
-    /**
-     * Obtains a Slice type ID representing the most-derived interface supported by this object.
-     * @param current The Current object for the invocation.
-     * @return A fully-scoped type ID.
-     */
+    /// Obtains a Slice type ID representing the most-derived interface supported by this object.
+    /// @param current The Current object for the invocation.
+    /// @return A fully-scoped type ID.
     ::std::string ice_id(const Current& current) const override;
 
-    /**
-     * Obtains the Slice type ID corresponding to this interface.
-     * @return A fully-scoped type ID.
-     */
+    /// Obtains the Slice type ID corresponding to this interface.
+    /// @return A fully-scoped type ID.
     static const char* ice_staticId() noexcept;
 
-    /**
-     * init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
-     * @param prefix The prefix of the associated local Logger.
-     * @param logMessages Old log messages generated before "now".
-     * @param current The Current object for the invocation.
-     */
+    /// init is called by attachRemoteLogger when a RemoteLogger proxy is attached.
+    /// @param prefix The prefix of the associated local Logger.
+    /// @param logMessages Old log messages generated before "now".
+    /// @param current The Current object for the invocation.
     virtual void init(::std::string prefix, LogMessageSeq logMessages, const Current& current) = 0;
     /// \cond INTERNAL
     void _iceD_init(::Ice::IncomingRequest&, ::std::function<void(::Ice::OutgoingResponse)>);
     /// \endcond
 
-    /**
-     * Log a LogMessage. Note that log may be called by LoggerAdmin before init.
-     * @param message The message to log.
-     * @param current The Current object for the invocation.
-     */
+    /// Log a LogMessage. Note that log may be called by LoggerAdmin before init.
+    /// @param message The message to log.
+    /// @param current The Current object for the invocation.
     virtual void log(LogMessage message, const Current& current) = 0;
     /// \cond INTERNAL
     void _iceD_log(::Ice::IncomingRequest&, ::std::function<void(::Ice::OutgoingResponse)>);
@@ -510,80 +430,66 @@ public:
 
 using RemoteLoggerPtr = ::std::shared_ptr<RemoteLogger>;
 
-/**
- * The interface of the admin object that allows an Ice application the attach its
- * {@link RemoteLogger} to the {@link RemoteLogger} of this admin object's Ice communicator.
- */
+/// The interface of the admin object that allows an Ice application the attach its
+/// {@link RemoteLogger} to the {@link RemoteLogger} of this admin object's Ice communicator.
 class ICE_API LoggerAdmin : public virtual Object
 {
 public:
 
     using ProxyType = LoggerAdminPrx;
 
-    /**
-     * Obtains a list of the Slice type IDs representing the interfaces supported by this object.
-     * @param current The Current object for the invocation.
-     * @return A list of fully-scoped type IDs.
-     */
+    /// Obtains a list of the Slice type IDs representing the interfaces supported by this object.
+    /// @param current The Current object for the invocation.
+    /// @return A list of fully-scoped type IDs.
     ::std::vector<::std::string> ice_ids(const Current& current) const override;
 
-    /**
-     * Obtains a Slice type ID representing the most-derived interface supported by this object.
-     * @param current The Current object for the invocation.
-     * @return A fully-scoped type ID.
-     */
+    /// Obtains a Slice type ID representing the most-derived interface supported by this object.
+    /// @param current The Current object for the invocation.
+    /// @return A fully-scoped type ID.
     ::std::string ice_id(const Current& current) const override;
 
-    /**
-     * Obtains the Slice type ID corresponding to this interface.
-     * @return A fully-scoped type ID.
-     */
+    /// Obtains the Slice type ID corresponding to this interface.
+    /// @return A fully-scoped type ID.
     static const char* ice_staticId() noexcept;
 
-    /**
-     * Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
-     * RemoteLogger proxy.
-     * @param prx A proxy to the remote logger.
-     * @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
-     * no filtering (send all message types).
-     * @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
-     * ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
-     * trace categories).
-     * @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
-     * value requests all messages available.
-     * @param current The Current object for the invocation.
-     * @throws Ice::RemoteLoggerAlreadyAttachedException Raised if this remote logger is already attached to this admin
-     * object.
-     */
+    /// Attaches a RemoteLogger object to the local logger. attachRemoteLogger calls init on the provided
+    /// RemoteLogger proxy.
+    /// @param prx A proxy to the remote logger.
+    /// @param messageTypes The list of message types that the remote logger wishes to receive. An empty list means
+    /// no filtering (send all message types).
+    /// @param traceCategories The categories of traces that the remote logger wishes to receive. This parameter is
+    /// ignored if messageTypes is not empty and does not include trace. An empty list means no filtering (send all
+    /// trace categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be provided to init. A negative
+    /// value requests all messages available.
+    /// @param current The Current object for the invocation.
+    /// @throws Ice::RemoteLoggerAlreadyAttachedException Raised if this remote logger is already attached to this admin
+    /// object.
     virtual void attachRemoteLogger(::std::optional<RemoteLoggerPrx> prx, LogMessageTypeSeq messageTypes, StringSeq traceCategories, ::std::int32_t messageMax, const Current& current) = 0;
     /// \cond INTERNAL
     void _iceD_attachRemoteLogger(::Ice::IncomingRequest&, ::std::function<void(::Ice::OutgoingResponse)>);
     /// \endcond
 
-    /**
-     * Detaches a RemoteLogger object from the local logger.
-     * @param prx A proxy to the remote logger.
-     * @param current The Current object for the invocation.
-     * @return True if the provided remote logger proxy was detached, and false otherwise.
-     */
+    /// Detaches a RemoteLogger object from the local logger.
+    /// @param prx A proxy to the remote logger.
+    /// @param current The Current object for the invocation.
+    /// @return True if the provided remote logger proxy was detached, and false otherwise.
     virtual bool detachRemoteLogger(::std::optional<RemoteLoggerPrx> prx, const Current& current) = 0;
     /// \cond INTERNAL
     void _iceD_detachRemoteLogger(::Ice::IncomingRequest&, ::std::function<void(::Ice::OutgoingResponse)>);
     /// \endcond
 
-    /**
-     * Retrieves log messages recently logged.
-     * @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
-     * filtering (send all message types).
-     * @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
-     * messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
-     * categories).
-     * @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
-     * requests all messages available.
-     * @param prefix The prefix of the associated local logger.
-     * @param current The Current object for the invocation.
-     * @return The Log messages.
-     */
+    /// Retrieves log messages recently logged.
+    /// @param messageTypes The list of message types that the caller wishes to receive. An empty list means no
+    /// filtering (send all message types).
+    /// @param traceCategories The categories of traces that caller wish to receive. This parameter is ignored if
+    /// messageTypes is not empty and does not include trace. An empty list means no filtering (send all trace
+    /// categories).
+    /// @param messageMax The maximum number of log messages (of all types) to be returned. A negative value
+    /// requests all messages available.
+    /// @param prefix The prefix of the associated local logger.
+    /// @param current The Current object for the invocation.
+    /// @return The Log messages.
     virtual LogMessageSeq getLog(LogMessageTypeSeq messageTypes, StringSeq traceCategories, ::std::int32_t messageMax, ::std::string& prefix, const Current& current) = 0;
     /// \cond INTERNAL
     void _iceD_getLog(::Ice::IncomingRequest&, ::std::function<void(::Ice::OutgoingResponse)>);

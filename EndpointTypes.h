@@ -28,49 +28,31 @@
 
 namespace Ice
 {
-    /**
-     * Uniquely identifies TCP endpoints.
-     */
+    /// Uniquely identifies TCP endpoints.
     constexpr ::std::int16_t TCPEndpointType = 1;
 
-    /**
-     * Uniquely identifies SSL endpoints.
-     */
+    /// Uniquely identifies SSL endpoints.
     constexpr ::std::int16_t SSLEndpointType = 2;
 
-    /**
-     * Uniquely identifies UDP endpoints.
-     */
+    /// Uniquely identifies UDP endpoints.
     constexpr ::std::int16_t UDPEndpointType = 3;
 
-    /**
-     * Uniquely identifies TCP-based WebSocket endpoints.
-     */
+    /// Uniquely identifies TCP-based WebSocket endpoints.
     constexpr ::std::int16_t WSEndpointType = 4;
 
-    /**
-     * Uniquely identifies SSL-based WebSocket endpoints.
-     */
+    /// Uniquely identifies SSL-based WebSocket endpoints.
     constexpr ::std::int16_t WSSEndpointType = 5;
 
-    /**
-     * Uniquely identifies Bluetooth endpoints.
-     */
+    /// Uniquely identifies Bluetooth endpoints.
     constexpr ::std::int16_t BTEndpointType = 6;
 
-    /**
-     * Uniquely identifies SSL Bluetooth endpoints.
-     */
+    /// Uniquely identifies SSL Bluetooth endpoints.
     constexpr ::std::int16_t BTSEndpointType = 7;
 
-    /**
-     * Uniquely identifies iAP-based endpoints.
-     */
+    /// Uniquely identifies iAP-based endpoints.
     constexpr ::std::int16_t iAPEndpointType = 8;
 
-    /**
-     * Uniquely identifies SSL iAP-based endpoints.
-     */
+    /// Uniquely identifies SSL iAP-based endpoints.
     constexpr ::std::int16_t iAPSEndpointType = 9;
 
 }
