@@ -527,7 +527,8 @@ Slice::computeDefaultSerialVersionUID(const ContainedPtr& p)
     os << " Members: [";
     for (DataMemberList::const_iterator i = members.begin(); i != members.end();)
     {
-        os << (*i)->name() << ":" << (*i)->type();
+        // This random 'true' is necessary for backwards compatibility. See <insert link>.
+        os << (*i)->name() << ":" << true;
         i++;
         if (i != members.end())
         {
