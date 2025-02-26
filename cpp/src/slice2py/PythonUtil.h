@@ -49,6 +49,8 @@ namespace Slice::Python
     //
     std::string getAbsolute(const Slice::ContainedPtr&, const std::string& = "", const std::string& = "");
 
+    std::string addPrefixToName(std::string scopedName, std::string_view prefix);
+
     //
     // Emit a comment header.
     //

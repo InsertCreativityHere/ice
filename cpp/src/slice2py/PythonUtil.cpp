@@ -274,21 +274,6 @@ namespace Slice::Python
 }
 
 static string
-lookupKwd(const string& name)
-{
-    //
-    // Keyword list. *Must* be kept in alphabetical order.
-    //
-    static const string keywordList[] = {
-        "False", "None",     "True",  "and",    "as",     "assert", "async",  "await", "break",    "case",
-        "class", "continue", "def",   "del",    "elif",   "else",   "except", "exec",  "finally",  "for",
-        "from",  "global",   "if",    "import", "in",     "is",     "lambda", "match", "nonlocal", "not",
-        "or",    "pass",     "print", "raise",  "return", "try",    "type",   "while", "with",     "yield"};
-    bool found = binary_search(&keywordList[0], &keywordList[sizeof(keywordList) / sizeof(*keywordList)], name);
-    return found ? "_" + name : name;
-}
-
-static string
 getDictLookup(const ContainedPtr& cont, const string& suffix = "", const string& prefix = "")
 {
     string scope = Slice::Python::scopedToName(cont->scope());
@@ -2372,23 +2357,6 @@ Slice::Python::scopedToName(const string& scoped)
 }
 
 string
-Slice::Python::fixIdent(const string& ident)
-{
-    if (ident[0] != ':')
-    {
-        return lookupKwd(ident);
-    }
-    vector<string> ids = splitScopedName(ident);
-    transform(ids.begin(), ids.end(), ids.begin(), [](const string& id) -> string { return lookupKwd(id); });
-    stringstream result;
-    for (const auto& id : ids)
-    {
-        result << "::" + id;
-    }
-    return result.str();
-}
-
-string
 Slice::Python::getPackageMetadata(const ContainedPtr& cont)
 {
     //
@@ -2446,6 +2414,14 @@ Slice::Python::getAbsolute(const ContainedPtr& cont, const string& suffix, const
     }
 
     return scope + suffix + fixIdent(cont->name() + nameSuffix);
+}
+
+string
+Slice::Python::addPrefixToName(std::string scopedName, string_view prefix)
+{
+    auto pos = scopedName.rfind('.');
+    pos = (pos == string::npos ? 0 : pos + 1);
+    scopedName.insert(pos, prefix);
 }
 
 void
