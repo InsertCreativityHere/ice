@@ -25,11 +25,6 @@ namespace Slice::Python
     void generate(const Slice::UnitPtr&, bool, const std::vector<std::string>&, IceInternal::Output&);
 
     //
-    // Convert a scoped name into a Python name.
-    //
-    std::string scopedToName(const std::string&);
-
-    //
     // Check the given identifier against Python's list of reserved words. If it matches
     // a reserved word, then an escaped version is returned with a leading underscore.
     //
@@ -41,14 +36,20 @@ namespace Slice::Python
     //
     std::string getPackageMetadata(const Slice::ContainedPtr&);
 
-    //
-    // Get the fully-qualified name of the given definition, including any
-    // package defined via metadata. If a suffix is provided, it is
-    // prepended to the definition's unqualified name. If the nameSuffix
-    // is provided, it is appended to the containers name.
-    //
-    std::string getAbsolute(const Slice::ContainedPtr&, const std::string& = "", const std::string& = "");
+    /// Get the fully-qualified name of the given definition, including any package defined via metadata.
+    std::string getAbsolute(const Slice::ContainedPtr&);
 
+    /// Get the fully-qualified name of the given definition, including any package defined via metadata,
+    /// but "_M_" is prepended to the first name segment, indicating that this is a an explicit reference.
+    std::string getExplicitAbsolute(const Slice::ContainedPtr&);
+
+    /// Get the fully-qualified name of the given definition, including any package defined via metadata,
+    /// but "_M_" is prepended to the first name segment, and "_t_" is prepended to the final name segment,
+    /// indicating that this is a an explicit reference to a type.
+    std::string getAbsoluteType(const Slice::ContainedPtr&);
+
+    /// Prepends the specified 'prefix' to the provided name.
+    /// If the name is scoped (ex: A.B.C), the prefix is added to the last segment ('C' in this case).
     std::string addPrefixToName(std::string scopedName, std::string_view prefix);
 
     //
