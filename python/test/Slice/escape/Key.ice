@@ -21,7 +21,7 @@ module escapedAnd
     interface del
     {
         ["amd"] ["python:identifier:_elif"] void elif(
-            ["python:idenfitier:_else"] int else,
+            ["python:identifier:_else"] int else,
             out ["python:identifier:_except"] int except
         );
     }
@@ -37,7 +37,7 @@ module escapedAnd
     class for
     {
         int foo;
-        exec* from;
+        ["python:identifier:_from"] exec* from;
     }
 
     ["python:identifier:_is"]
@@ -57,7 +57,7 @@ module escapedAnd
     {
         ["python:identifier:_raise"]
         assert raise(
-            ["python:idenfitier:_else"] continue else,
+            ["python:identifier:_else"] continue else,
             ["python:identifier:_return"] for return,
             ["python:identifier:_while"] del* while,
             ["python:identifier:_yield"] exec* yield,
