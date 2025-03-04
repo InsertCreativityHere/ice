@@ -22,7 +22,7 @@ namespace
 
         for (const auto& param : params)
         {
-            if (param->name() == name)
+            if (param->mappedName() == name)
             {
                 return name + "_";
             }
@@ -137,14 +137,14 @@ namespace
         {
             if (hashPos != 0)
             {
-                os << Slice::Python::fixIdent(rawLink.substr(0, hashPos));
+                os << rawLink.substr(0, hashPos);
                 os << ".";
             }
-            os << Slice::Python::fixIdent(rawLink.substr(hashPos + 1));
+            os << rawLink.substr(hashPos + 1);
         }
         else
         {
-            os << Slice::Python::fixIdent(rawLink);
+            os << rawLink;
         }
 
         os << "`";
@@ -269,7 +269,7 @@ namespace Slice::Python
 }
 
 static string
-getDictLookup(const ContainedPtr& cont, const string& suffix = "", const string& prefix = "")
+getDictLookup(const ContainedPtr& cont, const string& name)
 {
     string scope = cont->mappedScope(".").substr(1);
     assert(!scope.empty());
@@ -280,7 +280,7 @@ getDictLookup(const ContainedPtr& cont, const string& suffix = "", const string&
         scope = package + "." + scope;
     }
 
-    return "'" + suffix + Slice::Python::fixIdent(cont->name() + prefix) + "' not in _M_" + scope + "__dict__";
+    return "if '" + name + "' not in _M_" + scope + "__dict__:";
 }
 
 //
@@ -405,13 +405,11 @@ Slice::Python::CodeVisitor::visitModuleEnd(const ModulePtr&)
 void
 Slice::Python::CodeVisitor::visitClassDecl(const ClassDeclPtr& p)
 {
-    //
     // Emit forward declarations.
-    //
     string scoped = p->scoped();
     if (_classHistory.count(scoped) == 0)
     {
-        _out << sp << nl << "if " << getDictLookup(p) << ':';
+        _out << sp << nl << getDictLookup(p, p->mappedName());
         _out.inc();
         _out << nl << getAbsoluteType(p) << " = IcePy.declareValue('" << scoped << "')";
         _out.dec();
@@ -422,13 +420,11 @@ Slice::Python::CodeVisitor::visitClassDecl(const ClassDeclPtr& p)
 void
 Slice::Python::CodeVisitor::visitInterfaceDecl(const InterfaceDeclPtr& p)
 {
-    //
     // Emit forward declarations.
-    //
     string scoped = p->scoped();
     if (_classHistory.count(scoped) == 0)
     {
-        _out << sp << nl << "if " << getDictLookup(p) << ':';
+        _out << sp << nl << getDictLookup(p, p->mappedName());
         _out.inc();
         _out << nl << getAbsoluteType(p) << "Prx" << " = IcePy.declareProxy('" << scoped << "')";
         _out.dec();
@@ -439,24 +435,21 @@ Slice::Python::CodeVisitor::visitInterfaceDecl(const InterfaceDeclPtr& p)
 void
 Slice::Python::CodeVisitor::writeOperations(const InterfaceDefPtr& p)
 {
-    OperationList operations = p->operations();
-    //
     // Emit a placeholder for each operation.
-    //
-    for (const auto& operation : operations)
+    for (const auto& operation : p->operations())
     {
-        string fixedOpName = fixIdent(operation->name());
+        const string opName = operation->mappedName();
 
         if (operation->hasMarshaledResult())
         {
-            string name = operation->name();
-            name[0] = static_cast<char>(toupper(static_cast<unsigned char>(name[0])));
+            string upperOpName = opName;
+            upperOpName[0] = static_cast<char>(toupper(static_cast<unsigned char>(upperOpName[0])));
             _out << sp;
             _out << nl << "@staticmethod";
-            _out << nl << "def " << name << "MarshaledResult(result, current):";
+            _out << nl << "def " << upperOpName << "MarshaledResult(result, current):";
             _out.inc();
             _out << nl << tripleQuotes;
-            _out << nl << "Immediately marshals the result of an invocation of " << name;
+            _out << nl << "Immediately marshals the result of an invocation of " << opName;
             _out << nl << "and returns an object that the servant implementation must return";
             _out << nl << "as its result.";
             _out << nl;
@@ -467,18 +460,18 @@ Slice::Python::CodeVisitor::writeOperations(const InterfaceDefPtr& p)
             _out << nl << "Returns";
             _out << nl << "  An object containing the marshaled result.";
             _out << nl << tripleQuotes;
-            _out << nl << "return IcePy.MarshaledResult(result, " << getExplicitAbsolute(p) << "._op_" << fixedOpName
+            _out << nl << "return IcePy.MarshaledResult(result, " << getExplicitAbsolute(p) << "._op_" << opName
                  << ", current.adapter.getCommunicator()._getImpl(), current.encoding)";
             _out.dec();
         }
 
-        _out << sp << nl << "def " << fixedOpName << "(self";
+        _out << sp << nl << "def " << opName << "(self";
 
         for (const auto& param : operation->parameters())
         {
             if (!param->isOutParam())
             {
-                _out << ", " << fixIdent(param->name());
+                _out << ", " << param->mappedName();
             }
         }
 
@@ -489,7 +482,7 @@ Slice::Python::CodeVisitor::writeOperations(const InterfaceDefPtr& p)
 
         writeDocstring(operation, DocAsyncDispatch);
 
-        _out << nl << "raise NotImplementedError(\"servant method '" << fixedOpName << "' not implemented\")";
+        _out << nl << "raise NotImplementedError(\"servant method '" << opName << "' not implemented\")";
         _out.dec();
     }
 }
@@ -502,9 +495,8 @@ Slice::Python::CodeVisitor::visitClassDefStart(const ClassDefPtr& p)
     const string valueName = fixIdent(p->name());
     const ClassDefPtr base = p->base();
     const DataMemberList members = p->dataMembers();
-    const DataMemberList baseMembers = (base ? base->allDataMembers() : DataMemberList{});
 
-    _out << sp << nl << "if " << getDictLookup(p) << ':';
+    _out << sp << nl << getDictLookup(p, p->mappedName());
     _out.inc();
     _out << nl << getExplicitAbsolute(p) << " = None";
     _out << nl << "class " << valueName << '(';
@@ -538,7 +530,7 @@ Slice::Python::CodeVisitor::visitClassDefStart(const ClassDefPtr& p)
         if (base)
         {
             _out << nl << getExplicitAbsolute(base) << ".__init__(self";
-            for (const auto& member : baseMembers)
+            for (const auto& member : base->allDataMembers())
             {
                 _out << ", " << fixIdent(member->name());
             }
@@ -651,40 +643,26 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     string prxType = getAbsoluteType(p) + "Prx";
     InterfaceList bases = p->bases();
 
-    _out << sp << nl << "if " << getDictLookup(p, "", "Prx") << ':';
+    _out << sp << nl << getDictLookup(p, p->mappedName() + "Prx");
     _out.inc();
 
     // Define the proxy class
     _out << nl << prxAbs << " = None";
-    _out << nl << "class " << prxName << '(';
-
+    _out << nl << "class " << prxName;
+    _out << spar;
+    if (bases.empty())
     {
-        vector<string> baseClasses;
+        _out << "Ice.ObjectPrx";
+    }
+    else
+    {
         for (const auto& base : bases)
         {
-            InterfaceDefPtr d = base;
-            baseClasses.push_back(getExplicitAbsolute(base) + "Prx");
-        }
-
-        if (baseClasses.empty())
-        {
-            _out << "Ice.ObjectPrx";
-        }
-        else
-        {
-            auto q = baseClasses.begin();
-            while (q != baseClasses.end())
-            {
-                _out << *q;
-
-                if (++q != baseClasses.end())
-                {
-                    _out << ", ";
-                }
-            }
+            _out << getExplicitAbsolute(base) + "Prx";
         }
     }
-    _out << "):";
+    _out << epar;
+    _out << ':';
     _out.inc();
 
     _out << sp;
@@ -825,53 +803,37 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 
     // Define the servant class
     _out << sp << nl << classAbs << " = None";
-    _out << nl << "class " << className << '(';
+    _out << nl << "class " << className;
+    _out << spar;
     {
-        vector<string> baseClasses;
-        for (const auto& base : bases)
-        {
-            InterfaceDefPtr d = base;
-            baseClasses.push_back(getExplicitAbsolute(base));
-        }
-
-        if (baseClasses.empty())
+        if (bases.empty())
         {
             _out << "Ice.Object";
         }
         else
         {
-            auto q = baseClasses.begin();
-            while (q != baseClasses.end())
+            for (const auto& base : bases)
             {
-                _out << *q;
-
-                if (++q != baseClasses.end())
-                {
-                    _out << ", ";
-                }
+                _out << getExplicitAbsolute(base);
             }
         }
     }
-    _out << "):";
+    _out << epar << ':';
 
     _out.inc();
 
     //
     // ice_ids
     //
-    StringList ids = p->ids();
     _out << sp << nl << "def ice_ids(self, current=None):";
     _out.inc();
-    _out << nl << "return (";
-    for (auto q = ids.begin(); q != ids.end(); ++q)
+    _out << nl << "return ";
+    _out << spar;
+    for (const auto& id : p->ids())
     {
-        if (q != ids.begin())
-        {
-            _out << ", ";
-        }
-        _out << "'" << *q << "'";
+        _out << "'" + id + "'";
     }
-    _out << ')';
+    _out << epar;
     _out.dec();
 
     //
@@ -1048,9 +1010,8 @@ Slice::Python::CodeVisitor::visitExceptionStart(const ExceptionPtr& p)
     string baseName;
 
     const DataMemberList members = p->dataMembers();
-    const DataMemberList baseMembers = (base ? base->allDataMembers() : DataMemberList{});
 
-    _out << sp << nl << "if " << getDictLookup(p) << ':';
+    _out << sp << nl << getDictLookup(p, p->mappedName());
     _out.inc();
     _out << nl << getExplicitAbsolute(p) << " = None";
     _out << nl << "class " << name << '(';
@@ -1084,7 +1045,7 @@ Slice::Python::CodeVisitor::visitExceptionStart(const ExceptionPtr& p)
         if (base)
         {
             _out << nl << baseName << ".__init__(self";
-            for (const auto& member : baseMembers)
+            for (const auto& member : base->allDataMembers())
             {
                 _out << ", " << fixIdent(member->name());
             }
@@ -1181,7 +1142,7 @@ Slice::Python::CodeVisitor::visitStructStart(const StructPtr& p)
     const string name = fixIdent(p->name());
     const DataMemberList members = p->dataMembers();
 
-    _out << sp << nl << "if " << getDictLookup(p) << ':';
+    _out << sp << nl << getDictLookup(p, p->mappedName());
     _out.inc();
     _out << nl << abs << " = None";
     _out << nl << "class " << name << "(object):";
@@ -1444,7 +1405,7 @@ Slice::Python::CodeVisitor::visitSequence(const SequencePtr& p)
 {
     // Emit the type information.
     string scoped = p->scoped();
-    _out << sp << nl << "if " << getDictLookup(p, "_t_") << ':';
+    _out << sp << nl << getDictLookup(p, "_t_" + p->mappedName());
     _out.inc();
     _out << nl << getAbsoluteType(p) << " = IcePy.defineSequence('" << scoped << "', ";
     writeMetadata(p->getMetadata());
@@ -1459,7 +1420,7 @@ Slice::Python::CodeVisitor::visitDictionary(const DictionaryPtr& p)
 {
     // Emit the type information.
     string scoped = p->scoped();
-    _out << sp << nl << "if " << getDictLookup(p, "_t_") << ':';
+    _out << sp << nl << getDictLookup(p, "_t_" + p->mappedName());
     _out.inc();
     _out << nl << getAbsoluteType(p) << " = IcePy.defineDictionary('" << scoped << "', ";
     writeMetadata(p->getMetadata());
@@ -1478,7 +1439,7 @@ Slice::Python::CodeVisitor::visitEnum(const EnumPtr& p)
     string name = fixIdent(p->name());
     EnumeratorList enumerators = p->enumerators();
 
-    _out << sp << nl << "if " << getDictLookup(p) << ':';
+    _out << sp << nl << getDictLookup(p, p->mappedName());
     _out.inc();
     _out << nl << getExplicitAbsolute(p) << " = None";
     _out << nl << "class " << name << "(Ice.EnumBase):";
@@ -1732,7 +1693,7 @@ Slice::Python::CodeVisitor::writeMetadata(const MetadataList& metadata)
     {
         if (meta->directive().find("python:") == 0)
         {
-            if (i > 0)
+            if (i++ > 0)
             {
                 _out << ", ";
             }
@@ -2348,31 +2309,30 @@ Slice::Python::getPackageMetadata(const ContainedPtr& cont)
 }
 
 string
-Slice::Python::getAbsolute(const ContainedPtr& cont)
+Slice::Python::getAbsolute(const ContainedPtr& p)
 {
-    const string package = getPackageMetadata(cont);
+    const string package = getPackageMetadata(p);
     const string packagePrefix = (package.empty() ? "" : package + ".");
-    return packagePrefix + cont->mappedScoped(".").substr(1);
+    return packagePrefix + p->mappedScoped(".").substr(1);
 }
 
 string
-Slice::Python::getExplicitAbsolute(const ContainedPtr& cont)
+Slice::Python::getExplicitAbsolute(const ContainedPtr& p)
 {
-    return "_M_" + getAbsolute(cont);
+    return "_M_" + getAbsolute(p);
 }
 
 string
-Slice::Python::getAbsoluteType(const ContainedPtr& cont)
+Slice::Python::getAbsoluteType(const ContainedPtr& p)
 {
-    return addPrefixToName(getExplicitAbsolute(cont), "_t_");
-}
+    string absoluteName = getExplicitAbsolute(p);
 
-string
-Slice::Python::addPrefixToName(std::string scopedName, string_view prefix)
-{
-    auto pos = scopedName.rfind('.');
+    // Append a "_t_" in front of the last name segment.
+    auto pos = absoluteName.rfind('.');
     pos = (pos == string::npos ? 0 : pos + 1);
-    scopedName.insert(pos, prefix);
+    absoluteName.insert(pos, "_t_");
+
+    return absoluteName;
 }
 
 void
