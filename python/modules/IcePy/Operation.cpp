@@ -44,13 +44,14 @@ namespace IcePy
     class Operation
     {
     public:
-        Operation(const char*, PyObject*, int, PyObject*, PyObject*, PyObject*, PyObject*, PyObject*, PyObject*);
+        Operation(const char*, const char*, PyObject*, int, PyObject*, PyObject*, PyObject*, PyObject*, PyObject*, PyObject*);
 
         void marshalResult(Ice::OutputStream&, PyObject*);
 
         void deprecate(const string&);
 
         string name;
+        string dispatchName;
         Ice::OperationMode mode;
         bool amd;
         std::optional<Ice::FormatType> format;
@@ -61,7 +62,6 @@ namespace IcePy
         ParamInfoList optionalOutParams;
         ParamInfoPtr returnType;
         ExceptionInfoList exceptions;
-        string dispatchName;
         bool sendsClasses;
         bool returnsClasses;
         bool pseudoOp;
@@ -338,6 +338,7 @@ extern "C" int
 operationInit(OperationObject* self, PyObject* args, PyObject* /*kwds*/)
 {
     char* name;
+    char* dispatchName;
     PyObject* modeType = lookupType("Ice.OperationMode");
     assert(modeType);
     PyObject* mode;
@@ -350,8 +351,9 @@ operationInit(OperationObject* self, PyObject* args, PyObject* /*kwds*/)
     PyObject* exceptions;
     if (!PyArg_ParseTuple(
             args,
-            "sO!iOO!O!O!OO!",
+            "ssO!iOO!O!O!OO!",
             &name,
+            &dispatchName,
             modeType,
             &mode,
             &amd,
@@ -370,7 +372,7 @@ operationInit(OperationObject* self, PyObject* args, PyObject* /*kwds*/)
     }
 
     self->op = new OperationPtr(
-        make_shared<Operation>(name, mode, amd, format, metadata, inParams, outParams, returnType, exceptions));
+        make_shared<Operation>(name, dispatchName, mode, amd, format, metadata, inParams, outParams, returnType, exceptions));
     return 0;
 }
 
@@ -687,6 +689,7 @@ IcePy::ParamInfo::unmarshaled(PyObject* val, PyObject* target, void* closure)
 //
 IcePy::Operation::Operation(
     const char* n,
+    const char* d,
     PyObject* m,
     int amdFlag,
     PyObject* fmt,
@@ -697,6 +700,7 @@ IcePy::Operation::Operation(
     PyObject* ex)
 {
     name = n;
+    dispatchName = d;
 
     //
     // mode
@@ -709,7 +713,6 @@ IcePy::Operation::Operation(
     // amd
     //
     amd = amdFlag ? true : false;
-    dispatchName = fixIdent(name); // Use the same dispatch name regardless of AMD.
 
     //
     // format
@@ -814,7 +817,7 @@ Operation::marshalResult(Ice::OutputStream& os, PyObject* result)
     if (numResults > 1 && (!PyTuple_Check(result) || PyTuple_GET_SIZE(result) != numResults))
     {
         ostringstream ostr;
-        ostr << "cannot marshal result: operation '" << fixIdent(name) << "' should return a tuple of length "
+        ostr << "cannot marshal result: operation '" << dispatchName << "' should return a tuple of length "
              << numResults;
         throw Ice::MarshalException(__FILE__, __LINE__, ostr.str());
     }
@@ -936,7 +939,7 @@ IcePy::Operation::deprecate(const string& msg)
     }
     else
     {
-        _deprecateMessage = "operation " + name + " is deprecated";
+        _deprecateMessage = "operation " + dispatchName + " is deprecated";
     }
 }
 
@@ -1279,14 +1282,10 @@ IcePy::Invocation::prepareRequest(
     Py_ssize_t paramCount = static_cast<Py_ssize_t>(op->inParams.size());
     if (argc != paramCount)
     {
-        string opName;
+        string opName = op->dispatchName;
         if (mapping == AsyncMapping)
         {
-            opName = op->name + "Async";
-        }
-        else
-        {
-            opName = fixIdent(op->name);
+            opName += "Async";
         }
         PyErr_Format(PyExc_RuntimeError, "%s expects %d in parameters", opName.c_str(), static_cast<int>(paramCount));
         return false;
@@ -1313,14 +1312,10 @@ IcePy::Invocation::prepareRequest(
                 PyObject* arg = PyTuple_GET_ITEM(args, info->pos);
                 if ((!info->optional || arg != Py_None) && !info->type->validate(arg))
                 {
-                    string name;
+                    string name = op->dispatchName;
                     if (mapping == AsyncMapping)
                     {
-                        name = op->name + "Async";
-                    }
-                    else
-                    {
-                        name = fixIdent(op->name);
+                        name += "Async";
                     }
                     PyErr_Format(
                         PyExc_ValueError,

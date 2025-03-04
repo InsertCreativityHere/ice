@@ -40,6 +40,18 @@ module escapedAnd
         exec* from;
     }
 
+    ["python:identifier:_is"]
+    exception is
+    {
+        int bar;
+    }
+
+    ["python:identifier:_not"]
+    exception not extends is
+    {
+        ["python:identifier:_pass"] int pass;
+    }
+
     ["python:identifier:_if"]
     interface if extends exec, del
     {
@@ -59,18 +71,6 @@ module escapedAnd
 
     ["python:identifier:_in"]
     dictionary<string,assert> in;
-
-    ["python:identifier:_is"]
-    exception is
-    {
-        int bar;
-    }
-
-    ["python:identifier:_not"]
-    exception not extends is
-    {
-        ["python:identifier:_pass"] int pass;
-    }
 
     ["python:identifier:_lambda"]
     const int lambda = 0;

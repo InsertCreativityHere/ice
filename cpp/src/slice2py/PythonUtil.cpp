@@ -460,8 +460,8 @@ Slice::Python::CodeVisitor::writeOperations(const InterfaceDefPtr& p)
             _out << nl << "Returns";
             _out << nl << "  An object containing the marshaled result.";
             _out << nl << tripleQuotes;
-            _out << nl << "return IcePy.MarshaledResult(result, " << getExplicitAbsolute(p) << "._op_" << opName
-                 << ", current.adapter.getCommunicator()._getImpl(), current.encoding)";
+            _out << nl << "return IcePy.MarshaledResult(result, " << getExplicitAbsolute(p) << "._op_"
+                 << operation->name() << ", current.adapter.getCommunicator()._getImpl(), current.encoding)";
             _out.dec();
         }
 
@@ -688,6 +688,7 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     OperationList operations = p->operations();
     for (const auto& operation : operations)
     {
+        string opName = operation->name();
         string mappedOpName = operation->mappedName();
         if (mappedOpName == "checkedCast" || mappedOpName == "uncheckedCast")
         {
@@ -744,7 +745,7 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
         _out << ", " << contextParamName << "=None):";
         _out.inc();
         writeDocstring(operation, DocSync);
-        _out << nl << "return " << classAbs << "._op_" << mappedOpName << ".invoke(self, ((" << inParams;
+        _out << nl << "return " << classAbs << "._op_" << opName << ".invoke(self, ((" << inParams;
         if (!inParams.empty() && inParams.find(',') == string::npos)
         {
             _out << ", ";
@@ -764,7 +765,7 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
         _out << ", " << contextParamName << "=None):";
         _out.inc();
         writeDocstring(operation, DocAsync);
-        _out << nl << "return " << classAbs << "._op_" << mappedOpName << ".invokeAsync(self, ((" << inParams;
+        _out << nl << "return " << classAbs << "._op_" << opName << ".invokeAsync(self, ((" << inParams;
         if (!inParams.empty() && inParams.find(',') == string::npos)
         {
             _out << ", ";
@@ -868,7 +869,7 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     //
     // Define each operation. The arguments to the IcePy.Operation constructor are:
     //
-    // 'opName', Mode, AMD, Format, Metadata, (InParams), (OutParams), ReturnParam, (Exceptions)
+    // 'opName', 'mappedOpName', Mode, AMD, Format, Metadata, (InParams), (OutParams), ReturnParam, (Exceptions)
     //
     // where InParams and OutParams are tuples of type descriptions, and Exceptions
     // is a tuple of exception type ids.
@@ -879,7 +880,9 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     }
     for (const auto& operation : operations)
     {
-        const string fullOpName = className + "._op_" + operation->mappedName();
+        const string opName = operation->name();
+        const string mappedOpName = operation->mappedName();
+        const string fullOpName = className + "._op_" + opName;
         ParameterList params = operation->parameters();
         ParameterList::iterator t;
         int count;
@@ -904,8 +907,8 @@ Slice::Python::CodeVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
             format = "None";
         }
 
-        _out << nl << fullOpName << " = IcePy.Operation('" << operation->name()
-             << "', " << getOperationMode(operation->mode()) << ", "
+        _out << nl << fullOpName << " = IcePy.Operation('" << opName << "', '" << mappedOpName << "', "
+             << getOperationMode(operation->mode()) << ", "
              << ((p->hasMetadata("amd") || operation->hasMetadata("amd")) ? "True" : "False") << ", " << format << ", ";
         writeMetadata(operation->getMetadata());
         _out << ", (";

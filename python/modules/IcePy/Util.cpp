@@ -628,7 +628,18 @@ namespace
     PyObject*
     createPythonException(const char* typeId, std::array<PyObject*, N> args, bool fallbackToLocalException = false)
     {
-        PyObject* type = IcePy::lookupType(scopedToName(typeId));
+        string exceptionName = typeId;
+        if (exceptionName.find("::") == 0)
+        {
+            exceptionName.erase(0, 2);
+        }
+        string::size_type pos;
+        while ((pos = exceptionName.find("::")) != string::npos)
+        {
+            exceptionName.replace(pos, 2, ".");
+        }    
+
+        PyObject* type = IcePy::lookupType(exceptionName);
         if (!type)
         {
             if (fallbackToLocalException)
