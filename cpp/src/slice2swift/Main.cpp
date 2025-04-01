@@ -259,7 +259,7 @@ compile(const vector<string>& argv)
 
                     try
                     {
-                        Gen gen(icecpp->getBaseName(), includePaths, output);
+                        Slice::Swift::Gen gen(icecpp->getBaseName(), includePaths, output);
                         gen.generate(u);
                     }
                     catch (const Slice::FileException& ex)
