@@ -17,11 +17,11 @@ namespace Slice::Swift
     std::string getSwiftModule(const ModulePtr&);
     ModulePtr getTopLevelModule(const ContainedPtr&);
 
-    static void validateMetadata(const UnitPtr&);
+    void validateMetadata(const UnitPtr&);
 
     // Swift only allows 1 package per file, so this function checks that if there are multiple top-level-modules
     // within a single Slice file, that they all map to the same Swift package.
-    static void validateSwiftModuleMappings(const UnitPtr&);
+    void validateSwiftModuleMappings(const UnitPtr&);
 
     void writeDocLines(
         IceInternal::Output&,
@@ -43,13 +43,13 @@ namespace Slice::Swift
     std::string typeToString(const TypePtr&, const ContainedPtr&, bool = false);
 
     /// Removes any Swift escaping from the provided identifier (any leading or trailing backticks will be removed).
-    static std::string removeEscaping(std::string ident);
+    std::string removeEscaping(std::string ident);
 
     std::string getUnqualified(const std::string&, const std::string&);
     std::string modeToString(Operation::Mode);
     std::string getOptionalFormat(const TypePtr&);
 
-    static bool isNullableType(const TypePtr&);
+    bool isNullableType(const TypePtr&);
 
     /// Returns a string representing the Swift type `contained` maps to.
     ///
