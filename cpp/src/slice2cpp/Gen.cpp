@@ -521,7 +521,7 @@ namespace
             ExceptionPtr ex = op->container()->lookupException(name, false);
             if (ex)
             {
-                scopedName = ex->mappedScoped().substr(2);
+                scopedName = ex->mappedScoped().substr(2); // Remove the leading "::"
             }
             out << nl << "/// @throws " << scopedName << " ";
             writeDocLines(out, lines, false);

@@ -82,13 +82,13 @@ namespace
         ClassDeclPtr cl = dynamic_pointer_cast<ClassDecl>(type);
         if (cl)
         {
-            return cl->mappedScoped(".").substr(1);
+            return cl->mappedScoped(".");
         }
 
         StructPtr st = dynamic_pointer_cast<Struct>(type);
         if (st)
         {
-            return st->mappedScoped(".").substr(1);
+            return st->mappedScoped(".");
         }
 
         InterfaceDeclPtr proxy = dynamic_pointer_cast<InterfaceDecl>(type);
@@ -96,7 +96,7 @@ namespace
         {
             ostringstream os;
             os << "(";
-            os << proxy->mappedScoped(".").substr(1) + "Prx";
+            os << proxy->mappedScoped(".") + "Prx";
             os << " or None)";
             return os.str();
         }
@@ -104,7 +104,7 @@ namespace
         EnumPtr en = dynamic_pointer_cast<Enum>(type);
         if (en)
         {
-            return en->mappedScoped(".").substr(1);
+            return en->mappedScoped(".");
         }
 
         SequencePtr seq = dynamic_pointer_cast<Sequence>(type);
@@ -271,7 +271,7 @@ namespace Slice::Python
 static void
 writeModuleHasDefinitionCheck(Output& out, const ContainedPtr& cont, const string& name)
 {
-    string scope = cont->mappedScope(".").substr(1);
+    string scope = cont->mappedScope(".");
     assert(!scope.empty());
 
     string package = Slice::Python::getPackageMetadata(cont);
@@ -2341,7 +2341,7 @@ Slice::Python::getAbsolute(const ContainedPtr& p)
 {
     const string package = getPackageMetadata(p);
     const string packagePrefix = package + (package.empty() ? "" : ".");
-    return packagePrefix + p->mappedScoped(".").substr(1);
+    return packagePrefix + p->mappedScoped(".");
 }
 
 string

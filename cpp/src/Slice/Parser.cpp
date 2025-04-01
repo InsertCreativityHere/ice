@@ -938,7 +938,7 @@ Slice::Contained::mappedScope(const string& separator) const
     {
         return container->mappedScoped(separator) + separator;
     }
-    else
+    else if (separator != ".")
     {
         return separator;
     }
