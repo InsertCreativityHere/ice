@@ -70,9 +70,9 @@ namespace
 
     string getUnqualified(const ContainedPtr& contained, const string& moduleName)
     {
-        string scopedName = contained->scoped();
-        if (scopedName.find("::") != string::npos && scopedName.find(moduleName) == 0 &&
-            scopedName.find("::", moduleName.size()) == string::npos)
+        // TODO this is buggy. Ex: if you pass in (::IceSSL::Engine, "::Ice") it will incorrectly emit "SSL::Engine".
+        const string scopedName = contained->scoped();
+        if (scopedName.find(moduleName) == 0 && scopedName.find("::", moduleName.size()) == string::npos)
         {
             return scopedName.substr(moduleName.size());
         }
@@ -610,11 +610,11 @@ Gen::TypesVisitor::visitSequence(const SequencePtr& p)
             }
             out << "<"
                 // TODO the generic argument must be the IceRPC C# mapped type
-                << typeToString(p->type(), p->scope(), false) << ">\")]";
+                << typeToString(p->type(), scope, false) << ">\")]";
             break;
         }
     }
-    out << " Sequence<" << typeToString(p->type(), p->scope(), false) << ">";
+    out << " Sequence<" << typeToString(p->type(), scope, false) << ">";
 }
 
 void
@@ -633,19 +633,18 @@ Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
         {
             out << "[cs::type(\"[System.Collections.Generic.SortedDictionary<"
                 // TODO the generic arguments must be the IceRPC C# mapped types
-                << typeToString(p->keyType(), p->scope(), false) << ", "
-                << typeToString(p->valueType(), p->scope(), false) << ">\")]";
+                << typeToString(p->keyType(), scope, false) << ", "
+                << typeToString(p->valueType(), scope, false) << ">\")]";
             break;
         }
     }
-    out << " Dictionary<" << typeToString(p->keyType(), p->scope(), false) << ", "
-        << typeToString(p->valueType(), p->scope(), false) << ">";
+    out << " Dictionary<" << typeToString(p->keyType(), scope, false) << ", "
+        << typeToString(p->valueType(), scope, false) << ">";
 }
 
 void
 Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 {
-    const string scope = p->scope();
     Output& out = getOutput(p);
 
     out << sp;

@@ -1155,12 +1155,13 @@ Slice::Gen::TypesVisitor::visitClassDefEnd(const ClassDefPtr& p)
     }
 
     ostringstream staticId;
-    staticId << "The string <c>" << p->scoped() << "</c>.";
+    const string scoped = p->scoped();
+    staticId << "The string <c>" << scoped << "</c>.";
 
     _out << sp;
     writeDocLine(_out, "summary", "Gets the type ID of the associated Slice class.");
     writeDocLine(_out, "returns", staticId.str());
-    _out << nl << R"(public static new string ice_staticId() => ")" << p->scoped() << R"(";)";
+    _out << nl << R"(public static new string ice_staticId() => ")" << scoped << R"(";)";
 
     _out << sp << nl << "public override string ice_id() => ice_staticId();";
     writeMarshaling(p);
@@ -1403,7 +1404,7 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
         }
     }
 
-    string scoped = p->scoped();
+    const string scoped = p->scoped();
 
     _out << sp;
     _out << nl << "public override string ice_id() => \"" << scoped << "\";";
@@ -2146,12 +2147,13 @@ Slice::Gen::TypesVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     _out.dec();
 
     ostringstream staticId;
-    staticId << "The string <c>" << p->scoped() << "</c>.";
+    const string scoped = p->scoped();
+    staticId << "The string <c>" << scoped << "</c>.";
 
     _out << sp;
     writeDocLine(_out, "summary", "Gets the type ID of the associated Slice interface.");
     writeDocLine(_out, "returns", staticId.str());
-    _out << nl << R"(public static string ice_staticId() => ")" << p->scoped() << R"(";)";
+    _out << nl << R"(public static string ice_staticId() => ")" << scoped << R"(";)";
 
     _out << sp;
     writeMarshalDocComment(_out);
@@ -2438,11 +2440,12 @@ Slice::Gen::ServantVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
     _out << sb;
 
     ostringstream staticId;
-    staticId << "The string <c>" << p->scoped() << "</c>.";
+    const string scoped = p->scoped();
+    staticId << "The string <c>" << scoped << "</c>.";
 
     writeDocLine(_out, "summary", "Gets the type ID of the associated Slice interface.");
     writeDocLine(_out, "returns", staticId.str());
-    _out << nl << R"(public static new string ice_staticId() => ")" << p->scoped() << R"(";)";
+    _out << nl << R"(public static new string ice_staticId() => ")" << scoped << R"(";)";
 
     for (const auto& op : p->allOperations())
     {

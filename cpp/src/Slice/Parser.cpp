@@ -934,12 +934,14 @@ Slice::Contained::mappedScoped(const string& separator) const
 string
 Slice::Contained::mappedScope(const string& separator) const
 {
-    string scoped;
     if (auto container = dynamic_pointer_cast<Contained>(_container))
     {
-        scoped = container->mappedScoped(separator);
+        return container->mappedScoped(separator) + separator;
     }
-    return scoped + separator;
+    else
+    {
+        return separator;
+    }
 }
 
 string

@@ -1556,6 +1556,7 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 void
 Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 {
+    const string scoped = p->scoped();
     const string scopedName = p->mappedScoped();
     const string prx = p->mappedName() + "Prx";
     const string scopedPrx = scopedName + "Prx";
@@ -1563,13 +1564,13 @@ Slice::Gen::ProxyVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 
     H << sp;
     H << nl << "/// Gets the type ID of the associated Slice interface.";
-    H << nl << "/// @return The string `\"" << p->scoped() << "\"`.";
+    H << nl << "/// @return The string `\"" << scoped << "\"`.";
     H << nl << "static const char* ice_staticId() noexcept;";
 
     C << sp;
     C << nl << "const char*" << nl << scopedPrx.substr(2) << "::ice_staticId() noexcept";
     C << sb;
-    C << nl << "return \"" << p->scoped() << "\";";
+    C << nl << "return \"" << scoped << "\";";
     C << eb;
 
     if (!bases.empty())
