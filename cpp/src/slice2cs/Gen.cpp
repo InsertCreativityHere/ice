@@ -112,7 +112,7 @@ namespace
         {
             if (auto builtinTarget = dynamic_pointer_cast<Builtin>(target))
             {
-                string typeS = CsGenerator::typeToString(builtinTarget, "");
+                string typeS = Slice::Cs::typeToString(builtinTarget, "");
                 if (builtinTarget->kind() == Builtin::KindObjectProxy || builtinTarget->kind() == Builtin::KindValue)
                 {
                     // Remove trailing '?':
@@ -135,17 +135,17 @@ namespace
                 if (auto operationTarget = dynamic_pointer_cast<Operation>(target))
                 {
                     // link to the method on the proxy interface
-                    result << CsGenerator::getUnqualified(operationTarget->interface(), sourceScope) << "Prx."
+                    result << Slice::Cs::getUnqualified(operationTarget->interface(), sourceScope) << "Prx."
                            << operationTarget->mappedName();
                 }
                 else if (auto interfaceTarget = dynamic_pointer_cast<InterfaceDecl>(target))
                 {
                     // link to the proxy interface
-                    result << CsGenerator::getUnqualified(interfaceTarget, sourceScope) << "Prx";
+                    result << Slice::Cs::getUnqualified(interfaceTarget, sourceScope) << "Prx";
                 }
                 else
                 {
-                    result << CsGenerator::getUnqualified(dynamic_pointer_cast<Contained>(target), sourceScope);
+                    result << Slice::Cs::getUnqualified(dynamic_pointer_cast<Contained>(target), sourceScope);
                 }
                 result << "\"";
             }
@@ -294,12 +294,12 @@ namespace
     }
 }
 
-Slice::CsVisitor::CsVisitor(Output& out) : _out(out) {}
+Slice::Cs::CsVisitor::CsVisitor(Output& out) : _out(out) {}
 
-Slice::CsVisitor::~CsVisitor() = default;
+Slice::Cs::CsVisitor::~CsVisitor() = default;
 
 void
-Slice::CsVisitor::writeMarshalUnmarshalParams(
+Slice::Cs::CsVisitor::writeMarshalUnmarshalParams(
     const ParameterList& params,
     const OperationPtr& op,
     bool marshal,
@@ -445,7 +445,7 @@ Slice::CsVisitor::writeMarshalUnmarshalParams(
 }
 
 void
-Slice::CsVisitor::writeMarshalDataMember(
+Slice::Cs::CsVisitor::writeMarshalDataMember(
     const DataMemberPtr& member,
     const string& name,
     const string& ns,
@@ -470,7 +470,7 @@ Slice::CsVisitor::writeMarshalDataMember(
 }
 
 void
-Slice::CsVisitor::writeUnmarshalDataMember(
+Slice::Cs::CsVisitor::writeUnmarshalDataMember(
     const DataMemberPtr& member,
     const string& name,
     const string& ns,
@@ -500,7 +500,7 @@ Slice::CsVisitor::writeUnmarshalDataMember(
 }
 
 void
-Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
+Slice::Cs::CsVisitor::writeMarshaling(const ClassDefPtr& p)
 {
     string ns = getNamespace(p);
     ClassDefPtr base = p->base();
@@ -559,7 +559,7 @@ Slice::CsVisitor::writeMarshaling(const ClassDefPtr& p)
 }
 
 vector<string>
-Slice::CsVisitor::getParams(const OperationPtr& op, const string& ns)
+Slice::Cs::CsVisitor::getParams(const OperationPtr& op, const string& ns)
 {
     vector<string> params;
     ParameterList paramList = op->parameters();
@@ -578,7 +578,7 @@ Slice::CsVisitor::getParams(const OperationPtr& op, const string& ns)
 }
 
 vector<string>
-Slice::CsVisitor::getInParams(const OperationPtr& op, const string& ns, bool internal)
+Slice::Cs::CsVisitor::getInParams(const OperationPtr& op, const string& ns, bool internal)
 {
     vector<string> params;
     for (const auto& q : op->inParameters())
@@ -590,7 +590,7 @@ Slice::CsVisitor::getInParams(const OperationPtr& op, const string& ns, bool int
 }
 
 vector<string>
-Slice::CsVisitor::getOutParams(const OperationPtr& op, const string& ns, bool returnParam, bool outKeyword)
+Slice::Cs::CsVisitor::getOutParams(const OperationPtr& op, const string& ns, bool returnParam, bool outKeyword)
 {
     vector<string> params;
     if (returnParam)
@@ -617,7 +617,7 @@ Slice::CsVisitor::getOutParams(const OperationPtr& op, const string& ns, bool re
 }
 
 vector<string>
-Slice::CsVisitor::getArgs(const OperationPtr& op)
+Slice::Cs::CsVisitor::getArgs(const OperationPtr& op)
 {
     vector<string> args;
     ParameterList paramList = op->parameters();
@@ -634,7 +634,7 @@ Slice::CsVisitor::getArgs(const OperationPtr& op)
 }
 
 vector<string>
-Slice::CsVisitor::getInArgs(const OperationPtr& op, bool internal)
+Slice::Cs::CsVisitor::getInArgs(const OperationPtr& op, bool internal)
 {
     vector<string> args;
     ParameterList paramList = op->parameters();
@@ -650,7 +650,7 @@ Slice::CsVisitor::getInArgs(const OperationPtr& op, bool internal)
 }
 
 string
-Slice::CsVisitor::getDispatchParams(
+Slice::Cs::CsVisitor::getDispatchParams(
     const OperationPtr& op,
     string& retS,
     vector<string>& params,
@@ -691,7 +691,7 @@ Slice::CsVisitor::getDispatchParams(
 }
 
 void
-Slice::CsVisitor::emitAttributes(const ContainedPtr& p)
+Slice::Cs::CsVisitor::emitAttributes(const ContainedPtr& p)
 {
     assert(
         dynamic_pointer_cast<Enum>(p) || dynamic_pointer_cast<Enumerator>(p) || dynamic_pointer_cast<DataMember>(p) ||
@@ -707,14 +707,14 @@ Slice::CsVisitor::emitAttributes(const ContainedPtr& p)
 }
 
 void
-Slice::CsVisitor::emitNonBrowsableAttribute()
+Slice::Cs::CsVisitor::emitNonBrowsableAttribute()
 {
     _out << nl
          << "[global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]";
 }
 
 void
-Slice::CsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePtr& valueType, const string& value)
+Slice::Cs::CsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePtr& valueType, const string& value)
 {
     ConstPtr constant = dynamic_pointer_cast<Const>(valueType);
     if (constant)
@@ -750,7 +750,7 @@ Slice::CsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePt
 }
 
 void
-Slice::CsVisitor::writeDataMemberInitializers(const DataMemberList& dataMembers)
+Slice::Cs::CsVisitor::writeDataMemberInitializers(const DataMemberList& dataMembers)
 {
     // Generates "= null!" for each required field. This wouldn't be necessary if we actually generated required
     // fields and properties.
@@ -764,7 +764,7 @@ Slice::CsVisitor::writeDataMemberInitializers(const DataMemberList& dataMembers)
 }
 
 void
-Slice::CsVisitor::writeDocComment(const ContainedPtr& p, const string& generatedType, const string& notes)
+Slice::Cs::CsVisitor::writeDocComment(const ContainedPtr& p, const string& generatedType, const string& notes)
 {
     optional<DocComment> comment = DocComment::parseFrom(p, csLinkFormatter, true, true);
     if (comment)
@@ -790,7 +790,7 @@ Slice::CsVisitor::writeDocComment(const ContainedPtr& p, const string& generated
 }
 
 void
-Slice::CsVisitor::writeHelperDocComment(
+Slice::Cs::CsVisitor::writeHelperDocComment(
     const ContainedPtr& p,
     const string& comment,
     const string& generatedType,
@@ -811,7 +811,7 @@ Slice::CsVisitor::writeHelperDocComment(
 }
 
 void
-Slice::CsVisitor::writeOpDocComment(const OperationPtr& op, const vector<string>& extraParams, bool isAsync)
+Slice::Cs::CsVisitor::writeOpDocComment(const OperationPtr& op, const vector<string>& extraParams, bool isAsync)
 {
     optional<DocComment> comment = DocComment::parseFrom(op, csLinkFormatter, true, true);
     if (!comment)
@@ -856,7 +856,7 @@ Slice::CsVisitor::writeOpDocComment(const OperationPtr& op, const vector<string>
 }
 
 void
-Slice::CsVisitor::writeParameterDocComments(const DocComment& comment, const ParameterList& parameters)
+Slice::Cs::CsVisitor::writeParameterDocComments(const DocComment& comment, const ParameterList& parameters)
 {
     auto commentParameters = comment.parameters();
     for (const auto& param : parameters)
@@ -872,7 +872,7 @@ Slice::CsVisitor::writeParameterDocComments(const DocComment& comment, const Par
 }
 
 void
-Slice::CsVisitor::moduleStart(const ModulePtr& p)
+Slice::Cs::CsVisitor::moduleStart(const ModulePtr& p)
 {
     if (p->isTopLevel())
     {
@@ -887,7 +887,7 @@ Slice::CsVisitor::moduleStart(const ModulePtr& p)
 }
 
 void
-Slice::CsVisitor::moduleEnd(const ModulePtr& p)
+Slice::Cs::CsVisitor::moduleEnd(const ModulePtr& p)
 {
     if (p->isTopLevel())
     {
@@ -898,7 +898,7 @@ Slice::CsVisitor::moduleEnd(const ModulePtr& p)
     }
 }
 
-Slice::Gen::Gen(const string& base, const vector<string>& includePaths, const string& dir) : _includePaths(includePaths)
+Slice::Cs::Gen::Gen(const string& base, const vector<string>& includePaths, const string& dir) : _includePaths(includePaths)
 {
     string fileBase = base;
     string::size_type pos = base.find_last_of("/\\");
@@ -952,7 +952,7 @@ Slice::Gen::Gen(const string& base, const vector<string>& includePaths, const st
     _out << nl << "#pragma warning disable CS0619 // Type or member is obsolete";
 }
 
-Slice::Gen::~Gen()
+Slice::Cs::Gen::~Gen()
 {
     if (_out.isOpen())
     {
@@ -962,9 +962,9 @@ Slice::Gen::~Gen()
 }
 
 void
-Slice::Gen::generate(const UnitPtr& p)
+Slice::Cs::Gen::generate(const UnitPtr& p)
 {
-    CsGenerator::validateMetadata(p);
+    Slice::Cs::validateMetadata(p);
 
     TypesVisitor typesVisitor(_out);
     p->visit(&typesVisitor);
@@ -977,17 +977,17 @@ Slice::Gen::generate(const UnitPtr& p)
 }
 
 void
-Slice::Gen::printHeader()
+Slice::Cs::Gen::printHeader()
 {
     _out << "// Copyright (c) ZeroC, Inc.";
     _out << sp;
     _out << nl << "// slice2cs version " << ICE_STRING_VERSION;
 }
 
-Slice::Gen::TypesVisitor::TypesVisitor(IceInternal::Output& out) : CsVisitor(out) {}
+Slice::Cs::Gen::TypesVisitor::TypesVisitor(IceInternal::Output& out) : CsVisitor(out) {}
 
 bool
-Slice::Gen::TypesVisitor::visitModuleStart(const ModulePtr& p)
+Slice::Cs::Gen::TypesVisitor::visitModuleStart(const ModulePtr& p)
 {
     moduleStart(p);
     _out << sp;
@@ -998,14 +998,14 @@ Slice::Gen::TypesVisitor::visitModuleStart(const ModulePtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitModuleEnd(const ModulePtr& p)
+Slice::Cs::Gen::TypesVisitor::visitModuleEnd(const ModulePtr& p)
 {
     _out << eb;
     moduleEnd(p);
 }
 
 bool
-Slice::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
 {
     string ns = getNamespace(p);
     ClassDefPtr base = p->base();
@@ -1033,7 +1033,7 @@ Slice::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitClassDefEnd(const ClassDefPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitClassDefEnd(const ClassDefPtr& p)
 {
     string name = p->mappedName();
     string ns = getNamespace(p);
@@ -1169,7 +1169,7 @@ Slice::Gen::TypesVisitor::visitClassDefEnd(const ClassDefPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
+Slice::Cs::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
 {
     string ns = getNamespace(p);
     string name = p->mappedName();
@@ -1201,7 +1201,7 @@ Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 {
     TypePtr key = p->keyType();
     TypePtr value = p->valueType();
@@ -1273,7 +1273,7 @@ Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
 {
     string ns = getNamespace(p);
     ExceptionPtr base = p->base();
@@ -1296,7 +1296,7 @@ Slice::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
 {
     string name = p->mappedName();
     string ns = getNamespace(p);
@@ -1472,7 +1472,7 @@ Slice::Gen::TypesVisitor::visitExceptionEnd(const ExceptionPtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
 {
     const bool classMapping = isMappedToClass(p);
     string name = p->mappedName();
@@ -1488,7 +1488,7 @@ Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitStructEnd(const StructPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitStructEnd(const StructPtr& p)
 {
     string name = p->mappedName();
     string ns = getNamespace(p);
@@ -1591,7 +1591,7 @@ Slice::Gen::TypesVisitor::visitStructEnd(const StructPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 {
     string name = p->mappedName();
     string ns = getNamespace(p);
@@ -1650,7 +1650,7 @@ Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitConst(const ConstPtr& p)
 {
     _out << sp;
     writeHelperDocComment(p, "Provides the " + p->mappedName() + " constant.", "helper class");
@@ -1665,7 +1665,7 @@ Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitDataMember(const DataMemberPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitDataMember(const DataMemberPtr& p)
 {
     ContainedPtr cont = dynamic_pointer_cast<Contained>(p->container());
     assert(cont);
@@ -1724,7 +1724,7 @@ Slice::Gen::TypesVisitor::visitDataMember(const DataMemberPtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 {
     string ns = getNamespace(p);
 
@@ -1760,7 +1760,7 @@ Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 {
     _out << eb;
 
@@ -2192,7 +2192,7 @@ Slice::Gen::TypesVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitOperation(const OperationPtr& p)
+Slice::Cs::Gen::TypesVisitor::visitOperation(const OperationPtr& p)
 {
     string ns = getNamespace(p->interface());
     string name = p->mappedName();
@@ -2236,7 +2236,7 @@ Slice::Gen::TypesVisitor::visitOperation(const OperationPtr& p)
     }
 }
 
-Slice::Gen::ResultVisitor::ResultVisitor(IceInternal::Output& out) : CsVisitor(out) {}
+Slice::Cs::Gen::ResultVisitor::ResultVisitor(IceInternal::Output& out) : CsVisitor(out) {}
 
 namespace
 {
@@ -2266,7 +2266,7 @@ namespace
 }
 
 bool
-Slice::Gen::ResultVisitor::visitModuleStart(const ModulePtr& p)
+Slice::Cs::Gen::ResultVisitor::visitModuleStart(const ModulePtr& p)
 {
     if (hasResultType(p))
     {
@@ -2279,14 +2279,14 @@ Slice::Gen::ResultVisitor::visitModuleStart(const ModulePtr& p)
 }
 
 void
-Slice::Gen::ResultVisitor::visitModuleEnd(const ModulePtr& p)
+Slice::Cs::Gen::ResultVisitor::visitModuleEnd(const ModulePtr& p)
 {
     _out << eb;
     moduleEnd(p);
 }
 
 void
-Slice::Gen::ResultVisitor::visitOperation(const OperationPtr& p)
+Slice::Cs::Gen::ResultVisitor::visitOperation(const OperationPtr& p)
 {
     InterfaceDefPtr interface = p->interface();
     string ns = getNamespace(interface);
@@ -2351,10 +2351,10 @@ Slice::Gen::ResultVisitor::visitOperation(const OperationPtr& p)
     }
 }
 
-Slice::Gen::ServantVisitor::ServantVisitor(IceInternal::Output& out) : CsVisitor(out) {}
+Slice::Cs::Gen::ServantVisitor::ServantVisitor(IceInternal::Output& out) : CsVisitor(out) {}
 
 bool
-Slice::Gen::ServantVisitor::visitModuleStart(const ModulePtr& p)
+Slice::Cs::Gen::ServantVisitor::visitModuleStart(const ModulePtr& p)
 {
     if (!p->contains<InterfaceDef>())
     {
@@ -2368,14 +2368,14 @@ Slice::Gen::ServantVisitor::visitModuleStart(const ModulePtr& p)
 }
 
 void
-Slice::Gen::ServantVisitor::visitModuleEnd(const ModulePtr& p)
+Slice::Cs::Gen::ServantVisitor::visitModuleEnd(const ModulePtr& p)
 {
     _out << eb;
     moduleEnd(p);
 }
 
 bool
-Slice::Gen::ServantVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
+Slice::Cs::Gen::ServantVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 {
     string ns = getNamespace(p);
 
@@ -2416,7 +2416,7 @@ Slice::Gen::ServantVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 }
 
 void
-Slice::Gen::ServantVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
+Slice::Cs::Gen::ServantVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 {
     _out << eb;
 
@@ -2460,7 +2460,7 @@ Slice::Gen::ServantVisitor::visitInterfaceDefEnd(const InterfaceDefPtr& p)
 }
 
 void
-Slice::Gen::ServantVisitor::visitOperation(const OperationPtr& op)
+Slice::Cs::Gen::ServantVisitor::visitOperation(const OperationPtr& op)
 {
     InterfaceDefPtr interface = op->interface();
     string ns = getNamespace(interface);
@@ -2626,7 +2626,7 @@ Slice::Gen::ServantVisitor::visitOperation(const OperationPtr& op)
 }
 
 void
-Slice::Gen::ServantVisitor::writeDispatch(const InterfaceDefPtr& p)
+Slice::Cs::Gen::ServantVisitor::writeDispatch(const InterfaceDefPtr& p)
 {
     string ns = getNamespace(p);
 

@@ -5,9 +5,9 @@
 
 #include "CsUtil.h"
 
-namespace Slice
+namespace Slice::Cs
 {
-    class CsVisitor : public CsGenerator, public ParserVisitor
+    class CsVisitor : public ParserVisitor
     {
     public:
         CsVisitor(IceInternal::Output&);
