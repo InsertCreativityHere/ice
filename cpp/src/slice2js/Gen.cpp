@@ -260,18 +260,18 @@ namespace
     }
 }
 
-Slice::JsVisitor::JsVisitor(Output& out, const vector<pair<string, string>>& imports) : _out(out), _imports(imports) {}
+Slice::Js::JsVisitor::JsVisitor(Output& out, const vector<pair<string, string>>& imports) : _out(out), _imports(imports) {}
 
-Slice::JsVisitor::~JsVisitor() = default;
+Slice::Js::JsVisitor::~JsVisitor() = default;
 
 vector<pair<string, string>>
-Slice::JsVisitor::imports() const
+Slice::Js::JsVisitor::imports() const
 {
     return _imports;
 }
 
 void
-Slice::JsVisitor::writeMarshalDataMembers(const DataMemberList& dataMembers, const DataMemberList& optionalMembers)
+Slice::Js::JsVisitor::writeMarshalDataMembers(const DataMemberList& dataMembers, const DataMemberList& optionalMembers)
 {
     for (const auto& dataMember : dataMembers)
     {
@@ -293,7 +293,7 @@ Slice::JsVisitor::writeMarshalDataMembers(const DataMemberList& dataMembers, con
 }
 
 void
-Slice::JsVisitor::writeUnmarshalDataMembers(const DataMemberList& dataMembers, const DataMemberList& optionalMembers)
+Slice::Js::JsVisitor::writeUnmarshalDataMembers(const DataMemberList& dataMembers, const DataMemberList& optionalMembers)
 {
     for (const auto& dataMember : dataMembers)
     {
@@ -315,7 +315,7 @@ Slice::JsVisitor::writeUnmarshalDataMembers(const DataMemberList& dataMembers, c
 }
 
 string
-Slice::JsVisitor::getValue(const TypePtr& type)
+Slice::Js::JsVisitor::getValue(const TypePtr& type)
 {
     assert(type);
 
@@ -375,7 +375,7 @@ Slice::JsVisitor::getValue(const TypePtr& type)
 }
 
 string
-Slice::JsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePtr& valueType, const string& value)
+Slice::Js::JsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePtr& valueType, const string& value)
 {
     ostringstream os;
     ConstPtr constant = dynamic_pointer_cast<Const>(valueType);
@@ -413,7 +413,7 @@ Slice::JsVisitor::writeConstantValue(const TypePtr& type, const SyntaxTreeBasePt
 }
 
 void
-Slice::JsVisitor::writeDocCommentFor(const ContainedPtr& p, bool includeDeprecated)
+Slice::Js::JsVisitor::writeDocCommentFor(const ContainedPtr& p, bool includeDeprecated)
 {
     assert(!dynamic_pointer_cast<Operation>(p));
     optional<DocComment> comment = DocComment::parseFrom(p, jsLinkFormatter);
@@ -446,7 +446,7 @@ Slice::JsVisitor::writeDocCommentFor(const ContainedPtr& p, bool includeDeprecat
     _out << nl << " **/";
 }
 
-Slice::Gen::Gen(const string& base, const vector<string>& includePaths, const string& dir, bool typeScript)
+Slice::Js::Gen::Gen(const string& base, const vector<string>& includePaths, const string& dir, bool typeScript)
     : _includePaths(includePaths),
       _useStdout(false),
       _typeScript(typeScript)
@@ -495,7 +495,7 @@ Slice::Gen::Gen(const string& base, const vector<string>& includePaths, const st
     }
 }
 
-Slice::Gen::Gen(
+Slice::Js::Gen::Gen(
     const string& base,
     const vector<string>& includePaths,
     const string& /*dir*/,
@@ -515,7 +515,7 @@ Slice::Gen::Gen(
     }
 }
 
-Slice::Gen::~Gen()
+Slice::Js::Gen::~Gen()
 {
     if (_javaScriptOutput.isOpen() || _useStdout)
     {
@@ -531,7 +531,7 @@ Slice::Gen::~Gen()
 }
 
 void
-Slice::Gen::generate(const UnitPtr& p)
+Slice::Js::Gen::generate(const UnitPtr& p)
 {
     validateMetadata(p);
 
@@ -602,7 +602,7 @@ Slice::Gen::generate(const UnitPtr& p)
     }
 }
 
-Slice::Gen::ImportVisitor::ImportVisitor(IceInternal::Output& out, vector<string> includePaths)
+Slice::Js::Gen::ImportVisitor::ImportVisitor(IceInternal::Output& out, vector<string> includePaths)
     : JsVisitor(out),
       _includePaths(std::move(includePaths))
 {
@@ -613,7 +613,7 @@ Slice::Gen::ImportVisitor::ImportVisitor(IceInternal::Output& out, vector<string
 }
 
 bool
-Slice::Gen::ImportVisitor::visitClassDefStart(const ClassDefPtr& p)
+Slice::Js::Gen::ImportVisitor::visitClassDefStart(const ClassDefPtr& p)
 {
     _seenClass = true;
     if (p->compactId() >= 0)
@@ -624,34 +624,34 @@ Slice::Gen::ImportVisitor::visitClassDefStart(const ClassDefPtr& p)
 }
 
 bool
-Slice::Gen::ImportVisitor::visitInterfaceDefStart(const InterfaceDefPtr&)
+Slice::Js::Gen::ImportVisitor::visitInterfaceDefStart(const InterfaceDefPtr&)
 {
     _seenInterface = true;
     return true;
 }
 
 bool
-Slice::Gen::ImportVisitor::visitStructStart(const StructPtr&)
+Slice::Js::Gen::ImportVisitor::visitStructStart(const StructPtr&)
 {
     _seenStruct = true;
     return false;
 }
 
 void
-Slice::Gen::ImportVisitor::visitOperation(const OperationPtr&)
+Slice::Js::Gen::ImportVisitor::visitOperation(const OperationPtr&)
 {
     _seenOperation = true;
 }
 
 bool
-Slice::Gen::ImportVisitor::visitExceptionStart(const ExceptionPtr&)
+Slice::Js::Gen::ImportVisitor::visitExceptionStart(const ExceptionPtr&)
 {
     _seenUserException = true;
     return false;
 }
 
 void
-Slice::Gen::ImportVisitor::visitSequence(const SequencePtr& seq)
+Slice::Js::Gen::ImportVisitor::visitSequence(const SequencePtr& seq)
 {
     BuiltinPtr builtin = dynamic_pointer_cast<Builtin>(seq->type());
     if (builtin)
@@ -672,7 +672,7 @@ Slice::Gen::ImportVisitor::visitSequence(const SequencePtr& seq)
 }
 
 void
-Slice::Gen::ImportVisitor::visitDictionary(const DictionaryPtr& dict)
+Slice::Js::Gen::ImportVisitor::visitDictionary(const DictionaryPtr& dict)
 {
     BuiltinPtr builtin = dynamic_pointer_cast<Builtin>(dict->valueType());
     if (builtin)
@@ -693,13 +693,13 @@ Slice::Gen::ImportVisitor::visitDictionary(const DictionaryPtr& dict)
 }
 
 void
-Slice::Gen::ImportVisitor::visitEnum(const EnumPtr&)
+Slice::Js::Gen::ImportVisitor::visitEnum(const EnumPtr&)
 {
     _seenEnum = true;
 }
 
 set<string>
-Slice::Gen::ImportVisitor::writeImports(const UnitPtr& p)
+Slice::Js::Gen::ImportVisitor::writeImports(const UnitPtr& p)
 {
     // The JavaScript module we are building as specified by "js:module:" metadata.
     string jsModule = getJavaScriptModule(p->findDefinitionContext(p->topLevelFile()));
@@ -957,14 +957,14 @@ Slice::Gen::ImportVisitor::writeImports(const UnitPtr& p)
     return importedModules;
 }
 
-Slice::Gen::ExportsVisitor::ExportsVisitor(::IceInternal::Output& out, std::set<std::string> importedModules)
+Slice::Js::Gen::ExportsVisitor::ExportsVisitor(::IceInternal::Output& out, std::set<std::string> importedModules)
     : JsVisitor(out),
       _importedModules(std::move(importedModules))
 {
 }
 
 bool
-Slice::Gen::ExportsVisitor::visitModuleStart(const ModulePtr& p)
+Slice::Js::Gen::ExportsVisitor::visitModuleStart(const ModulePtr& p)
 {
     //
     // For a top-level module we write the following:
@@ -1001,15 +1001,15 @@ Slice::Gen::ExportsVisitor::visitModuleStart(const ModulePtr& p)
 }
 
 set<string>
-Slice::Gen::ExportsVisitor::exportedModules() const
+Slice::Js::Gen::ExportsVisitor::exportedModules() const
 {
     return _exportedModules;
 }
 
-Slice::Gen::TypesVisitor::TypesVisitor(IceInternal::Output& out) : JsVisitor(out) {}
+Slice::Js::Gen::TypesVisitor::TypesVisitor(IceInternal::Output& out) : JsVisitor(out) {}
 
 bool
-Slice::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
+Slice::Js::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
 {
     const string scopedName = p->mappedScoped(".").substr(1);
     ClassDefPtr base = p->base();
@@ -1133,7 +1133,7 @@ Slice::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
+Slice::Js::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 {
     const string serviceType = p->mappedScoped(".").substr(1);
     const string proxyType = serviceType + "Prx";
@@ -1428,7 +1428,7 @@ Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
+Slice::Js::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
 {
     // Stream helpers for sequences are lazy initialized as the required types might not be available until later.
     const string helperName = p->mappedScoped(".").substr(1) + "Helper";
@@ -1447,7 +1447,7 @@ Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
+Slice::Js::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
 {
     const string scopedName = p->mappedScoped(".").substr(1);
     const ExceptionPtr base = p->base();
@@ -1582,7 +1582,7 @@ Slice::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
 }
 
 bool
-Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
+Slice::Js::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
 {
     const string scopedName = p->mappedScoped(".").substr(1);
     const DataMemberList dataMembers = p->dataMembers();
@@ -1665,7 +1665,7 @@ Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
+Slice::Js::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 {
     const TypePtr keyType = p->keyType();
     const TypePtr valueType = p->valueType();
@@ -1698,7 +1698,7 @@ Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
+Slice::Js::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 {
     const string scopedName = p->mappedScoped(".").substr(1);
     _out << sp;
@@ -1733,7 +1733,7 @@ Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
 }
 
 void
-Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
+Slice::Js::Gen::TypesVisitor::visitConst(const ConstPtr& p)
 {
     string scope = p->mappedScope(".").substr(1);
     scope.pop_back(); // Remove the trailing '.' from the scope.
@@ -1749,7 +1749,7 @@ Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
 }
 
 string
-Slice::Gen::TypesVisitor::encodeTypeForOperation(const TypePtr& type)
+Slice::Js::Gen::TypesVisitor::encodeTypeForOperation(const TypePtr& type)
 {
     assert(type);
 
@@ -1812,10 +1812,10 @@ Slice::Gen::TypesVisitor::encodeTypeForOperation(const TypePtr& type)
     return "???";
 }
 
-Slice::Gen::TypeScriptImportVisitor::TypeScriptImportVisitor(IceInternal::Output& out) : JsVisitor(out) {}
+Slice::Js::Gen::TypeScriptImportVisitor::TypeScriptImportVisitor(IceInternal::Output& out) : JsVisitor(out) {}
 
 void
-Slice::Gen::TypeScriptImportVisitor::addImport(const ContainedPtr& definition)
+Slice::Js::Gen::TypeScriptImportVisitor::addImport(const ContainedPtr& definition)
 {
     const string definitionId = definition->mappedScoped(".").substr(1);
 
@@ -1866,7 +1866,7 @@ Slice::Gen::TypeScriptImportVisitor::addImport(const ContainedPtr& definition)
 }
 
 bool
-Slice::Gen::TypeScriptImportVisitor::visitUnitStart(const UnitPtr& unit)
+Slice::Js::Gen::TypeScriptImportVisitor::visitUnitStart(const UnitPtr& unit)
 {
     _module = getJavaScriptModule(unit->findDefinitionContext(unit->topLevelFile()));
     _filename = unit->topLevelFile();
@@ -1908,7 +1908,7 @@ Slice::Gen::TypeScriptImportVisitor::visitUnitStart(const UnitPtr& unit)
 }
 
 bool
-Slice::Gen::TypeScriptImportVisitor::visitClassDefStart(const ClassDefPtr& p)
+Slice::Js::Gen::TypeScriptImportVisitor::visitClassDefStart(const ClassDefPtr& p)
 {
     // Add imports required for the base class type.
     ClassDefPtr base = p->base();
@@ -1930,7 +1930,7 @@ Slice::Gen::TypeScriptImportVisitor::visitClassDefStart(const ClassDefPtr& p)
 }
 
 bool
-Slice::Gen::TypeScriptImportVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
+Slice::Js::Gen::TypeScriptImportVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 {
     // Add imports required for base interfaces types.
     for (const auto& base : p->bases())
@@ -1960,7 +1960,7 @@ Slice::Gen::TypeScriptImportVisitor::visitInterfaceDefStart(const InterfaceDefPt
 }
 
 bool
-Slice::Gen::TypeScriptImportVisitor::visitStructStart(const StructPtr& p)
+Slice::Js::Gen::TypeScriptImportVisitor::visitStructStart(const StructPtr& p)
 {
     // Add imports required for data member types.
     for (const auto& dataMember : p->dataMembers())
@@ -1975,7 +1975,7 @@ Slice::Gen::TypeScriptImportVisitor::visitStructStart(const StructPtr& p)
 }
 
 bool
-Slice::Gen::TypeScriptImportVisitor::visitExceptionStart(const ExceptionPtr& p)
+Slice::Js::Gen::TypeScriptImportVisitor::visitExceptionStart(const ExceptionPtr& p)
 {
     // Add imports required for base exception types.
     ExceptionPtr base = p->base();
@@ -1997,7 +1997,7 @@ Slice::Gen::TypeScriptImportVisitor::visitExceptionStart(const ExceptionPtr& p)
 }
 
 void
-Slice::Gen::TypeScriptImportVisitor::visitSequence(const SequencePtr& seq)
+Slice::Js::Gen::TypeScriptImportVisitor::visitSequence(const SequencePtr& seq)
 {
     // Add import required for the sequence element type.
     auto type = dynamic_pointer_cast<Contained>(seq->type());
@@ -2008,7 +2008,7 @@ Slice::Gen::TypeScriptImportVisitor::visitSequence(const SequencePtr& seq)
 }
 
 void
-Slice::Gen::TypeScriptImportVisitor::visitDictionary(const DictionaryPtr& dict)
+Slice::Js::Gen::TypeScriptImportVisitor::visitDictionary(const DictionaryPtr& dict)
 {
     //
     // Add imports required for the dictionary key and value types
@@ -2027,7 +2027,7 @@ Slice::Gen::TypeScriptImportVisitor::visitDictionary(const DictionaryPtr& dict)
 }
 
 std::map<std::string, std::string>
-Slice::Gen::TypeScriptImportVisitor::writeImports()
+Slice::Js::Gen::TypeScriptImportVisitor::writeImports()
 {
     for (const auto& moduleName : _importedModules)
     {
@@ -2037,7 +2037,7 @@ Slice::Gen::TypeScriptImportVisitor::writeImports()
 }
 
 string
-Slice::Gen::TypeScriptVisitor::importPrefix(const string& s) const
+Slice::Js::Gen::TypeScriptVisitor::importPrefix(const string& s) const
 {
     const auto it = _importedTypes.find(s);
     if (it != _importedTypes.end())
@@ -2048,7 +2048,7 @@ Slice::Gen::TypeScriptVisitor::importPrefix(const string& s) const
 }
 
 string
-Slice::Gen::TypeScriptVisitor::typeToTsString(const TypePtr& type, bool nullable, bool forParameter, bool optional)
+Slice::Js::Gen::TypeScriptVisitor::typeToTsString(const TypePtr& type, bool nullable, bool forParameter, bool optional)
     const
 {
     if (!type)
@@ -2184,7 +2184,7 @@ Slice::Gen::TypeScriptVisitor::typeToTsString(const TypePtr& type, bool nullable
     return t;
 }
 
-Slice::Gen::TypeScriptVisitor::TypeScriptVisitor(
+Slice::Js::Gen::TypeScriptVisitor::TypeScriptVisitor(
     IceInternal::Output& out,
     std::map<std::string, std::string> importedTypes)
     : JsVisitor(out),
@@ -2193,7 +2193,7 @@ Slice::Gen::TypeScriptVisitor::TypeScriptVisitor(
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitUnitStart(const UnitPtr& unit)
+Slice::Js::Gen::TypeScriptVisitor::visitUnitStart(const UnitPtr& unit)
 {
     _module = getJavaScriptModule(unit->findDefinitionContext(unit->topLevelFile()));
     _iceImportPrefix = _module == "@zeroc/ice" ? "" : "__module__zeroc_ice.";
@@ -2206,7 +2206,7 @@ Slice::Gen::TypeScriptVisitor::visitUnitStart(const UnitPtr& unit)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitUnitEnd(const UnitPtr&)
+Slice::Js::Gen::TypeScriptVisitor::visitUnitEnd(const UnitPtr&)
 {
     set<string> globalModules;
     for (const auto& [key, value] : _importedTypes)
@@ -2233,7 +2233,7 @@ Slice::Gen::TypeScriptVisitor::visitUnitEnd(const UnitPtr&)
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitModuleStart(const ModulePtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitModuleStart(const ModulePtr& p)
 {
     if (p->isTopLevel() && _module.empty())
     {
@@ -2248,13 +2248,13 @@ Slice::Gen::TypeScriptVisitor::visitModuleStart(const ModulePtr& p)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitModuleEnd(const ModulePtr&)
+Slice::Js::Gen::TypeScriptVisitor::visitModuleEnd(const ModulePtr&)
 {
     _out << eb; // namespace end
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitClassDefStart(const ClassDefPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitClassDefStart(const ClassDefPtr& p)
 {
     const DataMemberList dataMembers = p->dataMembers();
     const DataMemberList allDataMembers = p->allDataMembers();
@@ -2321,7 +2321,7 @@ namespace
 }
 
 void
-Slice::Gen::TypeScriptVisitor::writeOpDocSummary(Output& out, const OperationPtr& op, bool forDispatch)
+Slice::Js::Gen::TypeScriptVisitor::writeOpDocSummary(Output& out, const OperationPtr& op, bool forDispatch)
 {
     out << nl << "/**";
 
@@ -2408,7 +2408,7 @@ Slice::Gen::TypeScriptVisitor::writeOpDocSummary(Output& out, const OperationPtr
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 {
     //
     // Define servant an proxy types
@@ -2604,7 +2604,7 @@ Slice::Gen::TypeScriptVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitExceptionStart(const ExceptionPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitExceptionStart(const ExceptionPtr& p)
 {
     const DataMemberList dataMembers = p->dataMembers();
     const DataMemberList allDataMembers = p->allDataMembers();
@@ -2655,7 +2655,7 @@ Slice::Gen::TypeScriptVisitor::visitExceptionStart(const ExceptionPtr& p)
 }
 
 bool
-Slice::Gen::TypeScriptVisitor::visitStructStart(const StructPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitStructStart(const StructPtr& p)
 {
     const string name = p->mappedName();
     const DataMemberList dataMembers = p->dataMembers();
@@ -2730,7 +2730,7 @@ Slice::Gen::TypeScriptVisitor::visitStructStart(const StructPtr& p)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitSequence(const SequencePtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitSequence(const SequencePtr& p)
 {
     const string name = p->mappedName();
 
@@ -2766,7 +2766,7 @@ Slice::Gen::TypeScriptVisitor::visitSequence(const SequencePtr& p)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitDictionary(const DictionaryPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitDictionary(const DictionaryPtr& p)
 {
     const string name = p->mappedName();
     _out << sp;
@@ -2808,7 +2808,7 @@ Slice::Gen::TypeScriptVisitor::visitDictionary(const DictionaryPtr& p)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitEnum(const EnumPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitEnum(const EnumPtr& p)
 {
     const string name = p->mappedName();
 
@@ -2834,7 +2834,7 @@ Slice::Gen::TypeScriptVisitor::visitEnum(const EnumPtr& p)
 }
 
 void
-Slice::Gen::TypeScriptVisitor::visitConst(const ConstPtr& p)
+Slice::Js::Gen::TypeScriptVisitor::visitConst(const ConstPtr& p)
 {
     _out << sp;
     writeDocCommentFor(p);
@@ -2842,7 +2842,7 @@ Slice::Gen::TypeScriptVisitor::visitConst(const ConstPtr& p)
 }
 
 void
-Slice::Gen::validateMetadata(const UnitPtr& u)
+Slice::Js::Gen::validateMetadata(const UnitPtr& u)
 {
     map<string, MetadataInfo> knownMetadata;
 

@@ -5,9 +5,9 @@
 
 #include "JsUtil.h"
 
-namespace Slice
+namespace Slice::Js
 {
-    class JsVisitor : public JsGenerator, public ParserVisitor
+    class JsVisitor : public ParserVisitor
     {
     public:
         JsVisitor(
@@ -34,14 +34,14 @@ namespace Slice
         std::vector<std::pair<std::string, std::string>> _imports;
     };
 
-    class Gen final : public JsGenerator
+    class Gen final
     {
     public:
         Gen(const std::string&, const std::vector<std::string>&, const std::string&, bool);
 
         Gen(const std::string&, const std::vector<std::string>&, const std::string&, bool, std::ostream&);
 
-        ~Gen() override;
+        ~Gen();
 
         void generate(const UnitPtr&);
 

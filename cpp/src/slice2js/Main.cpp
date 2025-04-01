@@ -289,12 +289,12 @@ compile(const vector<string>& argv)
                     {
                         if (useStdout)
                         {
-                            Gen gen(preprocessor->getBaseName(), includePaths, output, typeScript, cout);
+                            Slice::Js::Gen gen(preprocessor->getBaseName(), includePaths, output, typeScript, cout);
                             gen.generate(p);
                         }
                         else
                         {
-                            Gen gen(preprocessor->getBaseName(), includePaths, output, typeScript);
+                            Slice::Js::Gen gen(preprocessor->getBaseName(), includePaths, output, typeScript);
                             gen.generate(p);
                         }
                     }
