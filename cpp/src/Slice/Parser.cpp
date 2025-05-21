@@ -682,7 +682,7 @@ namespace
 }
 
 StringList
-Slice::Contained::splitComment(string comment, function<string(string, string)> linkFormatter, bool stripMarkup)
+Slice::Contained::splitComment(string comment, function<string(ContainedPtr, string)> linkFormatter, bool stripMarkup)
 {
     string::size_type pos = 0;
 
@@ -717,9 +717,6 @@ Slice::Contained::splitComment(string comment, function<string(string, string)> 
             string::size_type identEnd = comment.find_last_not_of(" \t", endpos);
             string ident = comment.substr(identStart, identEnd - identStart);
 
-            // Then erase the entire '{@link foo}' tag from the comment.
-            comment.erase(pos, endpos - pos + 1);
-
             // Split the link into 'class' and 'member' components (links are of the form 'class#member').
             string memberComponent = "";
             string::size_type hashPos = ident.find('#');
@@ -728,10 +725,45 @@ Slice::Contained::splitComment(string comment, function<string(string, string)> 
                 memberComponent = ident.substr(hashPos + 1);
                 ident.erase(hashPos);
             }
+            if (ident.empty())
+            {
+                ident = memberComponent;
+            }
+            else if (!memberComponent.empty())
+            {
+                ident += "::" + memberComponent;
+            }
 
-            // In it's place, insert the correctly formatted link.
-            string formattedLink = linkFormatter(ident, memberComponent);
+            string formattedLink = ident;
+
+            // Attempt to look up an element with the provided identifier.
+            ContainedList results = lookupContained(ident, false);
+            if (results.empty())
+            {
+                if (Builtin::kindFromString(ident))
+                {
+                    // TODO in the future we could allow linking to built-in types, and link to the mapped types?
+                    // cannot link to built in types
+                }
+                else
+                {
+                    // the linked to entity doesn't exist!
+                }
+            }
+            else if (results.size() > 1)
+            {
+                // Issue warning: ambiguous link
+            }
+            else
+            {
+                // Success! Call the provided link formatter on the element we found.
+                formattedLink = linkFormatter(results[0], thisScope());
+            }
+
+            // Erase the entire '{@link foo}' tag from the comment and replace it with the correctly formatted link.
+            comment.erase(pos, endpos - pos + 1);
             comment.insert(pos, formattedLink);
+            // Move 'pos' past the link we just fixed and continue searching for more '@link' tags.
             pos += formattedLink.length();
         }
         pos = comment.find(link, pos);
@@ -753,7 +785,7 @@ Slice::Contained::splitComment(string comment, function<string(string, string)> 
 }
 
 CommentPtr
-Slice::Contained::parseComment(function<string(string, string)> linkFormatter, bool stripMarkup) const
+Slice::Contained::parseComment(function<string(ContainedPtr, string)> linkFormatter, bool stripMarkup) const
 {
     // Split the comment's raw text up into lines.
     StringList lines = splitComment(_comment, std::move(linkFormatter), stripMarkup);

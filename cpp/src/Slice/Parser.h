@@ -374,7 +374,7 @@ namespace Slice
 
         std::string comment() const;
         CommentPtr parseComment(
-            std::function<std::string(std::string, std::string)> linkFormatter,
+            std::function<std::string(ContainedPtr, std::string)> linkFormatter,
             bool stripMarkup = false) const;
 
         int includeLevel() const;
@@ -408,6 +408,12 @@ namespace Slice
         std::string _comment;
         int _includeLevel;
         MetadataList _metadata;
+
+    private:
+        StringList splitComment(
+            std::string comment,
+            std::function<std::string(ContainedPtr, std::string)> linkFormatter,
+            bool stripMarkup) const;
     };
 
     // ----------------------------------------------------------------------
