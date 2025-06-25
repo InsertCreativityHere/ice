@@ -2,11 +2,16 @@
 set -eux -o pipefail
 
 usage() {
-    echo "Usage: $0
+    echo "Usage: $0"
 }
 
 if [ -z "${ICE_NIGHTLY_PUBLISH_TOKEN:-}" ]; then
     echo "Error: ICE_NIGHTLY_PUBLISH_TOKEN environment variable is not set"
+    exit 1
+fi
+
+if [ -z "${STAGING_DIR:-}" ]; then
+    echo "Error: STAGING_DIR environment variable is not set"
     exit 1
 fi
 
@@ -25,12 +30,14 @@ cp -rfv ../../../swift .
 cp -v ../../../Package.swift .
 
 # Update the Packages.swift file with the URL and Checksum for the xcframeworks
-for zip_file in "${root_dir}/staging/*.zip"; do
-    zip_name=$(basename "${zip_file}")
-    zip_url="https://download.zeroc.com/ice/nightly/${zip_name}"
+for zip_file in "${STAGING_DIR}"/*.zip; do
+    echo "Processing zip file: ${zip_file}"
+    zip_name=$(basename -s ".xcframework.zip" "${zip_file}")
+    name="${zip_name%%-*}"
+    version="${zip_name#*-}"
+    zip_url="https://download.zeroc.com/ice/nightly/${zip_name}.xcframework.zip"
 
-    curl -fsSL -o "${zip_name}" "$zip_url"
-    checksum=$(shasum -a 256 "${zip_name}" | cut -d ' ' -f 1)
+    checksum=$(shasum -a 256 "${zip_file}" | cut -d ' ' -f 1)
     indent=$(printf "%12s" "") # indentation for the checksum line
 
     # Replace path: "..." with url/checksum lines
@@ -40,6 +47,6 @@ done
 git add Package.swift cpp swift README.md
 git config user.name "ZeroC"
 git config user.email "git@zeroc.com"
-git commit -m "ice: $ice_version Nightly build"
-git tag -a "$ice_version" -m "ice: $ice_version"
+git commit -m "ice: $version Nightly build"
+git tag -a "$version" -m "ice: $version"
 git push origin main --tags

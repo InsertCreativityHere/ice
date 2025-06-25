@@ -1,4 +1,4 @@
-name: "Publish NuGet Packages"
+name: "Publish PIP Packages"
 
 on:
   workflow_dispatch:
@@ -17,10 +17,12 @@ on:
       run_id:
         required: true
         type: string
+
 jobs:
   build:
     name: "Publish Python PIP Packages"
-    runs-on: 'ubuntu-24.04'
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Download PIP artifacts
         env:
@@ -35,18 +37,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          CHANNEL="${{ inputs.channel }}"
-
           case "$CHANNEL" in
             "3.8")
-              REPOSITORY_URL="https://download.zeroc.com/nexus/repository/pypi-nightly/"
-              TWINE_USERNAME="__token__"
-              TWINE_PASSWORD="${{ secrets.PYPI_RELEASE_AUTH_TOKEN }}"
+              REPOSITORY_URL="https://upload.pypi.org/legacy/"
+              export TWINE_USERNAME="__token__"
+              export TWINE_PASSWORD="${RELEASE_PYPI_AUTH_TOKEN}"
               ;;
             "nightly")
               REPOSITORY_URL="https://download.zeroc.com/nexus/repository/pypi-nightly/"
-              TWINE_USERNAME="nightly"
-              TWINE_PASSWORD="${{ secrets.PYPI_NIGHTLY_PASSWORD }}"
+              export TWINE_USERNAME="nightly"
+              export TWINE_PASSWORD="${NEXUS_NIGHTLY_PASSWORD}"
               ;;
             *)
               echo "Unsupported channel: $CHANNEL"
@@ -55,11 +55,15 @@ jobs:
           esac
 
           mkdir -p dist
-          find staging -name 'zeroc_ice-*' -type f | while read -r file; do
-            cp -vf $file dist
-          done
+          # Collect all matching package files into dist/
+          find staging -name 'zeroc_ice-*' -type f -exec cp -vf {} dist/ \;
 
+          # Upload using Twine in a fresh venv
           python3 -m venv venv
           source venv/bin/activate
-          pip install twine
-          twine upload --verbose --repository-url ${REPOSITORY_URL} dist/*
+          pip install --upgrade pip twine
+          twine upload --verbose --repository-url "${REPOSITORY_URL}" dist/*
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          NEXUS_NIGHTLY_PASSWORD: ${{ secrets.NEXUS_NIGHTLY_PASSWORD }}
+          RELEASE_PYPI_AUTH_TOKEN: ${{ secrets.RELEASE_PYPI_AUTH_TOKEN }}

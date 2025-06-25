@@ -1,6 +1,7 @@
 name: "Publish MISC Packages"
-# This workflow publishes various packages (MSI, MATLAB, XCFramework, Swift) to S3.
-# We don't use separate workflows to avoid the reusable workflow limit in GitHub Actions.
+# This workflow publishes various packages (MSI, MATLAB, XCFramework, Swift, Brew) to S3.
+# We use a single workflow to avoid exceeding the reusable workflow limit in GitHub Actions.
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,7 +21,7 @@ on:
         type: string
 
 jobs:
-  build-msi-packages:
+  publish-msi-packages:
     name: "Publish MSI Packages"
     runs-on: "ubuntu-24.04"
     steps:
@@ -32,16 +33,22 @@ jobs:
           set -euo pipefail
           mkdir -p staging
           gh run download "$RUN_ID" --repo zeroc-ice/ice --pattern "windows-msi" --dir staging
+
       - name: Publish MSI Packages
         run: |
           set -euo pipefail
-          aws s3 sync "staging/" "s3://zeroc-downloads/${CHANNEL}/" --exclude "*" --include "*.msi"
+          mkdir -p "${CHANNEL}"
+          # Copy all .msi files from staging/windows-msi to the channel directory
+          # Preserve file attributes; do not overwrite existing files.
+          cp -npv staging/windows-msi/*.msi "${CHANNEL}/"
+          aws s3 sync "${CHANNEL}/" "s3://zeroc-downloads/ice/${CHANNEL}/" --exclude "*" --include "*.msi"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CHANNEL: ${{ inputs.channel }}
 
-  build-matlab-packages:
+  publish-matlab-packages:
+    name: "Publish MATLAB Packages"
     runs-on: "ubuntu-24.04"
     steps:
       - name: Download MATLAB artifacts
@@ -56,14 +63,17 @@ jobs:
       - name: Publish MATLAB Packages
         run: |
           set -euo pipefail
-          aws s3 sync "staging/" "s3://zeroc-downloads/${CHANNEL}/" --exclude "*" --include "*.mltbx"
-
+          mkdir -p "${CHANNEL}"
+          # Copy all .mltbx files from staging/matlab-packages-* to the channel directory
+          # Preserve file attributes; do not overwrite existing files.
+          cp -npv staging/matlab-packages-*/*.mltbx "${CHANNEL}/"
+          aws s3 sync "${CHANNEL}/" "s3://zeroc-downloads/ice/${CHANNEL}/" --exclude "*" --include "*.mltbx"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CHANNEL: ${{ inputs.channel }}
 
-  build-xcframework-packages:
+  publish-xcframework-packages:
     name: "Publish XCFramework Packages"
     runs-on: "ubuntu-24.04"
     steps:
@@ -79,17 +89,21 @@ jobs:
       - name: Publish XCFramework Packages
         run: |
           set -euo pipefail
-          aws s3 sync "staging/" "s3://zeroc-downloads/${CHANNEL}/" --exclude "*" --include "*.xcframework.zip"
+          mkdir -p "${CHANNEL}"
+          # Copy all .zip files from staging/xcframework-packages to the channel directory
+          # Preserve file attributes; do not overwrite existing files.
+          cp -npv staging/xcframework-packages/*.zip "${CHANNEL}/"
+          aws s3 sync "${CHANNEL}/" "s3://zeroc-downloads/ice/${CHANNEL}/" --exclude "*" --include "*.zip"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CHANNEL: ${{ inputs.channel }}
 
-  build-swift-packages:
+  publish-swift-packages:
+    name: "Publish Swift Packages"
     runs-on: macos-15
-    # Stable Swift release must be published manually.
+    # Stable Swift releases must be published manually.
     if: ${{ inputs.channel == 'nightly' }}
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -108,31 +122,17 @@ jobs:
         working-directory: packaging/swift
         env:
           ICE_NIGHTLY_PUBLISH_TOKEN: ${{ secrets.ICE_NIGHTLY_PUBLISH_TOKEN }}
+          STAGING_DIR: ${{ github.workspace }}/staging/xcframework-packages
         if: ${{ inputs.channel == 'nightly' }}
 
-  build-brew-packages:
+  publish-brew-packages:
+    name: "Publish Brew Packages"
     runs-on: macos-15
-    # Stable brew release must be published manually.
+    # Stable Brew releases must be published manually.
     if: ${{ inputs.channel == 'nightly' }}
     env:
       CHANNEL: ${{ inputs.channel }}
-
     steps:
-      - name: Check channel is supported
-        run: |
-          set -euo pipefail
-
-          if [ -z "${CHANNEL}" ]; then
-            echo "Channel is not set. Please provide a valid channel."
-            exit 1
-          fi
-
-          if [ "${CHANNEL}" != "nightly" ]; then
-            echo "Publishing to channel '${CHANNEL}' is not supported for this workflow."
-            echo "Stable brew packages must be built manually."
-            exit 1
-          fi
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -144,9 +144,15 @@ jobs:
           set -euo pipefail
           mkdir -p staging
           gh run download "$RUN_ID" --repo zeroc-ice/ice --pattern "homebrew-bottle" --dir staging
+
       - name: Publish Homebrew Bottle Packages
         run: |
-          aws s3 sync "staging/" "s3://zeroc-downloads/${CHANNEL}/" --exclude "*" --include "*.bottle.tar.gz"
+          set -euo pipefail
+          mkdir -p "${CHANNEL}"
+          # Copy all .tar.gz files from staging/homebrew-bottle to the channel directory
+          # Preserve file attributes; do not overwrite existing files.
+          cp -npv staging/homebrew-bottle/*.tar.gz "${CHANNEL}/"
+          aws s3 sync "${CHANNEL}/" "s3://zeroc-downloads/ice/${CHANNEL}/" --exclude "*" --include "*.tar.gz"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -48,10 +48,10 @@ jobs:
         run: |
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/workspace" \
-            -e PLATFORM="${{ matrix.distribution }}" \
-            -e CHANNEL="${{ matrix.channel }}" \
             ghcr.io/zeroc-ice/ice-rpm-builder-${{ matrix.distribution }} \
-            /workspace/ice/packaging/rpm/build-repo-package.sh
+            /workspace/ice/packaging/rpm/build-repo-package.sh \
+            --distribution "${{ matrix.distribution }}" \
+            --channel "${{ matrix.channel }}" \
 
       - name: Sign RPM packages and create repository
         run: |
@@ -85,10 +85,11 @@ jobs:
               ;;
           esac
 
+          mkdir -p "$DISTRIBUTION"
           aws s3 sync s3://zeroc-downloads/ice/$CHANNEL/$DISTRIBUTION $DISTRIBUTION
 
           rpm="ice-repo-${CHANNEL}-1.0.0-1.${DISTRIBUTION}.noarch.rpm"
-          cp -n "build/RPMS/noarch/$rpm" "${DISTRIBUTION}/$rpm"
+          cp -pn "build/RPMS/noarch/$rpm" "${DISTRIBUTION}/$rpm"
 
           aws s3 sync "$DISTRIBUTION" s3://zeroc-downloads/ice/$CHANNEL/$DISTRIBUTION --delete
         env:
