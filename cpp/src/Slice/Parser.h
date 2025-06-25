@@ -246,6 +246,37 @@ namespace Slice
     // DocComment
     // ----------------------------------------------------------------------
 
+    class DocCommentFormatter
+    {
+    public:
+        /// Gives the formatter a chance to preprocess a comment before it's parsed.
+        /// @param rawComment The raw text of the doc-comment, as it's written in the Slice file, except that any
+        ///                   comment formatting tokens ('///', '/**', etc.) have been removed.
+        /// @return A preprocessed form of the doc-comment, which will be used as input to the doc-comment parser.
+        /// @remark By default no preprocessing is performed.
+        [[nodiscard]] virtual std::string preprocess(const std::string& rawComment) { return rawComment; };
+
+        /// This function is called by the doc-comment parser to map '@p' tags into each language's syntax.
+        /// @param paramName The name which comes after the '@p' tag.
+        /// @return A properly formatted parameter reference. The doc-comment parser will replace the entire '@p name'
+        ///         string with the returned value.
+        [[nodiscard]] virtual std::string formatParamRef(const std::string& paramName) { return formatCode(paramName); };
+
+        /// This function is called by the doc-comment parser to map inline code snippets into each language's syntax.
+        /// @param rawCode The raw text contained inside the snippet (not including any enclosing backticks).
+        /// @return A properly formatted inline code snippet. The doc-comment parser will replace the entire '`code`'
+        ///         string with the returned value.
+        [[nodiscard]] virtual std::string formatCode(const std::string& rawCode) = 0;
+
+        /// This function is called by the doc-comment parser to map '@link' tags into each language's syntax.
+        /// @param rawLink The raw link text, taken verbatim. In Slice, links are of the form: '{@link <rawLink>}'.
+        /// @param source A pointer to the Slice element that the doc-comment (and link) are written on.
+        /// @param target A pointer to the Slice element being linked to, or `nullptr` if the link couldn't be resolved.
+        /// @return A properly formatted link. The doc-comment parser will replace the entire '{@link <rawLink>}' string
+        ///         with the returned value.
+        [[nodiscard]] virtual std::string formatLink(const std::string& rawLink, const ContainedPtr& source, const SyntaxTreeBasePtr& target) = 0;
+    };
+
     class DocComment final
     {
     public:
@@ -267,6 +298,8 @@ namespace Slice
         [[nodiscard]] const std::map<std::string, StringList>& exceptions() const;
 
     private:
+        friend class DocCommentParser;
+
         bool _isDeprecated{false};
         StringList _deprecated;
         StringList _overview;
@@ -420,6 +453,8 @@ namespace Slice
         [[nodiscard]] virtual std::string kindOf() const = 0;
 
     protected:
+        friend class DocCommentParser;
+
         Contained(const ContainerPtr& container, std::string name);
 
         ContainerPtr _container;
@@ -1065,6 +1100,7 @@ namespace Slice
         /// stored doc-comment will be cleared. This string can span multiple lines, and won't include formatting like
         /// leading '///' or opening '/**' etc.
         std::string currentDocComment();
+        DocCommentFormatter& docCommentFormatter();
 
         [[nodiscard]] std::string currentFile() const;
         [[nodiscard]] const std::string& topLevelFile() const;
@@ -1121,7 +1157,7 @@ namespace Slice
         void popDefinitionContext();
 
         const std::string _languageName;
-        const DocCommentFormatter& _docCommentFormatter;
+        DocCommentFormatter& _docCommentFormatter;
         bool _all;
         int _errors{0};
         std::string _currentDocComment;
