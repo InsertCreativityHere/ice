@@ -246,33 +246,9 @@ namespace Slice
     // DocComment
     // ----------------------------------------------------------------------
 
-    /// Functions of this type are used by `DocComment::parseFrom` to map link tags into each language's link syntax.
-    /// In Slice, links are of the form: '{@link <rawLink>}'.
-    ///
-    /// The first argument (`rawLink`) is the raw link text, taken verbatim from the doc-comment.
-    /// The second argument (`source`) is a pointer to the Slice element that the doc comment (and link) are written on.
-    /// The third argument (`target`) is a pointer to the Slice element that is being linked to.
-    /// If the parser could not resolve the link, this will be `nullptr`.
-    ///
-    /// This function should return the fully formatted link.
-    /// `DocComment::parseFrom` replaces the entire '{@link <rawLink>}' by the string this function returns.
-    using DocLinkFormatter =
-        std::string (*)(const std::string& rawLink, const ContainedPtr& source, const SyntaxTreeBasePtr& target);
-
     class DocComment final
     {
     public:
-        /// Parses the raw doc-comment attached to `p` into a structured `DocComment`.
-        ///
-        /// @param p The slice element whose doc-comment should be parsed.
-        /// @param linkFormatter A function used to format links according to the target language's syntax.
-        /// @param escapeXml If true, escapes all XML special characters in the parsed comment. Defaults to false.
-        ///
-        /// @return A `DocComment` instance containing a parsed representation of `p`'s doc-comment, if a doc-comment
-        /// was present. If no doc-comment was present (or it contained only whitespace) this returns `nullopt` instead.
-        [[nodiscard]] static std::optional<DocComment>
-        parseFrom(const ContainedPtr& p, DocLinkFormatter linkFormatter, bool escapeXml = false);
-
         [[nodiscard]] bool isDeprecated() const;
         [[nodiscard]] const StringList& deprecated() const;
 
@@ -417,7 +393,7 @@ namespace Slice
         [[nodiscard]] const std::string& file() const;
         [[nodiscard]] int line() const;
 
-        [[nodiscard]] std::string docComment() const;
+        [[nodiscard]] const std::optional<DocComment>& docComment() const;
 
         [[nodiscard]] int includeLevel() const;
         [[nodiscard]] DefinitionContextPtr definitionContext() const;
@@ -450,7 +426,8 @@ namespace Slice
         std::string _name;
         std::string _file;
         int _line;
-        std::string _docComment;
+        std::string _rawDocComment;
+        std::optional<DocComment> _docComment;
         int _includeLevel;
         DefinitionContextPtr _definitionContext;
         MetadataList _metadata;
@@ -1068,9 +1045,9 @@ namespace Slice
     class Unit final : public Container
     {
     public:
-        static UnitPtr createUnit(std::string languageName, bool all);
+        static UnitPtr createUnit(std::string languageName, DocCommentFormatter& docCommentFormatter, bool all);
 
-        Unit(std::string languageName, bool all);
+        Unit(std::string languageName, DocCommentFormatter& docCommentFormatter, bool all);
 
         [[nodiscard]] std::string languageName() const;
 
@@ -1144,6 +1121,7 @@ namespace Slice
         void popDefinitionContext();
 
         const std::string _languageName;
+        const DocCommentFormatter& _docCommentFormatter;
         bool _all;
         int _errors{0};
         std::string _currentDocComment;
