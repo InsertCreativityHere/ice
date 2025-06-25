@@ -1080,9 +1080,9 @@ namespace Slice
     class Unit final : public Container
     {
     public:
-        static UnitPtr createUnit(std::string languageName, DocCommentFormatter& docCommentFormatter, bool all);
+        static UnitPtr createUnit(std::string languageName, std::shared_ptr<DocCommentFormatter> docCommentFormatter, bool all);
 
-        Unit(std::string languageName, DocCommentFormatter& docCommentFormatter, bool all);
+        Unit(std::string languageName, std::shared_ptr<DocCommentFormatter> docCommentFormatter, bool all);
 
         [[nodiscard]] std::string languageName() const;
 
@@ -1100,7 +1100,6 @@ namespace Slice
         /// stored doc-comment will be cleared. This string can span multiple lines, and won't include formatting like
         /// leading '///' or opening '/**' etc.
         std::string currentDocComment();
-        DocCommentFormatter& docCommentFormatter();
 
         [[nodiscard]] std::string currentFile() const;
         [[nodiscard]] const std::string& topLevelFile() const;
@@ -1157,7 +1156,7 @@ namespace Slice
         void popDefinitionContext();
 
         const std::string _languageName;
-        DocCommentFormatter& _docCommentFormatter;
+        std::shared_ptr<DocCommentFormatter> _docCommentFormatter;
         bool _all;
         int _errors{0};
         std::string _currentDocComment;

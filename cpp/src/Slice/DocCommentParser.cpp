@@ -8,7 +8,7 @@
 using namespace std;
 using namespace Slice;
 
-namespace
+namespace Slice
 {
     class DocCommentParser final : public ParserVisitor
     {
@@ -38,9 +38,9 @@ namespace
 }
 
 void
-Slice::parseAllDocCommentsWithin(const UnitPtr& unit)
+Slice::parseAllDocCommentsWithin(const UnitPtr& unit, DocCommentFormatter& formatter)
 {
-    DocCommentParser docCommentParser{unit->docCommentFormatter()};
+    DocCommentParser docCommentParser{formatter};
     unit->visit(&docCommentParser);
 }
 

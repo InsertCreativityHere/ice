@@ -8,7 +8,7 @@
 namespace Slice
 {
     /// Visits all Slice definitions in the provided unit, and parses any doc comments that have been applied to them.
-    void parseAllDocCommentsWithin(const UnitPtr& unit);
+    void parseAllDocCommentsWithin(const UnitPtr& unit, DocCommentFormatter& formatter);
 }
 
 #endif

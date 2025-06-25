@@ -4272,9 +4272,9 @@ Slice::DataMember::DataMember(
 // ----------------------------------------------------------------------
 
 UnitPtr
-Slice::Unit::createUnit(string languageName, DocCommentFormatter& docCommentFormatter, bool all)
+Slice::Unit::createUnit(string languageName, shared_ptr<DocCommentFormatter> docCommentFormatter, bool all)
 {
-    return make_shared<Unit>(std::move(languageName), docCommentFormatter, all);
+    return make_shared<Unit>(std::move(languageName), std::move(docCommentFormatter), all);
 }
 
 string
@@ -4348,12 +4348,6 @@ Slice::Unit::currentDocComment()
     string comment;
     comment.swap(_currentDocComment);
     return comment;
-}
-
-DocCommentFormatter&
-Slice::Unit::docCommentFormatter()
-{
-    return _docCommentFormatter;
 }
 
 string
@@ -4672,7 +4666,10 @@ Slice::Unit::parse(const string& filename, FILE* file, bool debugMode)
         popDefinitionContext();
 
         emitDeprecationWarningsFor(unit());
-        parseAllDocCommentsWithin(unit());
+        if (_docCommentFormatter)
+        {
+            parseAllDocCommentsWithin(unit(), *_docCommentFormatter);
+        }
     }
 
     Slice::currentUnit = nullptr;
@@ -4762,9 +4759,9 @@ Slice::Unit::getTopLevelModules(const string& file) const
     }
 }
 
-Slice::Unit::Unit(string languageName, DocCommentFormatter& docCommentFormatter, bool all) :
+Slice::Unit::Unit(string languageName, shared_ptr<DocCommentFormatter> docCommentFormatter, bool all) :
     _languageName(std::move(languageName)),
-    _docCommentFormatter(docCommentFormatter),
+    _docCommentFormatter(std::move(docCommentFormatter)),
     _all(all)
 {
     if (!languageName.empty())
