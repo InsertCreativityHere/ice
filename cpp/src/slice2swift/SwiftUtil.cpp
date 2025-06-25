@@ -118,7 +118,7 @@ SwiftGenerator::writeDocLines(IceInternal::Output& out, const StringList& lines,
 void
 SwiftGenerator::writeDocSummary(IceInternal::Output& out, const ContainedPtr& p)
 {
-    optional<DocComment> doc = DocComment::parseFrom(p, swiftLinkFormatter);
+    const optional<DocComment>& doc = p->docComment();
     if (!doc)
     {
         return;
@@ -153,7 +153,7 @@ SwiftGenerator::writeDocSummary(IceInternal::Output& out, const ContainedPtr& p)
 void
 SwiftGenerator::writeOpDocSummary(IceInternal::Output& out, const OperationPtr& p, bool dispatch)
 {
-    optional<DocComment> doc = DocComment::parseFrom(p, swiftLinkFormatter);
+    const optional<DocComment>& doc = p->docComment();
     if (!doc)
     {
         return;
@@ -303,7 +303,7 @@ SwiftGenerator::writeOpDocSummary(IceInternal::Output& out, const OperationPtr& 
 void
 SwiftGenerator::writeProxyDocSummary(IceInternal::Output& out, const InterfaceDefPtr& p, const string& swiftModule)
 {
-    optional<DocComment> doc = DocComment::parseFrom(p, swiftLinkFormatter);
+    const optional<DocComment>& doc = p->docComment();
     if (!doc)
     {
         return;
@@ -328,7 +328,7 @@ SwiftGenerator::writeProxyDocSummary(IceInternal::Output& out, const InterfaceDe
         out << nl << "/// " << prx << " Methods:";
         for (const auto& op : ops)
         {
-            optional<DocComment> opdoc = DocComment::parseFrom(op, swiftLinkFormatter);
+            const optional<DocComment>& opdoc = op->docComment();
             optional<StringList> opDocOverview;
             if (opdoc)
             {
@@ -359,7 +359,7 @@ SwiftGenerator::writeProxyDocSummary(IceInternal::Output& out, const InterfaceDe
 void
 SwiftGenerator::writeServantDocSummary(IceInternal::Output& out, const InterfaceDefPtr& p, const string& swiftModule)
 {
-    optional<DocComment> doc = DocComment::parseFrom(p, swiftLinkFormatter);
+    const optional<DocComment>& doc = p->docComment();
     if (!doc)
     {
         return;
@@ -385,7 +385,7 @@ SwiftGenerator::writeServantDocSummary(IceInternal::Output& out, const Interface
         for (const auto& op : ops)
         {
             out << nl << "///  - " << removeEscaping(op->mappedName());
-            optional<DocComment> opdoc = DocComment::parseFrom(op, swiftLinkFormatter);
+            const optional<DocComment>& opdoc = op->docComment();
             if (opdoc)
             {
                 const StringList& opdocOverview = opdoc->overview();

@@ -327,7 +327,7 @@ namespace
 
     void writeDocSummary(Output& out, const ContainedPtr& p, DocSummaryOptions options = {})
     {
-        optional<DocComment> doc = DocComment::parseFrom(p, cppLinkFormatter);
+        const optional<DocComment>& doc = p->docComment();
         if (!doc)
         {
             return;
@@ -1694,7 +1694,7 @@ Slice::Gen::ProxyVisitor::visitOperation(const OperationPtr& p)
 
     const string deprecatedAttribute = getDeprecatedAttribute(p);
 
-    optional<DocComment> comment = DocComment::parseFrom(p, cppLinkFormatter);
+    const optional<DocComment>& comment = p->docComment();
     const string contextDoc = "@param " + contextParam + " The request context.";
 
     H << sp;
@@ -2150,7 +2150,7 @@ Slice::Gen::DataDefVisitor::visitExceptionStart(const ExceptionPtr& p)
             typeToString(dataMember->type(), dataMember->optional(), scope, dataMember->getMetadata(), _useWstring);
         allParameters.push_back(typeName + " " + dataMember->mappedName());
 
-        if (auto comment = DocComment::parseFrom(dataMember, cppLinkFormatter))
+        if (const auto& comment = dataMember->docComment())
         {
             allDocComments[dataMember->name()] = std::move(*comment);
         }
@@ -2603,7 +2603,7 @@ Slice::Gen::DataDefVisitor::emitOneShotConstructor(const ClassDefPtr& p)
             string typeName =
                 typeToString(dataMember->type(), dataMember->optional(), scope, dataMember->getMetadata(), _useWstring);
             allParameters.push_back(typeName + " " + dataMember->mappedName());
-            if (auto comment = DocComment::parseFrom(dataMember, cppLinkFormatter))
+            if (const auto& comment = dataMember->docComment())
             {
                 allDocComments[dataMember->name()] = std::move(*comment);
             }
@@ -2950,7 +2950,7 @@ Slice::Gen::InterfaceVisitor::visitOperation(const OperationPtr& p)
     const string currentTypeDecl = "const Ice::Current&";
     const string currentDecl = currentTypeDecl + " " + currentParam;
 
-    optional<DocComment> comment = DocComment::parseFrom(p, cppLinkFormatter);
+    const optional<DocComment>& comment = p->docComment();
 
     string isConst = p->hasMetadata("cpp:const") ? " const" : "";
     string noDiscard = "";
