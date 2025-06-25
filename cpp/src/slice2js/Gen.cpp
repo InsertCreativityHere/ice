@@ -425,7 +425,7 @@ void
 Slice::JsVisitor::writeDocCommentFor(const ContainedPtr& p, bool includeRemarks, bool includeDeprecated)
 {
     assert(!dynamic_pointer_cast<Operation>(p));
-    const optional<DocComment>& comment = p->docComment();
+    optional<DocComment> comment = DocComment::parseFrom(p, jsLinkFormatter);
     if (!comment && (!includeDeprecated || !p->isDeprecated()))
     {
         // There's nothing to write for this doc-comment.
@@ -2199,7 +2199,7 @@ Slice::Gen::TypeScriptVisitor::visitClassDefStart(const ClassDefPtr& p)
     _out << nl << " * One-shot constructor to initialize all data members.";
     for (const auto& dataMember : allDataMembers)
     {
-        if (const auto& comment = p->docComment())
+        if (auto comment = DocComment::parseFrom(dataMember, jsLinkFormatter))
         {
             _out << nl << " * @param " << dataMember->mappedName() << " " << getFirstSentence(comment->overview());
         }
@@ -2251,7 +2251,7 @@ Slice::Gen::TypeScriptVisitor::writeOpDocSummary(Output& out, const OperationPtr
     out << nl << "/**";
 
     map<string, StringList> paramDoc;
-    const optional<DocComment>& comment = op->docComment();
+    optional<DocComment> comment = DocComment::parseFrom(op, jsLinkFormatter);
     if (comment)
     {
         const StringList& overview = comment->overview();
@@ -2562,7 +2562,7 @@ Slice::Gen::TypeScriptVisitor::visitExceptionStart(const ExceptionPtr& p)
         _out << nl << " * One-shot constructor to initialize all data members.";
         for (const auto& dataMember : allDataMembers)
         {
-            if (const auto& comment = dataMember->docComment())
+            if (auto comment = DocComment::parseFrom(dataMember, jsLinkFormatter))
             {
                 _out << nl << " * @param " << dataMember->mappedName() << " " << getFirstSentence(comment->overview());
             }
