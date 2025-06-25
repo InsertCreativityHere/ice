@@ -511,7 +511,7 @@ namespace
             for (const auto& field : list)
             {
                 out << nl << "%     " << field->mappedName();
-                if (const auto& fieldDoc = field->docComment())
+                if (auto fieldDoc = DocComment::parseFrom(field, matlabLinkFormatter))
                 {
                     const StringList& fieldOverview = fieldDoc->overview();
                     if (!fieldOverview.empty())
@@ -531,7 +531,7 @@ namespace
         // No space and upper-case, per MATLAB conventions.
         out << nl << "%" << toUpper(name);
 
-        const optional<DocComment>& doc = p->docComment();
+        optional<DocComment> doc = DocComment::parseFrom(p, matlabLinkFormatter);
         StringList docOverview;
         if (doc)
         {
@@ -576,7 +576,7 @@ namespace
     {
         out << nl << "%" << toUpper(p->mappedName() + (async ? "Async" : ""));
 
-        const optional<DocComment>& doc = p->docComment();
+        optional<DocComment> doc = DocComment::parseFrom(p, matlabLinkFormatter);
         if (doc)
         {
             StringList docOverview = doc->overview();
@@ -695,7 +695,7 @@ namespace
         const string name = p->mappedName() + "Prx";
         out << nl << "%" << toUpper(name);
 
-        const optional<DocComment>& doc = p->docComment();
+        optional<DocComment> doc = DocComment::parseFrom(p, matlabLinkFormatter);
         StringList docOverview;
         if (doc)
         {
@@ -739,7 +739,7 @@ namespace
             for (const auto& op : ops)
             {
                 const string opName = op->mappedName();
-                const optional<DocComment>& opdoc = op->docComment();
+                const optional<DocComment> opdoc = DocComment::parseFrom(op, matlabLinkFormatter);
                 out << nl << "%     " << opName;
                 if (opdoc)
                 {
@@ -1045,7 +1045,7 @@ namespace
 
     void documentProperty(IceInternal::Output& out, const DataMemberPtr& field)
     {
-        const optional<DocComment>& doc = field->docComment();
+        optional<DocComment> doc = DocComment::parseFrom(field, matlabLinkFormatter);
         documentArgumentOrProperty(
             out,
             toUpper(field->mappedName()),
@@ -3558,7 +3558,7 @@ compile(const vector<string>& argv)
                 return EXIT_FAILURE;
             }
 
-            UnitPtr u = Unit::createUnit("matlab", nullptr, false);
+            UnitPtr u = Unit::createUnit("matlab", false);
             int parseStatus = u->parse(*i, cppHandle, debug);
             u->destroy();
 
@@ -3606,7 +3606,7 @@ compile(const vector<string>& argv)
             }
             else
             {
-                UnitPtr u = Unit::createUnit("matlab", nullptr, all);
+                UnitPtr u = Unit::createUnit("matlab", all);
                 int parseStatus = u->parse(*i, cppHandle, debug);
 
                 if (!icecpp->close())
