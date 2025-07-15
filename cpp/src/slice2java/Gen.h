@@ -163,6 +163,8 @@ namespace Slice
         static void writeSeeAlso(IceInternal::Output&, const UnitPtr&, const std::string&);
         static void writeParamDocComments(IceInternal::Output& out, const DataMemberList& members);
 
+        static void writeGeneratedAnnotation(IceInternal::Output& out);
+
     protected:
         JavaVisitor(const std::string&);
     };
