@@ -1159,7 +1159,7 @@ Slice::JavaVisitor::writeMarshaledResultType(
 
     out << sp;
     writeDocComment(out, "Holds the marshaled result of operation " + op->mappedName() + ".");
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "public static class " << opName << "MarshaledResult implements com.zeroc.Ice.MarshaledResult" << sb;
 
     const ParameterList params = op->parameters();
@@ -2509,7 +2509,7 @@ Slice::Gen::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
         out << nl << "@Deprecated";
     }
 
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     if (p->compactId() != -1)
     {
@@ -2811,7 +2811,7 @@ Slice::Gen::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
         out << nl << "@Deprecated";
     }
 
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public class " << name << " extends ";
 
@@ -3066,7 +3066,7 @@ Slice::Gen::TypesVisitor::visitStructStart(const StructPtr& p)
         out << nl << "@Deprecated";
     }
 
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "public final class " << p->mappedName() << " implements ";
     out.useCurrentPosAsIndent();
     out << "java.lang.Cloneable";
@@ -3713,7 +3713,7 @@ Slice::Gen::TypesVisitor::visitEnum(const EnumPtr& p)
     {
         out << nl << "@Deprecated";
     }
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
 
     out << nl << "public enum " << name;
     out << sb;
@@ -3957,7 +3957,7 @@ Slice::Gen::TypesVisitor::visitSequence(const SequencePtr& p)
     int iter;
 
     out << sp;
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     writeDocComment(out, "Helper class for marshaling/unmarshaling " + name + ".");
     out << nl << "public final class " << name << "Helper";
     out << sb;
@@ -4092,7 +4092,7 @@ Slice::Gen::TypesVisitor::visitDictionary(const DictionaryPtr& p)
     int iter;
 
     out << sp;
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     writeDocComment(out, "Helper class for marshaling/unmarshaling " + name + ".");
     out << nl << "public final class " << name << "Helper";
     out << sb;
@@ -4223,8 +4223,8 @@ Slice::Gen::TypesVisitor::visitConst(const ConstPtr& p)
     {
         out << nl << "@Deprecated";
     }
+    writeGeneratedAnnotation(out);
 
-    writeGeneratedAnnotation();
     out << nl << "public interface " << p->mappedName();
     out << sb;
     out << nl << "/** The value of Slice constant '" << p->scoped() << "' */";
