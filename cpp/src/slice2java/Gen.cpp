@@ -4252,7 +4252,7 @@ Slice::Gen::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     {
         out << nl << "@Deprecated";
     }
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public interface " << p->mappedName() << "Prx extends ";
     out.useCurrentPosAsIndent();
@@ -4539,7 +4539,7 @@ Slice::Gen::ServantVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
     optional<DocComment> dc = DocComment::parseFrom(p);
     writeDocComment(out, p->unit(), dc);
 
-    writeGeneratedAnnotation();
+    writeGeneratedAnnotation(out);
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public interface " << p->mappedName() << " extends ";
     auto q = bases.begin();
