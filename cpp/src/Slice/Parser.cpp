@@ -5114,6 +5114,7 @@ Slice::Unit::parse(const string& filename, FILE* file, bool debugMode)
         assert(_definitionContextStack.size() == 1);
         popDefinitionContext();
 
+        parseAllDocCommentsWithin(unit());
         emitDeprecationWarningsFor(unit());
     }
 
