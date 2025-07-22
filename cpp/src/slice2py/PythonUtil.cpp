@@ -2,6 +2,7 @@
 
 #include "PythonUtil.h"
 #include "../Ice/FileUtil.h"
+#include "../Slice/DocCommentParser.h"
 #include "../Slice/FileTracker.h"
 #include "../Slice/MetadataValidation.h"
 #include "../Slice/Preprocessor.h"
@@ -2673,7 +2674,7 @@ Slice::Python::dynamicCompile(const vector<string>& files, const vector<string>&
             throw runtime_error("Failed to preprocess Slice files");
         }
 
-        UnitPtr unit = Unit::createUnit("python", Slice::Python::pyLinkFormatter, debug);
+        UnitPtr unit = Unit::createUnit("python", debug);
         int parseStatus = unit->parse(fileName, cppHandle, false);
 
         if (parseStatus == EXIT_FAILURE)
@@ -2682,6 +2683,7 @@ Slice::Python::dynamicCompile(const vector<string>& files, const vector<string>&
             throw runtime_error("Failed to parse Slice files");
         }
 
+        parseAllDocCommentsWithin(unit, Slice::Python::pyLinkFormatter);
         validatePythonMetadata(unit);
 
         unit->visit(&packageVisitor);

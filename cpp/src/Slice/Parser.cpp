@@ -4715,21 +4715,15 @@ Slice::DataMember::DataMember(
 // ----------------------------------------------------------------------
 
 UnitPtr
-Slice::Unit::createUnit(string languageName, std::optional<DocLinkFormatter> linkFormatter, bool all)
+Slice::Unit::createUnit(string languageName, bool all)
 {
-    return make_shared<Unit>(std::move(languageName), linkFormatter, all);
+    return make_shared<Unit>(std::move(languageName), all);
 }
 
 string
 Slice::Unit::languageName() const
 {
     return _languageName;
-}
-
-const optional<DocLinkFormatter>&
-Slice::Unit::linkFormatter() const
-{
-    return _linkFormatter;
 }
 
 void
@@ -5114,7 +5108,6 @@ Slice::Unit::parse(const string& filename, FILE* file, bool debugMode)
         assert(_definitionContextStack.size() == 1);
         popDefinitionContext();
 
-        parseAllDocCommentsWithin(unit());
         emitDeprecationWarningsFor(unit());
     }
 
@@ -5205,9 +5198,8 @@ Slice::Unit::getTopLevelModules(const string& file) const
     }
 }
 
-Slice::Unit::Unit(string languageName, optional<DocLinkFormatter> linkFormatter, bool all)
+Slice::Unit::Unit(string languageName, bool all)
     : _languageName(std::move(languageName)),
-      _linkFormatter(linkFormatter),
       _all(all)
 {
     if (!languageName.empty())

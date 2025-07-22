@@ -2,6 +2,7 @@
 
 #include "../Ice/ConsoleUtil.h"
 #include "../Ice/Options.h"
+#include "../Slice/DocCommentParser.h"
 #include "../Slice/FileTracker.h"
 #include "../Slice/Preprocessor.h"
 #include "../Slice/Util.h"
@@ -182,7 +183,7 @@ compile(const vector<string>& argv)
                 return EXIT_FAILURE;
             }
 
-            UnitPtr u = Unit::createUnit("cs", Slice::Csharp::csLinkFormatter, false);
+            UnitPtr u = Unit::createUnit("cs", false);
             int parseStatus = u->parse(*i, cppHandle, debug);
             u->destroy();
 
@@ -231,7 +232,7 @@ compile(const vector<string>& argv)
             }
             else
             {
-                UnitPtr p = Unit::createUnit("cs", Slice::Csharp::csLinkFormatter, false);
+                UnitPtr p = Unit::createUnit("cs", false);
                 int parseStatus = p->parse(*i, cppHandle, debug);
 
                 if (!icecpp->close())
@@ -246,6 +247,8 @@ compile(const vector<string>& argv)
                 }
                 else
                 {
+                    parseAllDocCommentsWithin(p, Slice::Csharp::csLinkFormatter);
+
                     try
                     {
                         Gen gen(icecpp->getBaseName(), includePaths, output);
