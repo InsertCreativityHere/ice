@@ -168,8 +168,7 @@ public class Client extends TestHelper {
             {
                 out.print("pinging object with client endpoint... ");
                 out.flush();
-                ObjectPrx baseC =
-                    communicator.stringToProxy("collocated:" + getTestEndpoint(50));
+                ObjectPrx baseC = communicator.stringToProxy("collocated:" + getTestEndpoint(50));
                 try {
                     baseC.ice_ping();
                 } catch (ObjectNotExistException ex) {}

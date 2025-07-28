@@ -95,15 +95,15 @@ public class Observer<T extends Metrics> extends StopWatch
      * Gets a sub-observer for the specified metrics type.
      *
      * @param <S> the sub-metrics type
-     * @param <ObserverImpl> the observer implementation type
+     * @param <OI> the observer implementation type
      * @param mapName the name of the metrics map
      * @param helper the metrics helper for the sub-metrics type
      * @param mcl the metrics class
      * @param ocl the observer class
      * @return the sub-observer, or null if no matching entries are found
      */
-    public <S extends Metrics, ObserverImpl extends Observer<S>> ObserverImpl getObserver(
-            String mapName, MetricsHelper<S> helper, Class<S> mcl, Class<ObserverImpl> ocl) {
+    public <S extends Metrics, OI extends Observer<S>> OI getObserver(
+            String mapName, MetricsHelper<S> helper, Class<S> mcl, Class<OI> ocl) {
         List<MetricsMap<S>.Entry> metricsObjects = null;
         for (MetricsMap<T>.Entry entry : _objects) {
             MetricsMap<S>.Entry e = entry.getMatching(mapName, helper, mcl);
@@ -120,7 +120,7 @@ public class Observer<T extends Metrics> extends StopWatch
         }
 
         try {
-            ObserverImpl obsv = ocl.getDeclaredConstructor().newInstance();
+            OI obsv = ocl.getDeclaredConstructor().newInstance();
             obsv.init(helper, metricsObjects, null);
             return obsv;
         } catch (Exception ex) {

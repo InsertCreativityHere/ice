@@ -22,13 +22,13 @@ public final class RetryI implements Retry {
     }
 
     @Override
-    public int opIdempotent(int nRetry, Current current) {
-        if (nRetry < 0) {
+    public int opIdempotent(int retryNumber, Current current) {
+        if (retryNumber < 0) {
             _counter = 0;
             return 0;
         }
 
-        if (nRetry > _counter) {
+        if (retryNumber > _counter) {
             ++_counter;
             throw new ConnectionLostException();
         }

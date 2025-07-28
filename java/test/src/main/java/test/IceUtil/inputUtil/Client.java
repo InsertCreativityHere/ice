@@ -118,7 +118,7 @@ public class Client extends TestHelper {
             try {
                 Options.split(parseExceptionCommands[i]);
                 test(false);
-            } catch (ParseException ex) {}
+            } catch (ParseException expected) {}
         }
 
         System.out.println("ok");

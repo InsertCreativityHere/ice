@@ -1418,17 +1418,17 @@ public class Coordinator {
                         return;
                     } else if (decision == TrustDecision.YesAlways) {
                         try {
-                            String CN = "";
+                            String cn = "";
                             LdapName dn =
                                 new LdapName(
                                     serverCertificate.getSubjectX500Principal().getName());
                             for (Rdn rdn : dn.getRdns()) {
                                 if ("CN".equals(rdn.getType().toUpperCase())) {
-                                    CN = rdn.getValue().toString();
+                                    cn = rdn.getValue().toString();
                                     break;
                                 }
                             }
-                            _trustedServerKeyStore.setCertificateEntry(CN, serverCertificate);
+                            _trustedServerKeyStore.setCertificateEntry(cn, serverCertificate);
                             _trustedServerKeyStore.store(
                                 new FileOutputStream(getDataDirectory() + "/ServerCerts.jks"),
                                 new char[]{});
@@ -1447,7 +1447,7 @@ public class Coordinator {
                                                 JOptionPane.ERROR_MESSAGE);
                                         });
                                     break;
-                                } catch (InterruptedException e) {
+                                } catch (InterruptedException ignored) {
                                 } catch (java.lang.reflect.InvocationTargetException e) {
                                     break;
                                 }
@@ -2118,7 +2118,7 @@ public class Coordinator {
                 RouterPrx.uncheckedCast(_communicator.getDefaultRouter())
                     .destroySessionAsync();
             }
-        } catch (LocalException e) {}
+        } catch (LocalException ignored) {}
     }
 
     void showVars() {
@@ -2269,7 +2269,7 @@ public class Coordinator {
         if (_icegridadminProcess != null) {
             try {
                 _icegridadminProcess.destroy();
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
             _icegridadminProcess = null;
             _fileParser = null;
         }
@@ -2333,10 +2333,8 @@ public class Coordinator {
         return _saveIceLogChooser;
     }
 
-    private static Properties createProperties(
-            String[] args, List<String> rArgs) {
-        Properties properties =
-            new Properties(Collections.singletonList("IceGridAdmin"));
+    private static Properties createProperties(String[] args, List<String> remainingArgs) {
+        Properties properties = new Properties(Collections.singletonList("IceGridAdmin"));
 
         // Disable retries
         properties.setProperty("Ice.RetryIntervals", "-1");
@@ -2344,7 +2342,7 @@ public class Coordinator {
         // Turn-off inactivity timeout for outgoing connections
         properties.setProperty("Ice.Connection.Client.InactivityTimeout", "0");
 
-        return new Properties(args, properties, rArgs);
+        return new Properties(args, properties, remainingArgs);
     }
 
     Coordinator(JFrame mainFrame, String[] args, Preferences prefs) {
@@ -2354,21 +2352,19 @@ public class Coordinator {
         _initData = new InitializationData();
 
         _initData.logger = new Logger(mainFrame, Util.getProcessLogger());
-        List<String> rArgs = new ArrayList<>();
-        _initData.properties = createProperties(args, rArgs);
+        List<String> remainingArgs = new ArrayList<>();
+        _initData.properties = createProperties(args, remainingArgs);
 
-        if (!rArgs.isEmpty()) {
+        if (!remainingArgs.isEmpty()) {
             String msg = "Extra command-line arguments: ";
-            for (String arg : rArgs) {
+            for (String arg : remainingArgs) {
                 msg += arg + " ";
             }
             _initData.logger.warning(msg);
         }
 
-        _traceObservers =
-            _initData.properties.getIcePropertyAsInt("IceGridAdmin.Trace.Observers") > 0;
-        _traceSaveToRegistry =
-            _initData.properties.getIcePropertyAsInt("IceGridAdmin.Trace.SaveToRegistry") > 0;
+        _traceObservers = _initData.properties.getIcePropertyAsInt("IceGridAdmin.Trace.Observers") > 0;
+        _traceSaveToRegistry = _initData.properties.getIcePropertyAsInt("IceGridAdmin.Trace.SaveToRegistry") > 0;
 
         _liveDeploymentRoot = new com.zeroc.IceGridGUI.LiveDeployment.Root(this);
 
@@ -2386,9 +2382,7 @@ public class Coordinator {
         try {
             Runtime.getRuntime().addShutdownHook(_shutdownHook);
         } catch (IllegalStateException e) {
-            //
             // Shutdown in progress, ignored
-            //
         }
 
         _saveXMLChooser = new JFileChooser(_prefs.get("current directory", null));

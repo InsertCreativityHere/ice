@@ -188,19 +188,18 @@ final class EndpointI extends com.zeroc.Ice.EndpointI {
     // Compare endpoints for sorting purposes
     //
     @Override
-    public int compareTo(com.zeroc.Ice.EndpointI obj) // From java.lang.Comparable
-        {
-            if (!(obj instanceof EndpointI)) {
-                return type() < obj.type() ? -1 : 1;
-            }
-
-            EndpointI p = (EndpointI) obj;
-            if (this == p) {
-                return 0;
-            }
-
-            return _delegate.compareTo(p._delegate);
+    public int compareTo(com.zeroc.Ice.EndpointI obj) {
+        if (!(obj instanceof EndpointI)) {
+            return type() < obj.type() ? -1 : 1;
         }
+
+        EndpointI p = (EndpointI) obj;
+        if (this == p) {
+            return 0;
+        }
+
+        return _delegate.compareTo(p._delegate);
+    }
 
     @Override
     protected boolean checkOption(String option, String argument, String endpoint) {

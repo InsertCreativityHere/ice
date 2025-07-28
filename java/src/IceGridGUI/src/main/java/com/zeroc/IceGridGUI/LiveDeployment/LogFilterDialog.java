@@ -85,8 +85,7 @@ class LogFilterDialog extends JDialog {
 
                     String txt = traceCategories.getText();
                     if (txt != null && !txt.isEmpty()) {
-                        traceCategoryFilter =
-                            StringUtil.splitString(txt, ", \t\r\n");
+                        traceCategoryFilter = StringUtil.splitString(txt, ", \t\r\n");
                         if (traceCategoryFilter == null) {
                             // unmatched quote
                             JOptionPane.showMessageDialog(
@@ -97,10 +96,10 @@ class LogFilterDialog extends JDialog {
                             return;
                         }
 
-                        if (traceCategoryFilter.length == 0) // only separators
-                            {
-                                traceCategoryFilter = null;
-                            }
+                        // The filter only contained separator characters.
+                        if (traceCategoryFilter.length == 0) {
+                            traceCategoryFilter = null;
+                        }
                     }
 
                     Set<LogMessageType> messageTypeFilterSet =

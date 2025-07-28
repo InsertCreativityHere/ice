@@ -114,14 +114,14 @@ public final class Current implements Cloneable {
     /**
      * Creates an outgoing response with reply status {@link ReplyStatus#Ok}.
      *
-     * @param <TResult> The type of result.
+     * @param <R> The type of result.
      * @param result The result to marshal into the response payload.
      * @param marshal The action that marshals result into an output stream.
      * @param formatType The class format.
      * @return A new outgoing response.
      */
-    public <TResult> OutgoingResponse createOutgoingResponse(
-            TResult result, BiConsumer<OutputStream, TResult> marshal, FormatType formatType) {
+    public <R> OutgoingResponse createOutgoingResponse(
+            R result, BiConsumer<OutputStream, R> marshal, FormatType formatType) {
         OutputStream ostr = startReplyStream();
         if (requestId != 0) {
             try {

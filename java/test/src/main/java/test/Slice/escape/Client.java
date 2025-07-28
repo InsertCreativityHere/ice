@@ -1,5 +1,8 @@
 // Copyright (c) ZeroC, Inc.
 
+// The 'Slice/escape' test intentionally uses some unconventional names.
+//CHECKSTYLE.OFF: ParameterName|LocalVariableName
+
 package test.Slice.escape;
 
 import com.zeroc.Ice.Communicator;

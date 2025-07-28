@@ -133,7 +133,7 @@ public interface Object {
     static CompletionStage<OutgoingResponse> _iceD_ice_isA(Object obj, IncomingRequest request) {
         InputStream istr = request.inputStream;
         istr.startEncapsulation();
-        String iceP_id = istr.readString();
+        String iceP_id = istr.readString(); // CHECKSTYLE.SUPPRESS: LocalVariableName
         istr.endEncapsulation();
         boolean ret = obj.ice_isA(iceP_id, request.current);
         return CompletableFuture.completedFuture(

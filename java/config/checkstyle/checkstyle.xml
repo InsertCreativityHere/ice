@@ -6,13 +6,10 @@
 <!--
     Checkstyle configuration that checks the Google coding conventions from Google Java Style
     that can be found at https://google.github.io/styleguide/javaguide.html
-
     Checkstyle is very configurable. Be sure to read the documentation at
     http://checkstyle.org (or in your downloaded distribution).
-
     To completely disable a check, just comment it out or delete it from the file.
     To suppress certain violations please review suppression filters.
-
     Authors: Max Vetrenko, Mauryan Kansara, Ruslan Diachenko, Roman Ivanov.
  -->
 
@@ -26,56 +23,56 @@
 
 <module name="Checker">
 
+  <!-- General configuration for Checkstyle -->
+  <!-- See https://checkstyle.org/config.html#Checker -->
   <property name="charset" value="UTF-8"/>
-
+  <property name="tabWidth" value="4"/>
+  <property name="fileExtensions" value="java"/>
   <property name="severity" value="${org.checkstyle.google.severity}" default="warning"/>
 
-  <!-- It's standard practice to separate any exceptions/suppressions into a separate XML file. -->
-  <module name="SuppressionFilter">
-    <property name="file" value="${config_loc}/suppressions.xml" />
-  </module>
-
-  <property name="fileExtensions" value="java, properties, xml"/>
-  <!-- Excludes all 'module-info.java' files              -->
+  <!-- Fine-grained exclusion rules -->
   <!-- See https://checkstyle.org/filefilters/index.html -->
   <module name="BeforeExecutionExclusionFileFilter">
+    <!-- Exclude all 'module-info.java' files -->
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
 
-  <module name="SuppressWarningsFilter"/>
+  <!-- Warning Suppression -->
 
-  <!-- https://checkstyle.org/filters/suppressionfilter.html -->
+  <!-- It's standard practice to place suppression rules in a separate XML file. -->
+  <!-- See https://checkstyle.org/filters/suppressionfilter.html -->
   <module name="SuppressionFilter">
-    <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
-           default="checkstyle-suppressions.xml" />
+    <property name="file" value="${config_loc}/suppressions.xml" />
     <property name="optional" value="true"/>
   </module>
 
-  <module name="SuppressWarningsFilter"/>
-
-  <!-- https://checkstyle.org/filters/suppresswithnearbytextfilter.html -->
+  <!-- Allows you to suppress checkstyle warnings on a single line by writing '// CHECKSTYLE.SUPPRESS: <RULE> '-->
+  <!-- See https://checkstyle.org/filters/suppresswithnearbytextfilter.html -->
   <module name="SuppressWithNearbyTextFilter">
-    <property name="nearbyTextPattern"
-              value="CHECKSTYLE.SUPPRESS\: (\w+) for ([+-]\d+) lines"/>
+    <property name="nearbyTextPattern" value="CHECKSTYLE.SUPPRESS\: (\w+)"/>
     <property name="checkPattern" value="$1"/>
-    <property name="lineRange" value="$2"/>
   </module>
 
-  <!-- Checks for whitespace                               -->
-  <!-- See http://checkstyle.org/checks/whitespace/index.html -->
+  <!-- Basic Formatting Checks -->
+
+  <!-- Reject tabs in source code -->
+  <!-- See https://checkstyle.org/checks/whitespace/filetabcharacter.html -->
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
   </module>
 
+  <!-- Enforce a line length limit of 120 columns in all '.java' files. -->
+  <!-- See https://checkstyle.org/checks/sizes/linelength.html -->
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
     <property name="max" value="120"/>
-    <property name="ignorePattern"
-             value="^package.*|^import.*|^\s*&quot;|href\s*=\s*&quot;[^&quot;]*&quot;|http://|https://|ftp://"/>
+    <!-- Exceptions to the line-length limit. -->
+    <property name="ignorePattern" value="^(package|import|\s*&quot;).*|(http|https|ftp)://"/>
   </module>
 
+  <!-- 'TreeWalker' is what Checkstyle uses to traverse the source code's AST. -->
+  <!-- Any checks that require some language awareness must be in this module. -->
   <module name="TreeWalker">
-  <module name="SuppressWarningsHolder"/>
     <module name="OuterTypeFilename"/>
     <module name="IllegalTokenText">
       <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
@@ -98,8 +95,7 @@
       <property name="tokens"
                value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
     </module>
-    <!-- TODO: Please enable this and fix presented warnings in a follow-up PR.-->
-    <!--<module name="LeftCurly">
+    <module name="LeftCurly">
       <property name="id" value="LeftCurlyEol"/>
       <property name="tokens"
                 value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF,
@@ -107,7 +103,7 @@
                     LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF,
                     LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF,
                     OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
-    </module>-->
+    </module>
     <module name="LeftCurly">
       <property name="id" value="LeftCurlyNl"/>
       <property name="option" value="nl"/>
@@ -146,8 +142,7 @@
                     LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_CATCH, LAMBDA,
                     LITERAL_YIELD, LITERAL_CASE, LITERAL_WHEN"/>
     </module>
-    <!-- TODO: Please enable this and fix presented warnings in a follow-up PR. -->
-    <!--<module name="WhitespaceAround">
+    <module name="WhitespaceAround">
       <property name="allowEmptyConstructors" value="true"/>
       <property name="allowEmptyLambdas" value="true"/>
       <property name="allowEmptyMethods" value="true"/>
@@ -169,7 +164,7 @@
                may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
       <message key="ws.notPreceded"
               value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
-    </module>-->
+    </module>
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="WhitespaceAround"/>
       <property name="query" value="//*[self::LITERAL_IF or self::LITERAL_ELSE or self::STATIC_INIT
@@ -222,7 +217,7 @@
       <property name="tokens" value="METHOD_REF"/>
       <property name="option" value="nl"/>
     </module>
-    <!-- TODO: Please enable the following modules and fix presented warnings in a follow-up PR.-->
+    <!-- TODO: We can't enable this rule because we use non-standard uppercase package names. -->
     <!--<module name="PackageName">
       <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
       <message key="name.invalidPattern"
@@ -235,7 +230,7 @@
              value="Type name ''{0}'' must match pattern ''{1}''."/>
     </module>
     <module name="MemberName">
-      <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+      <property name="format" value="^_?[a-z][a-z0-9][a-zA-Z0-9]*$"/>
       <message key="name.invalidPattern"
              value="Member name ''{0}'' must match pattern ''{1}''."/>
     </module>
@@ -244,11 +239,11 @@
       <message key="name.invalidPattern"
              value="Method name ''{0}'' must match pattern ''{1}''."/>
     </module>-->
-    <!--<module name="ParameterName">
+    <module name="ParameterName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Parameter name ''{0}'' must match pattern ''{1}''."/>
-    </module>-->
+    </module>
     <module name="LambdaParameterName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
@@ -259,45 +254,38 @@
       <message key="name.invalidPattern"
              value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
     </module>
-    <!-- TODO: Please enable this and fix presented warnings in a follow-up PR.-->
-    <!--<module name="LocalVariableName">
-      <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-z]([a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Local variable name ''{0}'' must match pattern ''{1}''."/>
-    </module>-->
+    </module>
     <module name="PatternVariableName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Pattern variable name ''{0}'' must match pattern ''{1}''."/>
     </module>
-    <!-- TODO: Please enable this and fix presented warnings in a follow-up PR.-->
-    <!--<module name="ClassTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-             value="Class type name ''{0}'' must match pattern ''{1}''."/>
-    </module>-->
     <module name="RecordComponentName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
                value="Record component name ''{0}'' must match pattern ''{1}''."/>
     </module>
-    <module name="RecordTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-               value="Record type name ''{0}'' must match pattern ''{1}''."/>
+
+    <!-- Type Parameter Names -->
+
+    <module name="ClassTypeParameterName">
+      <property name="format" value="(^[A-Z]+[0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
     </module>
-    <!-- TODO: Please enable the following modules and fix presented warnings in a follow-up PR.-->
-    <!--<module name="MethodTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-             value="Method type name ''{0}'' must match pattern ''{1}''."/>
-    </module>-->
-    <!-- <module name="InterfaceTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-             value="Interface type name ''{0}'' must match pattern ''{1}''."/>
-    </module> -->
-    <module name="NoFinalizer"/>
+    <module name="RecordTypeParameterName">
+      <property name="format" value="(^[A-Z]+[0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+    </module>
+    <module name="MethodTypeParameterName">
+      <property name="format" value="(^[A-Z]+[0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+    </module>
+    <module name="InterfaceTypeParameterName">
+      <property name="format" value="(^[A-Z]+[0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+    </module>
+
+    <!--<module name="NoFinalizer"/>-->
     <module name="GenericWhitespace">
       <message key="ws.followed"
              value="GenericWhitespace ''{0}'' is followed by whitespace."/>
@@ -430,10 +418,14 @@
       <property name="message" value="'[a-z][a-z0-9][a-zA-Z0-9]*(?:_[a-z][a-z0-9][a-zA-Z0-9]*)*'"/>
     </module>
     <module name="SingleLineJavadoc"/>
-    <!-- TODO: Please enable this and fix presented warnings in a follow-up PR.-->
+
+    <!-- Issue warnings for empty catch blocks. -->
+    <!-- See https://checkstyle.org/checks/blocks/emptycatchblock.html -->
     <!--<module name="EmptyCatchBlock">
-      <property name="exceptionVariableName" value="expected"/>
+      <property name="commentFormat" value=".*"/>
+      <property name="exceptionVariableName" value="expected|ignored"/>
     </module>-->
+
     <module name="CommentsIndentation">
       <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
     </module>

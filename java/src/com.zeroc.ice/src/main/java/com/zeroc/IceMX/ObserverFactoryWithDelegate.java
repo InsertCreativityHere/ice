@@ -9,14 +9,14 @@ import com.zeroc.Ice.MetricsAdminI;
  * Factory for creating observer instances that support delegation.
  *
  * @param <T> the metrics type
- * @param <OImpl> the observer implementation type that supports delegation
+ * @param <OI> the observer implementation type that supports delegation
  * @param <O> the delegate observer type
  */
 public class ObserverFactoryWithDelegate<
     T extends Metrics,
-    OImpl extends ObserverWithDelegate<T, O>,
+    OI extends ObserverWithDelegate<T, O>,
     O extends Observer>
-    extends ObserverFactory<T, OImpl> {
+    extends ObserverFactory<T, OI> {
     /**
      * Constructs an ObserverFactoryWithDelegate.
      *
@@ -38,8 +38,8 @@ public class ObserverFactoryWithDelegate<
      * @return the observer instance with delegate set, or the delegate if no metrics maps are enabled
      */
     @SuppressWarnings("unchecked")
-    public O getObserver(MetricsHelper<T> helper, Class<OImpl> cl, O delegate) {
-        OImpl o = super.getObserver(helper, cl);
+    public O getObserver(MetricsHelper<T> helper, Class<OI> cl, O delegate) {
+        OI o = super.getObserver(helper, cl);
         if (o != null) {
             o.setDelegate(delegate);
             return (O) o;
@@ -57,8 +57,8 @@ public class ObserverFactoryWithDelegate<
      * @return the observer instance with delegate set, or the delegate if no metrics maps are enabled
      */
     @SuppressWarnings("unchecked")
-    public O getObserver(MetricsHelper<T> helper, Object observer, Class<OImpl> cl, O delegate) {
-        OImpl o = super.getObserver(helper, observer, cl);
+    public O getObserver(MetricsHelper<T> helper, Object observer, Class<OI> cl, O delegate) {
+        OI o = super.getObserver(helper, observer, cl);
         if (o != null) {
             o.setDelegate(delegate);
             return (O) o;

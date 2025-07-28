@@ -26,7 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 class LookupI implements Lookup {
-    private abstract class Request<T, Ret> implements Runnable {
+    private abstract class Request<T, R> implements Runnable {
         Request(T id, int retryCount) {
             _id = id;
             _requestId = UUID.randomUUID().toString();
@@ -37,7 +37,7 @@ class LookupI implements Lookup {
             return _id;
         }
 
-        boolean addFuture(CompletableFuture<Ret> f) {
+        boolean addFuture(CompletableFuture<R> f) {
             _futures.add(f);
             return _futures.size() == 1;
         }
@@ -90,7 +90,7 @@ class LookupI implements Lookup {
         protected int _retryCount;
         protected int _lookupCount;
         protected int _failureCount;
-        protected List<CompletableFuture<Ret>> _futures = new ArrayList<>();
+        protected List<CompletableFuture<R>> _futures = new ArrayList<>();
         protected T _id;
         protected Future<?> _future;
     }
@@ -215,8 +215,7 @@ class LookupI implements Lookup {
         }
     }
 
-    public LookupI(
-            LocatorRegistryI registry, LookupPrx lookup, Properties properties) {
+    public LookupI(LocatorRegistryI registry, LookupPrx lookup, Properties properties) {
         _registry = registry;
         _lookup = lookup;
         _timeout = properties.getIcePropertyAsInt("IceDiscovery.Timeout");
@@ -234,8 +233,7 @@ class LookupI implements Lookup {
     }
 
     void setLookupReply(LookupReplyPrx lookupReply) {
-        // Use a lookup reply proxy whose address matches the interface used to send multicast
-        // datagrams.
+        // Use a lookup reply proxy whose address matches the interface used to send multicast datagrams.
         Endpoint[] single = new Endpoint[1];
         for (Map.Entry<LookupPrx, LookupReplyPrx> entry : _lookups.entrySet()) {
             UDPEndpointInfo info =
@@ -260,11 +258,7 @@ class LookupI implements Lookup {
     }
 
     @Override
-    public void findObjectById(
-            String domainId,
-            Identity id,
-            LookupReplyPrx reply,
-            Current c) {
+    public void findObjectById(String domainId, Identity id, LookupReplyPrx reply, Current c) {
         if (!domainId.equals(_domainId)) {
             return; // Ignore.
         }
@@ -281,11 +275,7 @@ class LookupI implements Lookup {
     }
 
     @Override
-    public void findAdapterById(
-            String domainId,
-            String adapterId,
-            LookupReplyPrx reply,
-            Current c) {
+    public void findAdapterById(String domainId, String adapterId, LookupReplyPrx reply, Current c) {
         if (!domainId.equals(_domainId)) {
             return; // Ignore.
         }
@@ -301,8 +291,7 @@ class LookupI implements Lookup {
         }
     }
 
-    synchronized void findObject(
-            CompletableFuture<ObjectPrx> f, Identity id) {
+    synchronized void findObject(CompletableFuture<ObjectPrx> f, Identity id) {
         ObjectRequest request = _objectRequests.get(id);
         if (request == null) {
             request = new ObjectRequest(id, _retryCount);
@@ -338,32 +327,27 @@ class LookupI implements Lookup {
         }
     }
 
-    synchronized void foundObject(
-            Identity id, String requestId, ObjectPrx proxy) {
+    synchronized void foundObject(Identity id, String requestId, ObjectPrx proxy) {
         ObjectRequest request = _objectRequests.get(id);
-        if (request != null
-            && request.getRequestId().equals(requestId)) // Ignore responses from old requests
-            {
-                request.response(proxy);
-                request.cancelTimer();
-                _objectRequests.remove(id);
-            }
+
+        // Ignore responses from old requests.
+        if (request != null && request.getRequestId().equals(requestId)) {
+            request.response(proxy);
+            request.cancelTimer();
+            _objectRequests.remove(id);
+        }
     }
 
-    synchronized void foundAdapter(
-            String adapterId,
-            String requestId,
-            ObjectPrx proxy,
-            boolean isReplicaGroup) {
+    synchronized void foundAdapter(String adapterId, String requestId, ObjectPrx proxy, boolean isReplicaGroup) {
         AdapterRequest request = _adapterRequests.get(adapterId);
-        if (request != null
-            && request.getRequestId().equals(requestId)) // Ignore responses from old requests
-            {
-                if (request.response(proxy, isReplicaGroup)) {
-                    request.cancelTimer();
-                    _adapterRequests.remove(adapterId);
-                }
+
+        // Ignore responses from old requests
+        if (request != null && request.getRequestId().equals(requestId)) {
+            if (request.response(proxy, isReplicaGroup)) {
+                request.cancelTimer();
+                _adapterRequests.remove(adapterId);
             }
+        }
     }
 
     synchronized void objectRequestTimedOut(ObjectRequest request) {

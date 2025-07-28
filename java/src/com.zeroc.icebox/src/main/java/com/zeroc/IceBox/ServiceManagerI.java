@@ -599,7 +599,7 @@ final class ServiceManagerI implements ServiceManager {
         while (_pendingStatusChanges) {
             try {
                 wait();
-            } catch (InterruptedException ex) {}
+            } catch (InterruptedException ignored) {}
         }
 
         // For each service, we call stop on the service and flush its database environment to

@@ -18,19 +18,15 @@ class LocatorI implements Locator {
     }
 
     @Override
-    public CompletionStage<ObjectPrx> findObjectByIdAsync(
-            Identity id, Current current) {
-        CompletableFuture<ObjectPrx> f =
-            new CompletableFuture<ObjectPrx>();
+    public CompletionStage<ObjectPrx> findObjectByIdAsync(Identity id, Current current) {
+        CompletableFuture<ObjectPrx> f = new CompletableFuture<ObjectPrx>();
         _lookup.findObject(f, id);
         return f;
     }
 
     @Override
-    public CompletionStage<ObjectPrx> findAdapterByIdAsync(
-            String adapterId, Current current) {
-        CompletableFuture<ObjectPrx> f =
-            new CompletableFuture<ObjectPrx>();
+    public CompletionStage<ObjectPrx> findAdapterByIdAsync(String adapterId, Current current) {
+        CompletableFuture<ObjectPrx> f = new CompletableFuture<ObjectPrx>();
         _lookup.findAdapter(f, adapterId);
         return f;
     }

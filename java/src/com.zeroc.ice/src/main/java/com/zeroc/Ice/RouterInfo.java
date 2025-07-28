@@ -59,10 +59,10 @@ final class RouterInfo {
 
     public EndpointI[] getClientEndpoints() {
         synchronized (this) {
-            if (_clientEndpoints != null) // Lazy initialization.
-                {
-                    return _clientEndpoints;
-                }
+            // Lazy initialization.
+            if (_clientEndpoints != null) {
+                return _clientEndpoints;
+            }
         }
 
         Router.GetClientProxyResult r = _router.getClientProxy();

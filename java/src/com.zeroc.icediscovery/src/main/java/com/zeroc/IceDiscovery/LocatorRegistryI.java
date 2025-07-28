@@ -70,8 +70,7 @@ class LocatorRegistryI implements LocatorRegistry {
     }
 
     @Override
-    public CompletionStage<Void> setServerProcessProxyAsync(
-            String serverId, ProcessPrx process, Current current) {
+    public CompletionStage<Void> setServerProcessProxyAsync(String serverId, ProcessPrx process, Current current) {
         return CompletableFuture.completedFuture((Void) null);
     }
 

@@ -69,17 +69,16 @@ class BatchOnewaysAMI {
                     });
         }
 
+        // 3 * 9 requests auto-flushed.
         int count = 0;
-        while (count < 27) // 3 * 9 requests auto-flushed.
-            {
-                count += p.opByteSOnewayCallCount();
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ex) {}
-            }
+        while (count < 27) {
+            count += p.opByteSOnewayCallCount();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {}
+        }
 
-        final boolean bluetooth =
-            properties.getIceProperty("Ice.Default.Protocol").indexOf("bt") == 0;
+        final boolean bluetooth = properties.getIceProperty("Ice.Default.Protocol").indexOf("bt") == 0;
         if (batch.ice_getConnection() != null && !bluetooth) {
             MyClassPrx batch2 = p.ice_batchOneway();
 

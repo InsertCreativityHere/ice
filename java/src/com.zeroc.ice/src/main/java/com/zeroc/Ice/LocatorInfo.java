@@ -83,12 +83,11 @@ final class LocatorInfo {
             synchronized (this) {
                 if (!_response && _exception == null) {
                     _callbacks.add(callback);
-                    if (wellKnownRef
-                        != null) // This request is to resolve the endpoints of a cached
-                        // well-known object ref
-                        {
-                            _wellKnownRefs.add(wellKnownRef);
-                        }
+
+                    // This request is to resolve the endpoints of a cached well-known object ref.
+                    if (wellKnownRef != null) {
+                        _wellKnownRefs.add(wellKnownRef);
+                    }
                     if (!_sent) {
                         _sent = true;
                         send();

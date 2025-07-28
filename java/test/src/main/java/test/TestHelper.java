@@ -114,12 +114,12 @@ public abstract class TestHelper {
         return createTestProperties(args, null);
     }
 
-    public Properties createTestProperties(String[] args, List<String> rArgs) {
-        rArgs = rArgs == null ? new ArrayList<String>() : rArgs;
-        Properties properties = new Properties(args, rArgs);
-        args = properties.parseCommandLineOptions("Test", rArgs.toArray(new String[rArgs.size()]));
-        rArgs.clear();
-        rArgs.addAll(Arrays.asList(args));
+    public Properties createTestProperties(String[] args, List<String> remainingArgs) {
+        remainingArgs = remainingArgs == null ? new ArrayList<String>() : remainingArgs;
+        Properties properties = new Properties(args, remainingArgs);
+        args = properties.parseCommandLineOptions("Test", remainingArgs.toArray(new String[remainingArgs.size()]));
+        remainingArgs.clear();
+        remainingArgs.addAll(Arrays.asList(args));
         return properties;
     }
 

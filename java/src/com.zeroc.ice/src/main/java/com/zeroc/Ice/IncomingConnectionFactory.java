@@ -135,17 +135,15 @@ final class IncomingConnectionFactory extends EventHandler implements Connection
         return connections;
     }
 
-    public void flushAsyncBatchRequests(
-            CompressBatch compressBatch, CommunicatorFlushBatch outAsync) {
-        for (ConnectionI c :
-                connections()) // connections() is synchronized, no need to synchronize here.
-            {
-                try {
-                    outAsync.flushConnection(c, compressBatch);
-                } catch (LocalException ex) {
-                    // Ignore.
-                }
+    public void flushAsyncBatchRequests(CompressBatch compressBatch, CommunicatorFlushBatch outAsync) {
+        // connections() is synchronized, no need to synchronize here.
+        for (ConnectionI c : connections()) {
+            try {
+                outAsync.flushConnection(c, compressBatch);
+            } catch (LocalException ex) {
+                // Ignore.
             }
+        }
     }
 
     //
@@ -437,18 +435,18 @@ final class IncomingConnectionFactory extends EventHandler implements Connection
     private static final int StateFinished = 3;
 
     private void setState(int state) {
-        if (_state == state) // Don't switch twice.
-            {
-                return;
-            }
+        // Don't switch twice.
+        if (_state == state) {
+            return;
+        }
 
         switch (state) {
             case StateActive:
             {
-                if (_state != StateHolding) // Can only switch from holding to active.
-                    {
-                        return;
-                    }
+                // Can only switch from holding to active.
+                if (_state != StateHolding) {
+                    return;
+                }
                 if (_acceptor != null) {
                     if (_instance.traceLevels().network >= 1) {
                         StringBuffer s = new StringBuffer("accepting ");
@@ -471,10 +469,10 @@ final class IncomingConnectionFactory extends EventHandler implements Connection
 
             case StateHolding:
             {
-                if (_state != StateActive) // Can only switch from active to holding.
-                    {
-                        return;
-                    }
+                if (_state != StateActive) {
+                    // Can only switch from active to holding.
+                    return;
+                }
                 if (_acceptor != null) {
                     // Stop accepting new connections.
                     if (_instance.traceLevels().network >= 1) {

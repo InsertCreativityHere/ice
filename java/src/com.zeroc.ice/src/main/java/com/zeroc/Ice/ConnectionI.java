@@ -716,16 +716,15 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
                 // thread and let IO be performed on this new leader thread while this thread
                 // continues with dispatching the up-calls.
                 current.ioCompleted();
-            } catch (DatagramLimitException ex) // Expected.
-                {
-                    if (_warnUdp) {
-                        _logger.warning("maximum datagram size of " + _readStream.pos() + " exceeded");
-                    }
-                    _readStream.resize(Protocol.headerSize);
-                    _readStream.pos(0);
-                    _readHeader = true;
-                    return;
-                } catch (SocketException ex) {
+            } catch (DatagramLimitException ex) { // Expected.
+                if (_warnUdp) {
+                    _logger.warning("maximum datagram size of " + _readStream.pos() + " exceeded");
+                }
+                _readStream.resize(Protocol.headerSize);
+                _readStream.pos(0);
+                _readHeader = true;
+                return;
+            } catch (SocketException ex) {
                 setState(StateClosed, ex);
                 return;
             } catch (LocalException ex) {
@@ -744,10 +743,10 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
             }
         }
 
-        if (!_executor) // Optimization, call upcall() directly if there's no executor.
-            {
-                upcall(startCB, sentCBs, info);
-            } else {
+        if (!_executor) {
+            // Optimization, call upcall() directly if there's no executor.
+            upcall(startCB, sentCBs, info);
+        } else {
             if (info != null) {
                 //
                 // Create a new stream for the dispatch instead of using the thread pool's thread
@@ -888,18 +887,17 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
         }
 
         current.ioCompleted();
-        if (!_executor) // Optimization, call finish() directly if there's no
-            // executor.
-            {
-                finish(close);
-            } else {
-            _threadPool.executeFromThisThread(
-                new RunnableThreadPoolWorkItem(this) {
-                    @Override
-                    public void run() {
-                        finish(close);
-                    }
-                });
+        if (!_executor) {
+            // Optimization, call finish() directly if there's no executor.
+            finish(close);
+        } else {
+        _threadPool.executeFromThisThread(
+            new RunnableThreadPoolWorkItem(this) {
+                @Override
+                public void run() {
+                    finish(close);
+                }
+            });
         }
     }
 
@@ -975,10 +973,10 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
 
             for (OutgoingMessage p : _sendStreams) {
                 p.completed(_exception);
-                if (p.requestId > 0) // Make sure finished isn't called twice.
-                    {
-                        _asyncRequests.remove(p.requestId);
-                    }
+                if (p.requestId > 0) {
+                    // Make sure finished isn't called twice.
+                    _asyncRequests.remove(p.requestId);
+                }
             }
             _sendStreams.clear();
         }
@@ -1267,32 +1265,23 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
     private static final int StateFinished = 7;
 
     private void setState(int state, LocalException ex) {
-        //
-        // If setState() is called with an exception, then only closed
-        // and closing states are permissible.
-        //
+        // If setState() is called with an exception, then only closed and closing states are permissible.
         assert state >= StateClosing;
 
-        if (_state == state) // Don't switch twice.
-            {
-                return;
-            }
+        // Don't switch twice.
+        if (_state == state) {
+            return;
+        }
 
         if (_exception == null) {
-            //
             // If we are in closed state, an exception must be set.
-            //
             assert (_state != StateClosed);
 
             _exception = ex;
 
-            //
             // We don't warn if we are not validated.
-            //
             if (_warn && _validated) {
-                //
                 // Don't warn about certain expected exceptions.
-                //
                 if (!(_exception instanceof CloseConnectionException
                     || _exception instanceof ConnectionAbortedException
                     || _exception instanceof ConnectionClosedException
@@ -1306,32 +1295,25 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
             }
         }
 
-        //
-        // We must set the new state before we notify requests of any
-        // exceptions. Otherwise new requests may retry on a connection that is not yet marked as
-        // closed or closing.
-        //
+        // We must set the new state before we notify requests of any exceptions.
+        // Otherwise new requests may retry on a connection that is not yet marked as closed or closing.
         setState(state);
     }
 
     private void setState(int state) {
-        //
         // We don't want to send close connection messages if the endpoint
         // only supports oneway transmission from client to server.
-        //
         if (_endpoint.datagram() && state == StateClosing) {
             state = StateClosed;
         }
 
-        //
         // Skip graceful shutdown if we are destroyed before validation.
-        //
         if (_state <= StateNotValidated && state == StateClosing) {
             state = StateClosed;
         }
 
+        // Don't switch twice.
         if (_state == state) {
-            // Don't switch twice.
             return;
         }
 
@@ -1369,16 +1351,13 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
                             _idleTimeoutTransceiver.enableIdleCheck();
                         }
                     }
-                    // else don't resume reading since we're at or over the _maxDispatches
-                    // limit.
+                    // else don't resume reading since we're at or over the _maxDispatches limit.
                     break;
                 }
 
                 case StateHolding:
                 {
-                    //
                     // Can only switch from active or not validated to holding.
-                    //
                     if (_state != StateActive && _state != StateNotValidated) {
                         return;
                     }
@@ -1389,17 +1368,14 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
                             _idleTimeoutTransceiver.disableIdleCheck();
                         }
                     }
-                    // else reads are already disabled because the _maxDispatches limit is
-                    // reached or exceeded.
+                    // else reads are already disabled because the _maxDispatches limit is reached or exceeded.
                     break;
                 }
 
                 case StateClosing:
                 case StateClosingPending:
                 {
-                    //
                     // Can't change back from closing pending.
-                    //
                     if (_state >= StateClosingPending) {
                         return;
                     }
@@ -1414,10 +1390,7 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
 
                     _batchRequestQueue.destroy(_exception);
 
-                    //
-                    // Don't need to close now for connections so only close the transceiver if
-                    // the selector request it.
-                    //
+                    // Don't need to close now for connections so only close the transceiver if the selector request it.
                     if (_threadPool.finish(this, false)) {
                         _transceiver.close();
                     }
@@ -1492,9 +1465,7 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
         _shutdownInitiated = true;
 
         if (!_endpoint.datagram()) {
-            //
             // Before we shut down, we send a close connection message.
-            //
             OutputStream os = new OutputStream(Protocol.currentProtocolEncoding);
             os.writeBlob(Protocol.magic);
             Protocol.currentProtocol.ice_writeMembers(os);
@@ -1508,9 +1479,7 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
             if ((sendMessage(new OutgoingMessage(os, false)) & AsyncStatus.Sent) > 0) {
                 setState(StateClosingPending);
 
-                //
                 // Notify the transceiver of the graceful connection closure.
-                //
                 int op = _transceiver.closing(true, _exception);
                 if (op != 0) {
                     _threadPool.register(this, op);
@@ -1526,9 +1495,7 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
             return false;
         }
 
-        //
         // Update the connection description once the transceiver is initialized.
-        //
         _desc = _transceiver.toString();
         _initialized = true;
         setState(StateNotValidated);
@@ -1537,113 +1504,112 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
     }
 
     private boolean validate(int operation) {
-        if (!_endpoint.datagram()) // Datagram connections are always implicitly
-            // validated.
-            {
-                if (_connector == null) // The server side has the active role for
-                    // connection validation.
-                    {
-                        if (_writeStream.isEmpty()) {
-                            _writeStream.writeBlob(Protocol.magic);
-                            Protocol.currentProtocol.ice_writeMembers(_writeStream);
-                            Protocol.currentProtocolEncoding.ice_writeMembers(_writeStream);
-                            _writeStream.writeByte(Protocol.validateConnectionMsg);
-                            _writeStream.writeByte((byte) 0); // Compression status
-                            // (always zero for validate connection).
-                            _writeStream.writeInt(Protocol.headerSize); // Message size.
-                            TraceUtil.traceSend(_writeStream, _instance, this, _logger, _traceLevels);
-                            _writeStream.prepareWrite();
-                        }
+        // Datagram connections are always implicitly validated.
+        if (!_endpoint.datagram()) {
+            // The server side has the active role for connection validation.
 
-                        if (_observer != null) {
-                            observerStartWrite(_writeStream.getBuffer());
-                        }
+            if (_connector == null) {
+                if (_writeStream.isEmpty()) {
+                    _writeStream.writeBlob(Protocol.magic);
+                    Protocol.currentProtocol.ice_writeMembers(_writeStream);
+                    Protocol.currentProtocolEncoding.ice_writeMembers(_writeStream);
+                    _writeStream.writeByte(Protocol.validateConnectionMsg);
+                    _writeStream.writeByte((byte) 0); // Compression status
+                    // (always zero for validate connection).
+                    _writeStream.writeInt(Protocol.headerSize); // Message size.
+                    TraceUtil.traceSend(_writeStream, _instance, this, _logger, _traceLevels);
+                    _writeStream.prepareWrite();
+                }
 
-                        if (_writeStream.pos() != _writeStream.size()) {
-                            int op = write(_writeStream.getBuffer());
-                            if (op != 0) {
-                                _threadPool.update(this, operation, op);
-                                return false;
-                            }
-                        }
+                if (_observer != null) {
+                    observerStartWrite(_writeStream.getBuffer());
+                }
 
-                        if (_observer != null) {
-                            observerFinishWrite(_writeStream.getBuffer());
-                        }
-                    } else
-                // The client side has the passive role for connection validation.
-                {
-                    if (_readStream.isEmpty()) {
-                        _readStream.resize(Protocol.headerSize);
-                        _readStream.pos(0);
-                    }
-
-                    if (_observer != null) {
-                        observerStartRead(_readStream.getBuffer());
-                    }
-
-                    if (_readStream.pos() != _readStream.size()) {
-                        int op = read(_readStream.getBuffer());
-                        if (op != 0) {
-                            _threadPool.update(this, operation, op);
-                            return false;
-                        }
-                    }
-
-                    if (_observer != null) {
-                        observerFinishRead(_readStream.getBuffer());
-                    }
-
-                    _validated = true;
-
-                    assert (_readStream.pos() == Protocol.headerSize);
-                    _readStream.pos(0);
-                    byte[] m = _readStream.readBlob(4);
-                    if (m[0] != Protocol.magic[0]
-                        || m[1] != Protocol.magic[1]
-                        || m[2] != Protocol.magic[2]
-                        || m[3] != Protocol.magic[3]) {
-                        throw new ProtocolException(
-                            "Bad magic in message header: "
-                                + Integer.toHexString(m[0])
-                                + " "
-                                + Integer.toHexString(m[1])
-                                + " "
-                                + Integer.toHexString(m[2])
-                                + " "
-                                + Integer.toHexString(m[3]));
-                    }
-
-                    _readProtocol.ice_readMembers(_readStream);
-                    Protocol.checkSupportedProtocol(_readProtocol);
-
-                    _readProtocolEncoding.ice_readMembers(_readStream);
-                    Protocol.checkSupportedProtocolEncoding(_readProtocolEncoding);
-
-                    byte messageType = _readStream.readByte();
-                    if (messageType != Protocol.validateConnectionMsg) {
-                        throw new ProtocolException(
-                            "Received message of type "
-                                + messageType
-                                + " over a connection that is not yet validated.");
-                    }
-                    _readStream.readByte(); // Ignore compression status for validate connection.
-                    int size = _readStream.readInt();
-                    if (size != Protocol.headerSize) {
-                        throw new MarshalException(
-                            "Received ValidateConnection message with unexpected size "
-                                + size
-                                + ".");
-                    }
-                    TraceUtil.traceRecv(_readStream, this, _logger, _traceLevels);
-
-                    // Client connection starts sending heartbeats once it has received the
-                    // ValidateConnection message.
-                    if (_idleTimeoutTransceiver != null) {
-                        _idleTimeoutTransceiver.scheduleHeartbeat();
+                if (_writeStream.pos() != _writeStream.size()) {
+                    int op = write(_writeStream.getBuffer());
+                    if (op != 0) {
+                        _threadPool.update(this, operation, op);
+                        return false;
                     }
                 }
+
+                if (_observer != null) {
+                    observerFinishWrite(_writeStream.getBuffer());
+                }
+            } else {
+                // The client side has the passive role for connection validation.
+
+                if (_readStream.isEmpty()) {
+                    _readStream.resize(Protocol.headerSize);
+                    _readStream.pos(0);
+                }
+
+                if (_observer != null) {
+                    observerStartRead(_readStream.getBuffer());
+                }
+
+                if (_readStream.pos() != _readStream.size()) {
+                    int op = read(_readStream.getBuffer());
+                    if (op != 0) {
+                        _threadPool.update(this, operation, op);
+                        return false;
+                    }
+                }
+
+                if (_observer != null) {
+                    observerFinishRead(_readStream.getBuffer());
+                }
+
+                _validated = true;
+
+                assert (_readStream.pos() == Protocol.headerSize);
+                _readStream.pos(0);
+                byte[] m = _readStream.readBlob(4);
+                if (m[0] != Protocol.magic[0]
+                    || m[1] != Protocol.magic[1]
+                    || m[2] != Protocol.magic[2]
+                    || m[3] != Protocol.magic[3]) {
+                    throw new ProtocolException(
+                        "Bad magic in message header: "
+                            + Integer.toHexString(m[0])
+                            + " "
+                            + Integer.toHexString(m[1])
+                            + " "
+                            + Integer.toHexString(m[2])
+                            + " "
+                            + Integer.toHexString(m[3]));
+                }
+
+                _readProtocol.ice_readMembers(_readStream);
+                Protocol.checkSupportedProtocol(_readProtocol);
+
+                _readProtocolEncoding.ice_readMembers(_readStream);
+                Protocol.checkSupportedProtocolEncoding(_readProtocolEncoding);
+
+                byte messageType = _readStream.readByte();
+                if (messageType != Protocol.validateConnectionMsg) {
+                    throw new ProtocolException(
+                        "Received message of type "
+                            + messageType
+                            + " over a connection that is not yet validated.");
+                }
+                _readStream.readByte(); // Ignore compression status for validate connection.
+                int size = _readStream.readInt();
+                if (size != Protocol.headerSize) {
+                    throw new MarshalException(
+                        "Received ValidateConnection message with unexpected size "
+                            + size
+                            + ".");
+                }
+                TraceUtil.traceRecv(_readStream, this, _logger, _traceLevels);
+
+                // Client connection starts sending heartbeats once it has received the
+                // ValidateConnection message.
+                if (_idleTimeoutTransceiver != null) {
+                    _idleTimeoutTransceiver.scheduleHeartbeat();
+                }
             }
+        }
 
         _writeStream.resize(0);
         _writeStream.pos(0);
@@ -1705,11 +1671,8 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
 
         try {
             while (true) {
-                //
                 // The message that was being sent is sent. We can swap back the write stream buffer
-                // to the outgoing message (required for retry) and queue its sent callback (if
-                // any).
-                //
+                // to the outgoing message (required for retry) and queue its sent callback (if any).
                 OutgoingMessage message = _sendStreams.getFirst();
                 _writeStream.swap(message.stream);
                 if (message.sent()) {
@@ -1717,26 +1680,19 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
                 }
                 _sendStreams.removeFirst();
 
-                //
                 // If there's nothing left to send, we're done.
-                //
                 if (_sendStreams.isEmpty()) {
                     break;
                 }
 
-                //
                 // If we are in the closed state or if the close is pending, don't continue sending.
                 //
-                // This can occur if parseMessage (called before
-                // sendNextMessage by message()) closes the connection.
-                //
+                // This can occur if parseMessage (called before sendNextMessage by message()) closes the connection.
                 if (_state >= StateClosingPending) {
                     return SocketOperation.None;
                 }
 
-                //
                 // Otherwise, prepare the next message.
-                //
                 message = _sendStreams.getFirst();
                 assert (!message.prepared);
                 OutputStream stream = message.stream;
@@ -2235,11 +2191,10 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
     private ConnectionInfo initConnectionInfo() {
         // Called in synchronization
 
-        if (_state > StateNotInitialized
-            && _info != null) // Update the connection information until it's initialized
-            {
-                return _info;
-            }
+        // Update the connection information until it's initialized
+        if (_state > StateNotInitialized && _info != null) {
+            return _info;
+        }
 
         boolean incoming = _connector == null;
         _info =

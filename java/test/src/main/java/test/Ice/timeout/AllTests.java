@@ -118,7 +118,7 @@ public class AllTests {
             try {
                 to.sleep(1000);
                 test(false);
-            } catch (InvocationTimeoutException ex) {}
+            } catch (InvocationTimeoutException expected) {}
             timeout.ice_ping();
             to = timeout.ice_invocationTimeout(1000);
             test(connection == to.ice_getConnection());

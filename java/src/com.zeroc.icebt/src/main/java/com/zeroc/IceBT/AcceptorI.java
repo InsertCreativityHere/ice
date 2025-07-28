@@ -139,7 +139,7 @@ final class AcceptorI implements Acceptor {
             while (_readyCallback == null) {
                 try {
                     wait();
-                } catch (InterruptedException ex) {}
+                } catch (InterruptedException ignored) {}
             }
         }
 

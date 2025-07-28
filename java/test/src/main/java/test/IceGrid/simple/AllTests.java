@@ -172,7 +172,7 @@ public class AllTests {
             try {
                 comm.stringToProxy("test @ TestAdapter").ice_ping();
                 test(false);
-            } catch (NoEndpointException ex) {}
+            } catch (NoEndpointException expected) {}
             comm.destroy();
 
             initData.properties = communicator.getProperties()._clone();
@@ -262,11 +262,11 @@ public class AllTests {
         try {
             base10.ice_ping();
             test(false);
-        } catch (NoEndpointException ex) {}
+        } catch (NoEndpointException expected) {}
         try {
             base102.ice_ping();
             test(false);
-        } catch (NoEndpointException ex) {}
+        } catch (NoEndpointException expected) {}
         base10 = base10.ice_encodingVersion(Util.Encoding_1_0);
         base102 = base102.ice_encodingVersion(Util.Encoding_1_0);
         base10.ice_ping();
@@ -329,11 +329,11 @@ public class AllTests {
         try {
             obj = TestIntfPrx.checkedCast(base);
             test(false);
-        } catch (NoEndpointException ex) {}
+        } catch (NoEndpointException expected) {}
         try {
             obj2 = TestIntfPrx.checkedCast(base2);
             test(false);
-        } catch (NoEndpointException ex) {}
+        } catch (NoEndpointException expected) {}
 
         try {
             admin.enableServer("server", true);

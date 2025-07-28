@@ -1301,11 +1301,11 @@ public final class OutputStream {
     /**
      * Writes an optional proxy to the stream.
      *
-     * @param <Prx> The proxy type.
+     * @param <P> The proxy type.
      * @param tag The optional tag.
      * @param v The optional proxy to write to the stream.
      */
-    public <Prx extends ObjectPrx> void writeProxy(int tag, Optional<Prx> v) {
+    public <P extends ObjectPrx> void writeProxy(int tag, Optional<P> v) {
         if (v != null && v.isPresent()) {
             writeProxy(tag, v.get());
         }
@@ -1468,10 +1468,10 @@ public final class OutputStream {
         void writePendingValues() {}
 
         protected int registerTypeId(String typeId) {
-            if (_typeIdMap == null) // Lazy initialization
-                {
-                    _typeIdMap = new TreeMap<>();
-                }
+            // Lazy initialization
+            if (_typeIdMap == null) {
+                _typeIdMap = new TreeMap<>();
+            }
 
             Integer p = _typeIdMap.get(typeId);
             if (p != null) {
@@ -1659,11 +1659,11 @@ public final class OutputStream {
             if (v == null) {
                 _stream.writeSize(0);
             } else if (_current != null && _encaps.format == FormatType.SlicedFormat) {
-                if (_current.indirectionTable == null) // Lazy initialization
-                    {
-                        _current.indirectionTable = new ArrayList<>();
-                        _current.indirectionMap = new IdentityHashMap<>();
-                    }
+                // Lazy initialization
+                if (_current.indirectionTable == null) {
+                    _current.indirectionTable = new ArrayList<>();
+                    _current.indirectionMap = new IdentityHashMap<>();
+                }
 
                 //
                 // If writing an instance within a slice and using the sliced format, write an index
@@ -1850,11 +1850,11 @@ public final class OutputStream {
                 // Make sure to also re-write the instance indirection table.
                 //
                 if (info.instances != null && info.instances.length > 0) {
-                    if (_current.indirectionTable == null) // Lazy initialization
-                        {
-                            _current.indirectionTable = new ArrayList<>();
-                            _current.indirectionMap = new IdentityHashMap<>();
-                        }
+                    // Lazy initialization
+                    if (_current.indirectionTable == null) {
+                        _current.indirectionTable = new ArrayList<>();
+                        _current.indirectionMap = new IdentityHashMap<>();
+                    }
                     for (Value o : info.instances) {
                         _current.indirectionTable.add(o);
                     }
@@ -1953,29 +1953,29 @@ public final class OutputStream {
     private Encaps _encapsCache;
 
     private void initEncaps() {
-        if (_encapsStack == null) // Lazy initialization
-            {
-                _encapsStack = _encapsCache;
-                if (_encapsStack != null) {
-                    _encapsCache = _encapsCache.next;
-                } else {
-                    _encapsStack = new Encaps();
-                }
-                _encapsStack.setEncoding(_encoding);
+        // Lazy initialization
+        if (_encapsStack == null) {
+            _encapsStack = _encapsCache;
+            if (_encapsStack != null) {
+                _encapsCache = _encapsCache.next;
+            } else {
+                _encapsStack = new Encaps();
             }
+            _encapsStack.setEncoding(_encoding);
+        }
 
         if (_encapsStack.format == null) {
             _encapsStack.format = _format;
         }
 
-        if (_encapsStack.encoder == null) // Lazy initialization.
-            {
-                if (_encapsStack.encoding_1_0) {
-                    _encapsStack.encoder = new EncapsEncoder10(this, _encapsStack);
-                } else {
-                    _encapsStack.encoder = new EncapsEncoder11(this, _encapsStack);
-                }
+        // Lazy initialization.
+        if (_encapsStack.encoder == null) {
+            if (_encapsStack.encoding_1_0) {
+                _encapsStack.encoder = new EncapsEncoder10(this, _encapsStack);
+            } else {
+                _encapsStack.encoder = new EncapsEncoder11(this, _encapsStack);
             }
+        }
     }
 
     /**

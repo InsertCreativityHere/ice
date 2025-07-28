@@ -393,11 +393,10 @@ public final class InputStream {
     /**
      * Reads the start of a value or exception slice.
      */
-    public void startSlice()
-        {
-            assert (_encapsStack != null && _encapsStack.decoder != null);
-            _encapsStack.decoder.startSlice();
-        }
+    public void startSlice() {
+        assert (_encapsStack != null && _encapsStack.decoder != null);
+        _encapsStack.decoder.startSlice();
+    }
 
     /** Indicates that the end of a value or exception slice has been reached. */
     public void endSlice() {
@@ -1576,7 +1575,8 @@ public final class InputStream {
         void readPendingValues() {}
 
         protected String readTypeId(boolean isIndex) {
-            if (_typeIdMap == null) {// Lazy initialization
+            // Lazy initialization
+            if (_typeIdMap == null) {
                 _typeIdMap = new TreeMap<>();
             }
 
@@ -1601,71 +1601,54 @@ public final class InputStream {
         protected void addPatchEntry(int index, Consumer<Value> cb) {
             assert (index > 0);
 
-            //
-            // Check if we have already unmarshaled the instance. If that's the case, just invoke
-            // the callback and we're done.
-            //
+            // Check if we have already unmarshaled the instance.
+            // If that's the case, just invoke the callback and we're done.
             Value obj = _unmarshaledMap.get(index);
             if (obj != null) {
                 cb.accept(obj);
                 return;
             }
 
-            if (_patchMap == null) { // Lazy initialization
+            // Lazy initialization
+            if (_patchMap == null) {
                 _patchMap = new TreeMap<>();
             }
 
-            //
             // Add patch entry if the instance isn't unmarshaled yet, the callback will be called
             // when the instance is unmarshaled.
-            //
             LinkedList<PatchEntry> l = _patchMap.get(index);
             if (l == null) {
-                //
                 // We have no outstanding instances to be patched for this index, so make a new
                 // entry in the patch map.
-                //
                 l = new LinkedList<>();
                 _patchMap.put(index, l);
             }
 
-            //
             // Append a patch entry for this instance.
-            //
             l.add(new PatchEntry(cb, _classGraphDepth));
         }
 
         protected void unmarshal(int index, Value v) {
-            //
             // Add the instance to the map of unmarshaled instances, this must be done before
             // reading the instances (for circular references).
-            //
             _unmarshaledMap.put(index, v);
 
-            //
             // Read the instance.
-            //
             v._iceRead(_stream);
 
             if (_patchMap != null) {
-                //
                 // Patch all instances now that the instance is unmarshaled.
-                //
                 LinkedList<PatchEntry> l = _patchMap.get(index);
                 if (l != null) {
                     assert (!l.isEmpty());
 
-                    //
                     // Patch all pointers that refer to the instance.
-                    //
                     for (PatchEntry entry : l) {
                         entry.cb.accept(v);
                     }
 
-                    //
                     // Clear out the patch map for that index -- there is nothing left to patch for
                     // that index for the time being.
-                    //
                     _patchMap.remove(index);
                 }
             }
@@ -1673,7 +1656,8 @@ public final class InputStream {
             if ((_patchMap == null || _patchMap.isEmpty()) && _valueList == null) {
                 v.ice_postUnmarshal();
             } else {
-                if (_valueList == null) {// Lazy initialization
+                // Lazy initialization
+                if (_valueList == null) {
                     _valueList = new ArrayList<>();
                 }
                 _valueList.add(v);
@@ -1820,18 +1804,14 @@ public final class InputStream {
                 return;
             }
 
-            //
             // For class instances, first read the type ID boolean which indicates
-            // whether or not the type ID is encoded as a string or as an index. For exceptions, the
-            // type ID is always encoded as a string.
+            // whether or not the type ID is encoded as a string or as an index.
             //
-            if (_sliceType
-                == SliceType.ValueSlice) // For exceptions, the type ID is always encoded as a
-                // string
-                {
-                    boolean isIndex = _stream.readBool();
-                    _typeId = readTypeId(isIndex);
-                } else {
+            // For exceptions, the type ID is always encoded as a string.
+            if (_sliceType == SliceType.ValueSlice) {
+                boolean isIndex = _stream.readBool();
+                _typeId = readTypeId(isIndex);
+            } else {
                 _typeId = _stream.readString();
             }
 
@@ -1973,7 +1953,9 @@ public final class InputStream {
                 // derive an index into the indirection table that we'll read
                 // at the end of the slice.
                 //
-                if (_current.indirectPatchList == null) {// Lazy initialization
+
+                // Lazy initialization
+                if (_current.indirectPatchList == null) {
                     _current.indirectPatchList = new ArrayDeque<>();
                 }
                 IndirectPatchEntry e = new IndirectPatchEntry();
@@ -2060,18 +2042,12 @@ public final class InputStream {
             // for exceptions it's always encoded as a string.
             //
             if (_current.sliceType == SliceType.ValueSlice) {
-                if ((_current.sliceFlags & Protocol.FLAG_HAS_TYPE_ID_COMPACT)
-                    == Protocol.FLAG_HAS_TYPE_ID_COMPACT) // Must be checked 1st!
-                    {
-                        _current.compactId = _stream.readSize();
-                        _current.typeId = String.valueOf(_current.compactId);
-                    } else if ((_current.sliceFlags
-                    & (Protocol.FLAG_HAS_TYPE_ID_INDEX
-                    | Protocol.FLAG_HAS_TYPE_ID_STRING))
-                    != 0) {
-                    _current.typeId =
-                        readTypeId(
-                            (_current.sliceFlags & Protocol.FLAG_HAS_TYPE_ID_INDEX) != 0);
+                // Must be checked 1st!
+                if ((_current.sliceFlags & Protocol.FLAG_HAS_TYPE_ID_COMPACT) == Protocol.FLAG_HAS_TYPE_ID_COMPACT) {
+                    _current.compactId = _stream.readSize();
+                    _current.typeId = String.valueOf(_current.compactId);
+                } else if ((_current.sliceFlags & (Protocol.FLAG_HAS_TYPE_ID_INDEX | Protocol.FLAG_HAS_TYPE_ID_STRING)) != 0) {
+                    _current.typeId = readTypeId((_current.sliceFlags & Protocol.FLAG_HAS_TYPE_ID_INDEX) != 0);
                     _current.compactId = -1;
                 } else {
                     //
@@ -2199,13 +2175,15 @@ public final class InputStream {
                         hasOptionalMembers,
                         (_current.sliceFlags & Protocol.FLAG_IS_LAST_SLICE) != 0);
 
-                if (_current.slices == null) {// Lazy initialization
+                // Lazy initialization
+                if (_current.slices == null) {
                     _current.slices = new ArrayList<>();
                 }
                 _current.slices.add(info);
             }
 
-            if (_current.indirectionTables == null) {// Lazy initialization
+            // Lazy initialization
+            if (_current.indirectionTables == null) {
                 _current.indirectionTables = new ArrayList<>();
             }
 
@@ -2317,13 +2295,12 @@ public final class InputStream {
         }
 
         private SlicedData readSlicedData() {
-            if (_current.slices == null) {// No preserved slices.
+            // There are no preserved slices.
+            if (_current.slices == null) {
                 return null;
             }
 
-            //
             // The _indirectionTables member holds the indirection table for each slice in _slices.
-            //
             assert (_current.slices.size() == _current.indirectionTables.size());
             for (int n = 0; n < _current.slices.size(); n++) {
                 //
@@ -2426,19 +2403,20 @@ public final class InputStream {
     private Encaps _encapsCache;
 
     private void initEncaps() {
-        if (_encapsStack == null) // Lazy initialization
-            {
-                _encapsStack = _encapsCache;
-                if (_encapsStack != null) {
-                    _encapsCache = _encapsCache.next;
-                } else {
-                    _encapsStack = new Encaps();
-                }
-                _encapsStack.setEncoding(_encoding);
-                _encapsStack.sz = _buf.b.limit();
+        // Lazy initialization
+        if (_encapsStack == null) {
+            _encapsStack = _encapsCache;
+            if (_encapsStack != null) {
+                _encapsCache = _encapsCache.next;
+            } else {
+                _encapsStack = new Encaps();
             }
+            _encapsStack.setEncoding(_encoding);
+            _encapsStack.sz = _buf.b.limit();
+        }
 
-        if (_encapsStack.decoder == null) {// Lazy initialization.
+        // Lazy initialization.
+        if (_encapsStack.decoder == null) {
             if (_encapsStack.encoding_1_0) {
                 _encapsStack.decoder =
                     new EncapsDecoder10(

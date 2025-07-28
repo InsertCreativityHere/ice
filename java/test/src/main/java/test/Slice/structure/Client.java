@@ -20,17 +20,17 @@ public class Client extends TestHelper {
         System.out.flush();
 
         // Define some default values.
-        C def_cls = new C(5);
-        S1 def_s = new S1("name");
-        String[] def_ss = new String[]{"one", "two", "three"};
-        ArrayList<Integer> def_il = new ArrayList<>();
-        def_il.add(1);
-        def_il.add(2);
-        def_il.add(3);
-        Map<String, String> def_sd = new HashMap<>();
-        def_sd.put("abc", "def");
-        ObjectPrx def_prx = communicator.stringToProxy("test");
-        S2 def_s2 =
+        C defaultC = new C(5);
+        S1 defaultS = new S1("name");
+        String[] defaultStringSeq = new String[]{"one", "two", "three"};
+        ArrayList<Integer> defaultIntList = new ArrayList<>();
+        defaultIntList.add(1);
+        defaultIntList.add(2);
+        defaultIntList.add(3);
+        Map<String, String> defaultStringDict = new HashMap<>();
+        defaultStringDict.put("abc", "def");
+        ObjectPrx defaultProxy = communicator.stringToProxy("test");
+        S2 s2 =
             new S2(
                 true,
                 (byte) 98,
@@ -40,12 +40,12 @@ public class Client extends TestHelper {
                 (float) 1.0,
                 2.0,
                 "string",
-                def_ss,
-                def_il,
-                def_sd,
-                def_s,
-                def_cls,
-                def_prx);
+                defaultStringSeq,
+                defaultIntList,
+                defaultStringDict,
+                defaultS,
+                defaultC,
+                defaultProxy);
 
         // Compare default-constructed structures.
         {
@@ -56,62 +56,62 @@ public class Client extends TestHelper {
         {
             S2 v;
 
-            v = def_s2.clone();
-            test(v.equals(def_s2));
+            v = s2.clone();
+            test(v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.bo = false;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.by--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.sh--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.i--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.l--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.f--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.d--;
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
 
-            v = def_s2.clone();
+            v = s2.clone();
             v.str = "";
-            test(!v.equals(def_s2));
+            test(!v.equals(s2));
         }
 
         // String member
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.str = new String(def_s2.str);
-            test(v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.str = new String(s2.str);
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.str = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.str = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.str = null;
             v2.str = null;
             test(v1.equals(v2));
@@ -121,17 +121,17 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.ss = def_s2.ss.clone();
-            test(v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.ss = s2.ss.clone();
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.ss = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.ss = null;
             test(!v1.equals(v2));
         }
@@ -140,21 +140,21 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.il = new ArrayList<>(def_s2.il);
-            test(v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.il = new ArrayList<>(s2.il);
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.il = new ArrayList<>();
-            test(!v1.equals(def_s2));
+            test(!v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.il = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.il = null;
             test(!v1.equals(v2));
         }
@@ -163,21 +163,21 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.sd = new HashMap<>(def_s2.sd);
-            test(v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.sd = new HashMap<>(s2.sd);
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.sd = new HashMap<>();
-            test(!v1.equals(def_s2));
+            test(!v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.sd = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.sd = null;
             test(!v1.equals(v2));
         }
@@ -186,25 +186,25 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.s = def_s2.s.clone();
-            test(v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.s = s2.s.clone();
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.s = new S1("name");
-            test(v1.equals(def_s2));
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.s = new S1("noname");
-            test(!v1.equals(def_s2));
+            test(!v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.s = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.s = null;
             test(!v1.equals(v2));
         }
@@ -213,17 +213,17 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
-            v1.cls = def_s2.cls.clone();
-            test(!v1.equals(def_s2));
+            v1 = s2.clone();
+            v1.cls = s2.cls.clone();
+            test(!v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.cls = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.cls = null;
             test(!v1.equals(v2));
         }
@@ -232,21 +232,21 @@ public class Client extends TestHelper {
         {
             S2 v1, v2;
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.prx = communicator.stringToProxy("test");
-            test(v1.equals(def_s2));
+            test(v1.equals(s2));
 
-            v1 = def_s2.clone();
+            v1 = s2.clone();
             v1.prx = communicator.stringToProxy("test2");
-            test(!v1.equals(def_s2));
+            test(!v1.equals(s2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v1.prx = null;
             test(!v1.equals(v2));
 
-            v1 = def_s2.clone();
-            v2 = def_s2.clone();
+            v1 = s2.clone();
+            v2 = s2.clone();
             v2.prx = null;
             test(!v1.equals(v2));
         }

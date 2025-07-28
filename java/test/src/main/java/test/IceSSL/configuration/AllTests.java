@@ -658,7 +658,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -719,7 +719,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -753,7 +753,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -803,7 +803,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -819,7 +819,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -835,7 +835,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -887,7 +887,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -941,7 +941,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -958,7 +958,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1007,7 +1007,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1042,7 +1042,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1109,7 +1109,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1144,7 +1144,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1160,7 +1160,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1205,7 +1205,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }
@@ -1221,7 +1221,7 @@ public class AllTests {
             try {
                 server.ice_ping();
                 test(false);
-            } catch (LocalException ex) {}
+            } catch (LocalException expected) {}
             fact.destroyServer(server);
             comm.destroy();
         }

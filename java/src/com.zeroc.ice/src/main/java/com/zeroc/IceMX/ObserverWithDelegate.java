@@ -57,8 +57,8 @@ public class ObserverWithDelegate<
      * Gets a sub-observer with a delegate for the specified metrics type.
      *
      * @param <S> the sub-metrics type
-     * @param <ObserverImpl> the observer implementation type that supports delegation
-     * @param <Obs> the delegate observer type
+     * @param <OI> the observer implementation type that supports delegation
+     * @param <OBS> the delegate observer type
      * @param mapName the name of the metrics map
      * @param helper the metrics helper for the sub-metrics type
      * @param mcl the metrics class
@@ -69,18 +69,18 @@ public class ObserverWithDelegate<
     @SuppressWarnings("unchecked")
     public <
         S extends Metrics,
-        ObserverImpl extends ObserverWithDelegate<S, Obs>,
-        Obs extends com.zeroc.Ice.Instrumentation.Observer>
-        Obs getObserver(
+        OI extends ObserverWithDelegate<S, OBS>,
+        OBS extends com.zeroc.Ice.Instrumentation.Observer>
+        OBS getObserver(
                     String mapName,
                     MetricsHelper<S> helper,
                     Class<S> mcl,
-                    Class<ObserverImpl> ocl,
-                    Obs delegate) {
-        ObserverImpl obsv = super.getObserver(mapName, helper, mcl, ocl);
+                    Class<OI> ocl,
+                    OBS delegate) {
+        OI obsv = super.getObserver(mapName, helper, mcl, ocl);
         if (obsv != null) {
             obsv.setDelegate(delegate);
-            return (Obs) obsv;
+            return (OBS) obsv;
         }
         return delegate;
     }
