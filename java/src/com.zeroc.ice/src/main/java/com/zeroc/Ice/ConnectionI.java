@@ -891,13 +891,13 @@ public final class ConnectionI extends EventHandler implements Connection, Cance
             // Optimization, call finish() directly if there's no executor.
             finish(close);
         } else {
-        _threadPool.executeFromThisThread(
-            new RunnableThreadPoolWorkItem(this) {
-                @Override
-                public void run() {
-                    finish(close);
-                }
-            });
+            _threadPool.executeFromThisThread(
+                new RunnableThreadPoolWorkItem(this) {
+                    @Override
+                    public void run() {
+                        finish(close);
+                    }
+                });
         }
     }
 
