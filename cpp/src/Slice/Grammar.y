@@ -65,7 +65,6 @@ int slice_lex(YYSTYPE* lvalp, YYLTYPE* llocp);
 
 %{
 
-#include "Ice/UUID.h"
 #include "Parser.h"
 #include "GrammarUtil.h"
 
@@ -322,19 +321,19 @@ definition
 }
 | class_decl ';'
 {
-    assert($1 == nullptr || dynamic_pointer_cast<ClassDecl>($1));
+    assert(dynamic_pointer_cast<ClassDecl>($1));
 }
 | class_def opt_semicolon
 {
-    assert($1 == nullptr || dynamic_pointer_cast<ClassDef>($1));
+    assert(dynamic_pointer_cast<ClassDef>($1));
 }
 | interface_decl ';'
 {
-    assert($1 == nullptr || dynamic_pointer_cast<InterfaceDecl>($1));
+    assert(dynamic_pointer_cast<InterfaceDecl>($1));
 }
 | interface_def opt_semicolon
 {
-    assert($1 == nullptr || dynamic_pointer_cast<InterfaceDef>($1));
+    assert(dynamic_pointer_cast<InterfaceDef>($1));
 }
 | exception_decl ';'
 {
@@ -613,21 +612,6 @@ struct_def
 ;
 
 // ----------------------------------------------------------------------
-class_name
-// ----------------------------------------------------------------------
-: ICE_CLASS ICE_IDENTIFIER
-{
-    $$ = $2;
-}
-| ICE_CLASS keyword
-{
-    auto ident = dynamic_pointer_cast<StringTok>($2);
-    currentUnit->error("keyword '" + ident->v + "' cannot be used as class name");
-    $$ = $2; // Dummy
-}
-;
-
-// ----------------------------------------------------------------------
 class_id
 // ----------------------------------------------------------------------
 : ICE_CLASS definition_name_open integer_constant ')'
@@ -650,10 +634,10 @@ class_id
     classId->t = id;
     $$ = classId;
 }
-| class_name
+| ICE_CLASS definition_name
 {
     auto classId = make_shared<ClassIdTok>();
-    classId->v = dynamic_pointer_cast<StringTok>($1)->v;
+    classId->v = dynamic_pointer_cast<StringTok>($2)->v;
     classId->t = -1;
     $$ = classId;
 }
@@ -662,9 +646,9 @@ class_id
 // ----------------------------------------------------------------------
 class_decl
 // ----------------------------------------------------------------------
-: class_name
+: ICE_CLASS definition_name
 {
-    auto ident = dynamic_pointer_cast<StringTok>($1);
+    auto ident = dynamic_pointer_cast<StringTok>($2);
     ContainerPtr cont = currentUnit->currentContainer();
     ClassDeclPtr cl = cont->createClassDecl(ident->v);
     $$ = cl;
@@ -680,28 +664,15 @@ class_def
     ContainerPtr cont = currentUnit->currentContainer();
     auto base = dynamic_pointer_cast<ClassDef>($2);
     ClassDefPtr cl = cont->createClassDef(ident->v, ident->t, base);
-    if (cl)
-    {
-        cont->checkHasChangedMeaning(ident->v, cl);
-        currentUnit->pushContainer(cl);
-        $$ = cl;
-    }
-    else
-    {
-        $$ = nullptr;
-    }
+
+    cont->checkHasChangedMeaning(ident->v, cl);
+    currentUnit->pushContainer(cl);
+    $$ = cl;
 }
 '{' data_members '}'
 {
-    if ($3)
-    {
-        currentUnit->popContainer();
-        $$ = $3;
-    }
-    else
-    {
-        $$ = nullptr;
-    }
+    currentUnit->popContainer();
+    $$ = $3;
 }
 ;
 
@@ -967,28 +938,14 @@ throws
 ;
 
 // ----------------------------------------------------------------------
-interface_id
-// ----------------------------------------------------------------------
-: ICE_INTERFACE ICE_IDENTIFIER
-{
-    $$ = $2;
-}
-| ICE_INTERFACE keyword
-{
-    auto ident = dynamic_pointer_cast<StringTok>($2);
-    currentUnit->error("keyword '" + ident->v + "' cannot be used as interface name");
-    $$ = $2; // Dummy
-}
-;
-
-// ----------------------------------------------------------------------
 interface_decl
 // ----------------------------------------------------------------------
-: interface_id
+: ICE_INTERFACE definition_name
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
     auto cont = currentUnit->currentContainer();
     InterfaceDeclPtr cl = cont->createInterfaceDecl(ident->v);
+
     cont->checkHasChangedMeaning(ident->v, cl);
     $$ = cl;
 }
@@ -997,34 +954,21 @@ interface_decl
 // ----------------------------------------------------------------------
 interface_def
 // ----------------------------------------------------------------------
-: interface_id interface_extends
+: ICE_INTERFACE definition_name interface_extends
 {
     auto ident = dynamic_pointer_cast<StringTok>($1);
     ContainerPtr cont = currentUnit->currentContainer();
     auto bases = dynamic_pointer_cast<InterfaceListTok>($2);
     InterfaceDefPtr interface = cont->createInterfaceDef(ident->v, bases->v);
-    if (interface)
-    {
-        cont->checkHasChangedMeaning(ident->v, interface);
-        currentUnit->pushContainer(interface);
-        $$ = interface;
-    }
-    else
-    {
-        $$ = nullptr;
-    }
+
+    cont->checkHasChangedMeaning(ident->v, interface);
+    currentUnit->pushContainer(interface);
+    $$ = interface;
 }
 '{' operations '}'
 {
-    if ($3)
-    {
-        currentUnit->popContainer();
-        $$ = $3;
-    }
-    else
-    {
-        $$ = nullptr;
-    }
+    currentUnit->popContainer();
+    $$ = $3;
 }
 ;
 

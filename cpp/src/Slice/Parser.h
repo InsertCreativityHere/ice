@@ -505,10 +505,10 @@ namespace Slice
         /// The user should disambiguate by qualifying the type-reference as 'Outer::H'.
         void checkHasChangedMeaning(const std::string& name, ContainedPtr namedThing = nullptr);
 
-        /// Returns `true` if this container is the global scope (i.e. it's of type `Unit`), and `false` otherwise.
-        /// If false, we emit an error message. So this function should only be called for types which cannot appear at
-        /// global scope... so everything except for `Module`s.
-        bool checkForGlobalDefinition(const char* definitionKindPlural);
+        /// Emits an error message if this container is the global scope (i.e. it's of type `Unit`).
+        /// This function should called when constructing types which cannot appear at global scope...
+        /// so everything except for `Module`s.
+        void reportIllegalGlobalDefinition(const char* definitionKindPlural);
 
         /// Returns true if this contains elements of the specified type.
         /// This check is recursive, so it will still return true even if the type is only contained indirectly.

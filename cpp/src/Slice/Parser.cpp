@@ -77,6 +77,51 @@ namespace
         return false;
     }
 
+    /// Checks an identifier for illegal syntax and reports any errors that are present.
+    void reportIllegalSuffixOrUnderscore(const string& identifier)
+    {
+        // check whether the identifier is scoped
+        size_t scopeIndex = identifier.rfind("::");
+        bool isScoped = scopeIndex != string::npos;
+        string name;
+        if (isScoped)
+        {
+            name = identifier.substr(scopeIndex + 2); // Only check the unscoped identifier for syntax
+        }
+        else
+        {
+            name = identifier;
+        }
+
+        assert(!name.empty());
+
+        // check the identifier for reserved suffixes
+        static const string suffixBlacklist[] = {"Helper", "Holder", "Prx", "Ptr"};
+        for (const auto& i : suffixBlacklist)
+        {
+            if (name.find(i, name.size() - i.size()) != string::npos)
+            {
+                currentUnit->error("illegal identifier '" + name + "': '" + i + "' suffix is reserved");
+                break;
+            }
+        }
+
+        // check the identifier for illegal underscores
+        size_t index = name.find('_');
+        if (index == 0)
+        {
+            currentUnit->error("illegal leading underscore in identifier '" + name + "'");
+        }
+        else if (name.rfind('_') == (name.size() - 1))
+        {
+            currentUnit->error("illegal trailing underscore in identifier '" + name + "'");
+        }
+        else if (name.find("__") != string::npos)
+        {
+            currentUnit->error("illegal double underscore in identifier '" + name + "'");
+        }
+    }
+
     /// Reports any naming conflicts between @p name and @p definitions.
     /// This should only be called for Slice elements that are _not_ defined at module scope.
     /// For example, this is fine to use for operations, enumerators, data members, and parameters.
@@ -892,69 +937,80 @@ Slice::Container::createModule(const string& name, bool nestedSyntax)
 ClassDefPtr
 Slice::Container::createClassDef(const string& name, int32_t id, const ClassDefPtr& base)
 {
-    ContainedList matches = unit()->findContents(thisScope() + name);
-    for (const auto& p : matches)
-    {
-        ClassDeclPtr decl = dynamic_pointer_cast<ClassDecl>(p);
-        if (decl)
-        {
-            continue; // all good
-        }
-
-        bool differsOnlyInCase = matches.front()->name() != name;
-        ClassDefPtr def = dynamic_pointer_cast<ClassDef>(p);
-        if (def)
-        {
-            if (differsOnlyInCase)
-            {
-                ostringstream os;
-                os << "class definition '" << name << "' is capitalized inconsistently with its previous name: '"
-                   << def->name() << "'";
-                unit()->error(os.str());
-            }
-            else
-            {
-                ostringstream os;
-                os << "redefinition of class '" << name << "'";
-                unit()->error(os.str());
-            }
-        }
-        else if (differsOnlyInCase)
-        {
-            ostringstream os;
-            os << "class definition '" << name << "' differs only in capitalization from " << matches.front()->kindOf()
-               << " name '" << matches.front()->name() << "'";
-            unit()->error(os.str());
-        }
-        else
-        {
-            const string kindOf = matches.front()->kindOf();
-            ostringstream os;
-            os << "class '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
-            unit()->error(os.str());
-        }
-        return nullptr;
-    }
-
-    if (!reportIllegalSuffixOrUnderscore(name) || !checkForGlobalDefinition("classes"))
-    {
-        return nullptr;
-    }
+    ClassDefPtr def = make_shared<ClassDef>(shared_from_this(), name, id, base);
 
     // Implicitly create a class declaration for each class definition.
     // This way the code generator can rely on always having a class declaration available for lookup.
-    ClassDefPtr def = make_shared<ClassDef>(shared_from_this(), name, id, base);
     ClassDeclPtr decl = createClassDecl(name);
     def->_declaration = decl;
     decl->_definition = def;
 
-    // Patch forward declarations which may of been created in other openings of this class' module.
-    for (const auto& q : matches)
+    reportIllegalGlobalDefinition("classes");
+
+    bool hasConflictingIdentifier = false;
+    if (!name.empty())
     {
-        dynamic_pointer_cast<ClassDecl>(q)->_definition = def;
+        ContainedList matches = unit()->findContents(thisScope() + name);
+        for (const auto& p : matches)
+        {
+            // It's okay for a class definition to 're-define' class declarations.
+            if (dynamic_pointer_cast<ClassDecl>(p))
+            {
+                continue;
+            }
+
+            // TODO simplify this redefinition check. We don't need 4 different messages.
+            hasConflictingIdentifier = true;
+            bool differsOnlyInCase = matches.front()->name() != name;
+            ClassDefPtr otherDef = dynamic_pointer_cast<ClassDef>(p);
+            if (otherDef)
+            {
+                if (differsOnlyInCase)
+                {
+                    ostringstream os;
+                    os << "class definition '" << name << "' is capitalized inconsistently with its previous name: '"
+                    << otherDef->name() << "'";
+                    unit()->error(os.str());
+                }
+                else
+                {
+                    ostringstream os;
+                    os << "redefinition of class '" << name << "'";
+                    unit()->error(os.str());
+                }
+            }
+            else if (differsOnlyInCase)
+            {
+                ostringstream os;
+                os << "class definition '" << name << "' differs only in capitalization from "
+                << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
+                unit()->error(os.str());
+            }
+            else
+            {
+                const string kindOf = matches.front()->kindOf();
+                ostringstream os;
+                os << "class '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
+                unit()->error(os.str());
+            }
+        }
+
+        reportIllegalSuffixOrUnderscore(name);
+
+        if (!hasConflictingIdentifier)
+        {
+            // If this class's identifier doesn't conflict with another definition,
+            // add it to the unit's contentMap so it can be looked up later.
+            unit()->addContent(def);
+
+            // Patch forward declarations which may of been created in other openings of this class's module.
+            for (const auto& q : matches)
+            {
+                dynamic_pointer_cast<ClassDecl>(q)->_definition = def;
+            }
+        }
     }
 
-    unit()->addContent(def);
     _contents.push_back(def);
     return def;
 }
@@ -962,63 +1018,61 @@ Slice::Container::createClassDef(const string& name, int32_t id, const ClassDefP
 ClassDeclPtr
 Slice::Container::createClassDecl(const string& name)
 {
-    ContainedList matches = unit()->findContents(thisScope() + name);
-    for (const auto& p : matches)
+    reportIllegalGlobalDefinition("classes");
+
+    bool hasConflictingIdentifier = false;
+    if (!name.empty())
     {
-        ClassDefPtr clDef = dynamic_pointer_cast<ClassDef>(p);
-        if (clDef)
+        ContainedList matches = unit()->findContents(thisScope() + name);
+        for (const auto& p : matches)
         {
-            continue;
-        }
-
-        ClassDeclPtr clDecl = dynamic_pointer_cast<ClassDecl>(p);
-        if (clDecl)
-        {
-            continue;
-        }
-
-        bool differsOnlyInCase = matches.front()->name() != name;
-        if (differsOnlyInCase)
-        {
-            ostringstream os;
-            os << "class declaration '" << name << "' differs only in capitalization from " << matches.front()->kindOf()
-               << " name '" << matches.front()->name() << "'";
-            unit()->error(os.str());
-        }
-        else
-        {
-            const string kindOf = matches.front()->kindOf();
-            ostringstream os;
-            os << "class '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
-            unit()->error(os.str());
-        }
-        return nullptr;
-    }
-
-    if (!reportIllegalSuffixOrUnderscore(name) || !checkForGlobalDefinition("classes"))
-    {
-        return nullptr;
-    }
-
-    //
-    // Multiple declarations are permissible. But if we do already
-    // have a declaration for the class in this container, we don't
-    // create another one.
-    //
-    for (const auto& q : _contents)
-    {
-        if (q->name() == name)
-        {
-            ClassDeclPtr decl = dynamic_pointer_cast<ClassDecl>(q);
-            if (decl)
+            // It's okay for a class declaration to 're-define' class definitions/declarations.
+            if (dynamic_pointer_cast<ClassDef>(p) || dynamic_pointer_cast<ClassDecl>(p))
             {
-                return decl;
+                continue;
+            }
+
+            hasConflictingIdentifier = true;
+            if (matches.front()->name() != name)
+            {
+                ostringstream os;
+                os << "class declaration '" << name << "' differs only in capitalization from "
+                << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
+                unit()->error(os.str());
+            }
+            else
+            {
+                const string kindOf = matches.front()->kindOf();
+                ostringstream os;
+                os << "class '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
+                unit()->error(os.str());
+            }
+        }
+
+        reportIllegalSuffixOrUnderscore(name);
+
+        // Multiple declarations are permissible.
+        // But if we already have a declaration for the class in this container, we don't create another one.
+        for (const auto& q : _contents)
+        {
+            if (q->name() == name)
+            {
+                ClassDeclPtr decl = dynamic_pointer_cast<ClassDecl>(q);
+                if (decl)
+                {
+                    return decl;
+                }
             }
         }
     }
 
     ClassDeclPtr decl = make_shared<ClassDecl>(shared_from_this(), name);
-    unit()->addContent(decl);
+    if (!hasConflictingIdentifier && !name.empty())
+    {
+        // If this class declaration's identifier doesn't conflict with another definition,
+        // add it to the unit's contentMap so it can be looked up later.
+        unit()->addContent(decl);
+    }
     _contents.push_back(decl);
     return decl;
 }
@@ -1026,71 +1080,81 @@ Slice::Container::createClassDecl(const string& name)
 InterfaceDefPtr
 Slice::Container::createInterfaceDef(const string& name, const InterfaceList& bases)
 {
-    ContainedList matches = unit()->findContents(thisScope() + name);
-    for (const auto& p : matches)
-    {
-        InterfaceDeclPtr decl = dynamic_pointer_cast<InterfaceDecl>(p);
-        if (decl)
-        {
-            continue; // all good
-        }
-
-        bool differsOnlyInCase = matches.front()->name() != name;
-        InterfaceDefPtr def = dynamic_pointer_cast<InterfaceDef>(p);
-        if (def)
-        {
-            if (differsOnlyInCase)
-            {
-                ostringstream os;
-                os << "interface definition '" << name << "' is capitalized inconsistently with its previous name: '"
-                   << def->name() + "'";
-                unit()->error(os.str());
-            }
-            else
-            {
-                ostringstream os;
-                os << "redefinition of interface '" << name << "'";
-                unit()->error(os.str());
-            }
-        }
-        else if (differsOnlyInCase)
-        {
-            ostringstream os;
-            os << "interface definition '" << name << "' differs only in capitalization from "
-               << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
-            unit()->error(os.str());
-        }
-        else
-        {
-            const string kindOf = matches.front()->kindOf();
-            ostringstream os;
-            os << "interface '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
-            unit()->error(os.str());
-        }
-        return nullptr;
-    }
-
-    if (!reportIllegalSuffixOrUnderscore(name) || !checkForGlobalDefinition("interfaces"))
-    {
-        return nullptr;
-    }
-
-    InterfaceDecl::checkBasesAreLegal(name, bases, unit());
+    InterfaceDefPtr def = make_shared<InterfaceDef>(shared_from_this(), name, bases);
 
     // Implicitly create an interface declaration for each interface definition.
     // This way the code generator can rely on always having an interface declaration available for lookup.
-    InterfaceDefPtr def = make_shared<InterfaceDef>(shared_from_this(), name, bases);
     InterfaceDeclPtr decl = createInterfaceDecl(name);
     def->_declaration = decl;
     decl->_definition = def;
 
-    // Patch forward declarations which may of been created in other openings of this interface's module.
-    for (const auto& q : matches)
+    reportIllegalGlobalDefinition("interfaces");
+    InterfaceDecl::checkBasesAreLegal(name, bases, unit());
+
+    bool hasConflictingIdentifier = false;
+    if (!name.empty())
     {
-        dynamic_pointer_cast<InterfaceDecl>(q)->_definition = def;
+        ContainedList matches = unit()->findContents(thisScope() + name);
+        for (const auto& p : matches)
+        {
+            // It's okay for an interface definition to 're-define' interface declarations.
+            if (dynamic_pointer_cast<InterfaceDecl>(p))
+            {
+                continue;
+            }
+
+            // TODO simplify this redefinition check. We don't need 4 different messages.
+            hasConflictingIdentifier = true;
+            bool differsOnlyInCase = matches.front()->name() != name;
+            InterfaceDefPtr otherDef = dynamic_pointer_cast<InterfaceDef>(p);
+            if (otherDef)
+            {
+                if (differsOnlyInCase)
+                {
+                    ostringstream os;
+                    os << "interface definition '" << name
+                    << "' is capitalized inconsistently with its previous name: '" << otherDef->name() + "'";
+                    unit()->error(os.str());
+                }
+                else
+                {
+                    ostringstream os;
+                    os << "redefinition of interface '" << name << "'";
+                    unit()->error(os.str());
+                }
+            }
+            else if (differsOnlyInCase)
+            {
+                ostringstream os;
+                os << "interface definition '" << name << "' differs only in capitalization from "
+                << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
+                unit()->error(os.str());
+            }
+            else
+            {
+                const string kindOf = matches.front()->kindOf();
+                ostringstream os;
+                os << "interface '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
+                unit()->error(os.str());
+            }
+        }
+
+        reportIllegalSuffixOrUnderscore(name);
+
+        if (!hasConflictingIdentifier)
+        {
+            // If this interface's identifier doesn't conflict with another definition,
+            // add it to the unit's contentMap so it can be looked up later.
+            unit()->addContent(def);
+
+            // Patch forward declarations which may of been created in other openings of this interface's module.
+            for (const auto& q : matches)
+            {
+                dynamic_pointer_cast<InterfaceDecl>(q)->_definition = def;
+            }
+        }
     }
 
-    unit()->addContent(def);
     _contents.push_back(def);
     return def;
 }
@@ -1098,60 +1162,61 @@ Slice::Container::createInterfaceDef(const string& name, const InterfaceList& ba
 InterfaceDeclPtr
 Slice::Container::createInterfaceDecl(const string& name)
 {
-    ContainedList matches = unit()->findContents(thisScope() + name);
-    for (const auto& p : matches)
+    reportIllegalGlobalDefinition("interfaces");
+
+    bool hasConflictingIdentifier = false;
+    if (!name.empty())
     {
-        InterfaceDefPtr interfaceDef = dynamic_pointer_cast<InterfaceDef>(p);
-        if (interfaceDef)
+        ContainedList matches = unit()->findContents(thisScope() + name);
+        for (const auto& p : matches)
         {
-            continue;
-        }
-
-        InterfaceDeclPtr interfaceDecl = dynamic_pointer_cast<InterfaceDecl>(p);
-        if (interfaceDecl)
-        {
-            continue;
-        }
-
-        bool differsOnlyInCase = matches.front()->name() != name;
-        if (differsOnlyInCase)
-        {
-            ostringstream os;
-            os << "interface declaration '" << name << "' differs only in capitalization from "
-               << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
-            unit()->error(os.str());
-        }
-        else
-        {
-            const string kindOf = matches.front()->kindOf();
-            ostringstream os;
-            os << "interface '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
-            unit()->error(os.str());
-        }
-        return nullptr;
-    }
-
-    if (!reportIllegalSuffixOrUnderscore(name) || !checkForGlobalDefinition("interfaces"))
-    {
-        return nullptr;
-    }
-
-    // Multiple declarations are permissible. But if we do already have a declaration for the interface in this
-    // container, we don't create another one.
-    for (const auto& q : _contents)
-    {
-        if (q->name() == name)
-        {
-            InterfaceDeclPtr decl = dynamic_pointer_cast<InterfaceDecl>(q);
-            if (decl)
+            // It's okay for a interface declaration to 're-define' interface definitions/declarations.
+            if (dynamic_pointer_cast<InterfaceDef>(p) || dynamic_pointer_cast<InterfaceDecl>(p))
             {
-                return decl;
+                continue;
+            }
+
+            hasConflictingIdentifier = true;
+            if (matches.front()->name() != name)
+            {
+                ostringstream os;
+                os << "interface declaration '" << name << "' differs only in capitalization from "
+                << matches.front()->kindOf() << " name '" << matches.front()->name() << "'";
+                unit()->error(os.str());
+            }
+            else
+            {
+                const string kindOf = matches.front()->kindOf();
+                ostringstream os;
+                os << "interface '" << name << "' was previously defined as " << getArticleFor(kindOf) << " " << kindOf;
+                unit()->error(os.str());
+            }
+        }
+
+        reportIllegalSuffixOrUnderscore(name);
+
+        // Multiple declarations are permissible.
+        // But if we already have a declaration for the interface in this container, we don't create another one.
+        for (const auto& q : _contents)
+        {
+            if (q->name() == name)
+            {
+                InterfaceDeclPtr decl = dynamic_pointer_cast<InterfaceDecl>(q);
+                if (decl)
+                {
+                    return decl;
+                }
             }
         }
     }
 
     InterfaceDeclPtr decl = make_shared<InterfaceDecl>(shared_from_this(), name);
-    unit()->addContent(decl);
+    if (!hasConflictingIdentifier && !name.empty())
+    {
+        // If this interface declaration's identifier doesn't conflict with another definition,
+        // add it to the unit's contentMap so it can be looked up later.
+        unit()->addContent(decl);
+    }
     _contents.push_back(decl);
     return decl;
 }
@@ -1161,7 +1226,7 @@ Slice::Container::createException(const string& name, const ExceptionPtr& base)
 {
     ExceptionPtr p = make_shared<Exception>(shared_from_this(), name, base);
 
-    checkForGlobalDefinition("exceptions");
+    reportIllegalGlobalDefinition("exceptions");
 
     if (!name.empty())
     {
@@ -1201,7 +1266,7 @@ Slice::Container::createStruct(const string& name)
 {
     StructPtr p = make_shared<Struct>(shared_from_this(), name);
 
-    checkForGlobalDefinition("structs");
+    reportIllegalGlobalDefinition("structs");
 
     if (!name.empty())
     {
@@ -1241,7 +1306,7 @@ Slice::Container::createSequence(const string& name, const TypePtr& type, Metada
 {
     SequencePtr p = make_shared<Sequence>(shared_from_this(), name, type, std::move(metadata));
 
-    checkForGlobalDefinition("sequences");
+    reportIllegalGlobalDefinition("sequences");
 
     if (!name.empty())
     {
@@ -1292,7 +1357,7 @@ Slice::Container::createDictionary(
         valueType,
         std::move(valueMetadata));
 
-    checkForGlobalDefinition("dictionaries");
+    reportIllegalGlobalDefinition("dictionaries");
     if (keyType && !Dictionary::isLegalKeyType(keyType))
     {
         unit()->error("dictionary '" + name + "' uses an illegal key type");
@@ -1336,7 +1401,7 @@ Slice::Container::createEnum(const string& name)
 {
     EnumPtr p = make_shared<Enum>(shared_from_this(), name);
 
-    checkForGlobalDefinition("enums");
+    reportIllegalGlobalDefinition("enums");
 
     if (!name.empty())
     {
@@ -1384,7 +1449,7 @@ Slice::Container::createConst(
     ConstPtr p =
         make_shared<Const>(shared_from_this(), name, type, std::move(metadata), resolvedValueType, valueString);
 
-    checkForGlobalDefinition("constants");
+    reportIllegalGlobalDefinition("constants");
 
     if (!name.empty())
     {
@@ -1896,17 +1961,15 @@ Slice::Container::checkHasChangedMeaning(const string& name, ContainedPtr namedT
     }
 }
 
-bool
-Slice::Container::checkForGlobalDefinition(const char* definitionKindPlural)
+void
+Slice::Container::reportIllegalGlobalDefinition(const char* definitionKindPlural)
 {
     if (dynamic_cast<Unit*>(this))
     {
         ostringstream os;
         os << definitionKindPlural << " can only be defined within a module";
         unit()->error(os.str());
-        return false;
     }
-    return true;
 }
 
 bool
