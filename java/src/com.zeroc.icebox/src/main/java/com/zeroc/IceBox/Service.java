@@ -21,6 +21,8 @@ public interface Service {
      */
     void start(String name, Communicator communicator, String[] args);
 
-    /** Stop the service. */
+    /**
+     * Stop the service.
+     */
     void stop();
 }

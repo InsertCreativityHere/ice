@@ -4,10 +4,10 @@ package com.zeroc.IceBT;
 
 /** Provides access to Bluetooth endpoint information. */
 public final class EndpointInfo extends com.zeroc.Ice.EndpointInfo {
-    /** The address configured with the endpoint. */
+    /** The Bluetooth address configured with the endpoint. */
     public final String addr;
 
-    /** The UUID configured with the endpoint. */
+    /** The Bluetooth UUID configured with the endpoint. */
     public final String uuid;
 
     private final short _type;

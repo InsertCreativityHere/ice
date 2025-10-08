@@ -14,7 +14,11 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.tree.DefaultTreeModel;
 
-/** An editable TreeNode that holds a list of children */
+/** 
+ * An editable TreeNode that manages a list of child nodes in the application tree.
+ * This abstract class provides common functionality for nodes that contain collections
+ * of child elements.
+ */
 abstract class ListTreeNode extends TreeNode {
     @Override
     public Enumeration<javax.swing.tree.TreeNode> children() {

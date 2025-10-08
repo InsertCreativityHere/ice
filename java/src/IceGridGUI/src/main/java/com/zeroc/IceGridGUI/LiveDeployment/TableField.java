@@ -21,7 +21,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-/** A special field used to show a map or list */
+/** 
+ * A specialized table component for displaying maps and lists in the Live Deployment view.
+ * This field provides a tabular representation of various Ice deployment data structures
+ * such as adapters, objects, and properties.
+ */
 public class TableField extends JTable {
     public TableField(String... columns) {
         _columnNames = new Vector<>(columns.length);

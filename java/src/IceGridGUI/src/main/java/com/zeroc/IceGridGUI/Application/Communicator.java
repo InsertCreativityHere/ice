@@ -27,7 +27,11 @@ import java.util.NoSuchElementException;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultTreeModel;
 
-/** The base class for Server, Service, ServerTemplate and ServiceTemplate */
+/** 
+ * The base class for communicator-based entities in IceGrid applications.
+ * This includes servers, services, server templates, and service templates that 
+ * all share common communicator configuration properties and behaviors.
+ */
 abstract class Communicator extends TreeNode implements DescriptorHolder {
     @Override
     @SuppressWarnings("unchecked")

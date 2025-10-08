@@ -8,9 +8,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * Utility class for BZip2 compression and decompression of Ice message data.
  * @hidden Public because it's used by the 'Ice/operations' test.
  */
 public class BZip2 {
+    /**
+     * Compresses a buffer using BZip2 compression.
+     *
+     * @param buf The buffer to compress.
+     * @param headerSize The size of the message header.
+     * @param compressionLevel The compression level (1-9).
+     * @return A new compressed buffer, or null if compression didn't reduce the size.
+     */
     public static Buffer compress(Buffer buf, int headerSize, int compressionLevel) {
         assert (supported());
 
@@ -83,6 +92,17 @@ public class BZip2 {
         return r;
     }
 
+    /**
+     * Decompresses a BZip2-compressed buffer.
+     *
+     * @param buf The compressed buffer to decompress.
+     * @param headerSize The size of the message header.
+     * @param messageSizeMax The maximum allowed message size after decompression.
+     * @return A new decompressed buffer.
+     * @throws MarshalException If the uncompressed size is invalid.
+     * @throws MemoryLimitException If the uncompressed size exceeds the maximum allowed size.
+     * @throws ProtocolException If decompression fails.
+     */
     public static Buffer uncompress(Buffer buf, int headerSize, int messageSizeMax) {
         assert (supported());
 
@@ -156,6 +176,13 @@ public class BZip2 {
     private static java.lang.reflect.Constructor<?> _bzInputStreamCtor;
     private static java.lang.reflect.Constructor<?> _bzOutputStreamCtor;
 
+    /**
+     * Checks whether BZip2 compression is supported.
+     * This method uses lazy initialization to determine if the required Apache Commons Compress
+     * libraries are available on the classpath.
+     *
+     * @return true if BZip2 compression is supported, false otherwise.
+     */
     public static synchronized boolean supported() {
         //
         // Use lazy initialization when determining whether support for bzip2 compression is

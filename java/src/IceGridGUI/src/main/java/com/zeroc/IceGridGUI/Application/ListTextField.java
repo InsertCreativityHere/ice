@@ -9,7 +9,11 @@ import java.util.List;
 
 import javax.swing.JTextField;
 
-/** A special field used to show/edit a list of strings separated by whitespace */
+/** 
+ * A specialized text field for displaying and editing lists of strings.
+ * The strings in the list are separated by whitespace characters, making it
+ * easy to input and display space-separated values.
+ */
 public class ListTextField extends JTextField {
     public ListTextField(int columns) {
         super(columns);

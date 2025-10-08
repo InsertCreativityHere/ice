@@ -7,7 +7,11 @@ import com.zeroc.IceGrid.ServerInstanceDescriptor;
 
 import javax.swing.JOptionPane;
 
-/** Base class for ServerEditor and ServerInstanceEditor */
+/** 
+ * Base class for server editors in the IceGrid GUI application view.
+ * This abstract class provides common functionality for both regular server 
+ * editors and server instance editors.
+ */
 abstract class AbstractServerEditor extends Editor {
     protected abstract void writeDescriptor();
 

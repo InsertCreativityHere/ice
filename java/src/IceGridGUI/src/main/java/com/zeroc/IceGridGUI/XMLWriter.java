@@ -12,8 +12,15 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
 
-/** Helper class to write XML files */
+/** Helper class to write XML files with proper formatting and escaping. */
 public class XMLWriter {
+    /**
+     * Constructs a new XMLWriter for the specified file.
+     *
+     * @param file The file to write XML content to.
+     * @throws FileNotFoundException If the file cannot be found or created.
+     * @throws IOException If an I/O error occurs while writing to the file.
+     */
     public XMLWriter(File file) throws FileNotFoundException, IOException {
         try {
             _writer =
@@ -25,6 +32,13 @@ public class XMLWriter {
         _writer.write("<!-- This file was written by IceGrid GUI -->" + _newline);
     }
 
+    /**
+     * Writes a self-closing XML element with optional attributes.
+     *
+     * @param name The name of the XML element.
+     * @param attributes A list of attribute name-value pairs, or null if no attributes.
+     * @throws IOException If an I/O error occurs while writing.
+     */
     public void writeElement(String name, List<String[]> attributes) throws IOException {
         _writer.write(_indent);
         _writer.write("<" + name);
@@ -32,10 +46,23 @@ public class XMLWriter {
         _writer.write("/>" + _newline);
     }
 
+    /**
+     * Writes a self-closing XML element with no attributes.
+     *
+     * @param name The name of the XML element.
+     * @throws IOException If an I/O error occurs while writing.
+     */
     public void writeElement(String name) throws IOException {
         writeElement(name, (List<String[]>) null);
     }
 
+    /**
+     * Writes an XML element with text content.
+     *
+     * @param name The name of the XML element.
+     * @param content The text content to include within the element.
+     * @throws IOException If an I/O error occurs while writing.
+     */
     public void writeElement(String name, String content) throws IOException {
         _writer.write(_indent);
         _writer.write("<" + name + ">" + escape(content) + "</" + name + ">" + _newline);

@@ -25,7 +25,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-/** A special field used to show/edit properties */
+/** 
+ * A specialized table component for displaying and editing Ice application properties.
+ * This field provides an interface for managing key-value property pairs used in 
+ * Ice application configurations.
+ */
 public class PropertiesField extends JTable {
     public PropertiesField(Editor editor) {
         _columnNames = new Vector<>(2);

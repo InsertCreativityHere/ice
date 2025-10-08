@@ -14,7 +14,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-/** Concrete proxy implementation. */
+/** 
+ * Concrete implementation of the Ice object proxy interface.
+ * This class provides the runtime behavior for Ice proxies, handling
+ * connection management, request dispatching, and communication with remote objects.
+ */
 class _ObjectPrxI implements ObjectPrx, Serializable {
     public _ObjectPrxI(Reference ref) {
         _reference = ref;

@@ -58,9 +58,16 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 
-/** The Root node of the Live Deployment view */
+/** 
+ * The root node of the Live Deployment view in the IceGrid GUI.
+ * This class manages the live state of an IceGrid deployment and provides
+ * access to real-time information about nodes, servers, and services.
+ */
 public class Root extends Communicator {
-    /** A custom tree model to filter tree views. */
+    /** 
+     * A custom tree model that supports filtering of tree views.
+     * This model allows for dynamic filtering of the deployment tree structure.
+     */
     class FilteredTreeModel extends DefaultTreeModel {
         public FilteredTreeModel(TreeNode root) {
             super(root, true);

@@ -18,7 +18,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-/** A special field used to show/edit a map */
+/** 
+ * A specialized table component for displaying and editing simple key-value mappings.
+ * This field provides a two-column table interface for managing map data with 
+ * customizable column headers.
+ */
 public class SimpleMapField extends JTable {
     public SimpleMapField(Editor editor, boolean substituteKey, String headKey, String headValue) {
         _editor = editor;

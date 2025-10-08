@@ -15,7 +15,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 
-/** Base class for all editors */
+/** 
+ * Base class for all editors in the IceGrid GUI.
+ * Provides common functionality for building property panels and toolbars.
+ */
 public abstract class EditorBase {
     public JComponent getProperties() {
         if (_propertiesPanel == null) {

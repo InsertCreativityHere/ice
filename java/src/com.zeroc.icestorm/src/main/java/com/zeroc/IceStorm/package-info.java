@@ -1,7 +1,11 @@
 // Copyright (c) ZeroC, Inc.
 
 /**
- * IceStorm APIs. IceStorm is a broker-based pub/sub service, where subscribers connect to
- * publishers using topics.
+ * IceStorm APIs for publish-subscribe messaging.
+ * 
+ * <p>IceStorm is a broker-based publish-subscribe service that enables loose coupling
+ * between publishers and subscribers through named topics. Publishers send messages to
+ * topics without knowledge of subscribers, and subscribers receive messages from topics
+ * they have subscribed to.
  */
 package com.zeroc.IceStorm;

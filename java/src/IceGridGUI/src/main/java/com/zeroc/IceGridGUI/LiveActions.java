@@ -9,7 +9,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-/** Holds all actions for the "Live Deployment" view */
+/** 
+ * Manages and provides access to all UI actions available in the "Live Deployment" view.
+ * This class contains various actions that can be performed on deployment objects.
+ */
 public class LiveActions {
     class SendSignal extends AbstractAction {
         SendSignal(String name) {

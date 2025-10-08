@@ -20,7 +20,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-/** A special field used to show/edit parameters */
+/** 
+ * A specialized table component for displaying and editing template parameters.
+ * This field allows users to define parameter names and their default values for
+ * Ice application templates.
+ */
 @SuppressWarnings("unchecked")
 public class ParametersField extends JTable {
     public ParametersField(Editor editor) {

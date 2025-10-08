@@ -9,7 +9,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-/** Holds all actions for the Application view */
+/** 
+ * Manages and provides access to all UI actions available in the Application view.
+ * This class handles actions that can be performed on application configuration objects.
+ */
 public class ApplicationActions {
     public Action get(int index) {
         return _array[index];
