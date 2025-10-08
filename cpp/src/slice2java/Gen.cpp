@@ -2363,16 +2363,16 @@ Slice::JavaVisitor::writeSeeAlso(Output& out, const UnitPtr& unt, const string& 
         s.insert(0, "::");
     }
 
-    TypeList l = unt->lookupTypeNoBuiltin(s, false, true);
-    if (l.empty())
+    TypePtr resolvedType = unt->lookupTypeNoBuiltin(s, false, true);
+    if (resolvedType)
     {
-        out << ref;
+        ContainedPtr cont = dynamic_pointer_cast<Contained>(resolvedType);
+        assert(cont);
+        out << getUnqualified(cont) << rest;
     }
     else
     {
-        ContainedPtr cont = dynamic_pointer_cast<Contained>(l.front());
-        assert(cont);
-        out << getUnqualified(cont) << rest;
+        out << ref;
     }
 }
 
