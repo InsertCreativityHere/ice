@@ -24,14 +24,14 @@ public abstract class Value implements Cloneable, Serializable {
     }
 
     /**
-     * The Ice run time invokes this method prior to marshaling an object's data members. This
-     * allows a subclass to override this method in order to validate its data members.
+     * The Ice run time invokes this method prior to marshaling an object's data members. This allows a subclass
+     * to override this method in order to validate its data members.
      */
     public void ice_preMarshal() {}
 
     /**
-     * The Ice run time invokes this method after unmarshaling an object's data members. This allows
-     * a subclass to override this method in order to perform additional initialization.
+     * The Ice run time invokes this method after unmarshaling an object's data members. This allows a
+     * subclass to override this method in order to perform additional initialization.
      */
     public void ice_postUnmarshal() {}
 
@@ -45,8 +45,8 @@ public abstract class Value implements Cloneable, Serializable {
     }
 
     /**
-     * Returns the sliced data if the value has a preserved-slice base class and has been sliced
-     * during un-marshaling of the value, null is returned otherwise.
+     * Returns the sliced data if the value has a preserved-slice base class and has been sliced during
+     * un-marshaling of the value, null is returned otherwise.
      *
      * @return The sliced data or null.
      */
