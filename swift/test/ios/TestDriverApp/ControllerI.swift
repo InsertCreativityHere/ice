@@ -93,6 +93,8 @@ class ControllerI {
         properties.setProperty(key: "IceDiscovery.DomainId", value: "TestController")
         properties.setProperty(key: "ControllerAdapter.Endpoints", value: "tcp")
         properties.setProperty(key: "ControllerAdapter.AdapterId", value: UUID().uuidString)
+        // properties.setProperty(key: "Ice.Trace.Protocol", value: "2")
+        properties.setProperty(key: "Ice.Trace.Network", value: "1")
 
         var initData = Ice.InitializationData()
         initData.properties = properties
