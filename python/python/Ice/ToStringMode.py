@@ -5,9 +5,9 @@ from enum import Enum
 
 class ToStringMode(Enum):
     """
-    The output mode for xxxToString methods such as identityToString and proxyToString. The actual encoding format for
-    the string is the same for all modes: you don't need to specify an encoding format or mode when reading such a
-    string.
+    The output mode for xxxToString methods such as :func:`identityToString` and :func:`proxyToString`.
+    The actual encoding format for the string is the same for all modes: you don't need to specify an
+    encoding format or mode when reading such a string.
     """
 
     Unicode = 0
