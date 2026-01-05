@@ -8,7 +8,11 @@ from .Object import Object
 
 class ServantLocator(ABC):
     """
-    A servant locator is called by an object adapter to locate a servant that is not found in its active servant map.
+    An application-provided class that an object adapter uses to locate servants.
+
+    Notes
+    -----
+    For simple cases, You should consider using a default servant instead (see :func:`ObjectAdapter#addDefaultServant`).
     """
 
     @abstractmethod
