@@ -1277,7 +1277,7 @@ static PyMethodDef ProxyMethods[] = {
     {"ice_adapterId",
      reinterpret_cast<PyCFunction>(proxyIceAdapterId),
      METH_VARARGS,
-     PyDoc_STR("ice_adapterId(id: str) -> Self")},
+     PyDoc_STR("ice_adapterId(newAdapterId: str) -> Self")},
     {"ice_getEndpoints",
      reinterpret_cast<PyCFunction>(proxyIceGetEndpoints),
      METH_NOARGS,
