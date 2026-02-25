@@ -341,7 +341,7 @@ class Endpoint:
 
         Returns
         -------
-        Ice.EndpointInfo
+        EndpointInfo
             This endpoint's information class.
         """
         ...
