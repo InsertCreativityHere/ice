@@ -288,11 +288,12 @@ namespace Slice::Python
         }
 
     private:
-        /// Add the runtime imports for the given Sequence definition.
-        /// @param sequence The Sequence definition being imported.
-        /// @param source The Slice definition that requires the import.
-        /// @param localMetadata Any additional metadata associated with the import. Such has parameter metadata.
-        void addRuntimeImportForSequence(
+        /// Add the imports required by a field whose type is the given Sequence: the runtime import for the
+        /// default factory the field initializer uses, and the typing imports for the field's type hint.
+        /// @param sequence The Sequence type of the field.
+        /// @param source The Slice definition containing the field.
+        /// @param localMetadata The metadata attached to the field itself.
+        void addImportsForSequenceField(
             const SequencePtr& sequence,
             const ContainedPtr& source,
             const MetadataList& localMetadata = MetadataList());
@@ -321,16 +322,23 @@ namespace Slice::Python
         /// @param source The Slice definition that requires this import.
         void addTypingImport(const std::string& moduleName, const std::string& definition, const ContainedPtr& source);
 
-        /// Adds a typing import for the package containing the given Slice definition.
+        /// Adds the typing imports for every name that the type hint for @p definition references, recursing into
+        /// sequence element and dictionary key/value types. This must register exactly the names that
+        /// CodeVisitor::typeToTypeHintString emits for the same type and direction.
         ///
         /// Typing imports are generated inside an `if TYPE_CHECKING:` block, so they are only used for type hints.
         ///
-        /// @param definition The definition to import the containing package.
+        /// @param definition The Slice type the hint is for.
         /// @param source The Slice definition that requires this import.
-        /// @param forMarshaling If true, the sequence is used for marshaling (invocation input parameter, or dispatch
-        /// output parameter).
-        void
-        addTypingImport(const SyntaxTreeBasePtr& definition, const ContainedPtr& source, bool forMarshaling = false);
+        /// @param forMarshaling If true, the type is used in the marshaling direction (invocation input parameter, or
+        /// dispatch return value).
+        /// @param localMetadata The metadata attached to the parameter, return value, or field the hint is for. Only
+        /// applied to @p definition itself, not to nested types.
+        void addTypingImport(
+            const SyntaxTreeBasePtr& definition,
+            const ContainedPtr& source,
+            bool forMarshaling = false,
+            const MetadataList& localMetadata = MetadataList());
 
         /// Import the meta type for the given Slice definition if it comes from a different module.
         /// @param definition is the Slice definition to import.

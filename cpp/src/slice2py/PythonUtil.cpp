@@ -616,10 +616,10 @@ Slice::Python::ImportVisitor::visitDataMember(const DataMemberPtr& p)
 
     // For fields with a type that is a Struct, we need to import it as a RuntimeImport, to
     // initialize the field in the constructor. For other contained types, we only need the
-    // import for type hints.
+    // import for type hints. Field type hints are in the unmarshaling direction.
     if (auto sequence = dynamic_pointer_cast<Sequence>(type))
     {
-        addRuntimeImportForSequence(sequence, parent);
+        addImportsForSequenceField(sequence, parent, p->getMetadata());
     }
     else if (dynamic_pointer_cast<Struct>(type) || dynamic_pointer_cast<Enum>(type))
     {
@@ -627,7 +627,7 @@ Slice::Python::ImportVisitor::visitDataMember(const DataMemberPtr& p)
     }
     else
     {
-        addTypingImport(type, parent, true);
+        addTypingImport(type, parent, false, p->getMetadata());
     }
     addRuntimeImportForMetaType(type, parent);
 
@@ -693,37 +693,22 @@ Slice::Python::ImportVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 
     for (const auto& op : operations)
     {
-        // We need to call `addTypingImport` twice per parameter. This is required because for list the marshaling
-        // and unmarshaling code might require different type hints.
+        // We need to call `addTypingImport` twice per parameter. This is required because every parameter and return
+        // type appears in both directions in the generated module: the proxy methods marshal the in-parameters the
+        // servant unmarshals, and the servant marshals the return value the proxy unmarshals.
         auto ret = op->returnType();
         if (ret)
         {
-            if (auto sequence = dynamic_pointer_cast<Sequence>(ret))
-            {
-                addRuntimeImportForSequence(sequence, p, op->getMetadata());
-            }
-            else if (dynamic_pointer_cast<Dictionary>(ret))
-            {
-                addTypingImport("collections.abc", "Mapping", p);
-            }
-            addTypingImport(ret, p, false);
-            addTypingImport(ret, p, true);
+            addTypingImport(ret, p, false, op->getMetadata());
+            addTypingImport(ret, p, true, op->getMetadata());
 
             addRuntimeImportForMetaType(ret, p);
         }
 
         for (const auto& param : op->parameters())
         {
-            if (auto sequence = dynamic_pointer_cast<Sequence>(param->type()))
-            {
-                addRuntimeImportForSequence(sequence, p, param->getMetadata());
-            }
-            else if (dynamic_pointer_cast<Dictionary>(param->type()))
-            {
-                addTypingImport("collections.abc", "Mapping", p);
-            }
-            addTypingImport(param->type(), p, false);
-            addTypingImport(param->type(), p, true);
+            addTypingImport(param->type(), p, false, param->getMetadata());
+            addTypingImport(param->type(), p, true, param->getMetadata());
 
             addRuntimeImportForMetaType(param->type(), p);
         }
@@ -774,7 +759,7 @@ Slice::Python::ImportVisitor::visitConst(const ConstPtr& p)
 }
 
 void
-Slice::Python::ImportVisitor::addRuntimeImportForSequence(
+Slice::Python::ImportVisitor::addImportsForSequenceField(
     const SequencePtr& sequence,
     const ContainedPtr& source,
     const MetadataList& localMetadata)
@@ -782,71 +767,25 @@ Slice::Python::ImportVisitor::addRuntimeImportForSequence(
     auto metadata = getSequenceMetadata(sequence, localMetadata);
     auto directive = metadata ? metadata->directive() : "";
 
-    // Whether the sequence is a field of the source type. Fields need runtime imports for their default factory,
-    // and are annotated with the sequence's own type. Everywhere else the sequence appears in an operation
-    // signature, where it only needs type hints, in the marshaling direction as well as the unmarshaling one.
-    auto isField = dynamic_pointer_cast<ClassDef>(source) || dynamic_pointer_cast<Struct>(source) ||
-                   dynamic_pointer_cast<Exception>(source);
-
-    auto builtin = dynamic_pointer_cast<Builtin>(sequence->type());
-    if (!isField && builtin && builtin->kind() <= Builtin::KindDouble)
-    {
-        // Marshaling-direction hints for a numeric sequence accept any Buffer.
-        addTypingImport("collections.abc", "Buffer", source);
-    }
-
+    // Sequence fields mapped to a custom type are initialized with a default factory, and the factory needs a
+    // runtime import.
     if (directive == "python:numpy.ndarray")
     {
-        // Import numpy for using it in the field factory.
-        if (isField)
-        {
-            addRuntimeImport("numpy", "", source);
-        }
-        else
-        {
-            addTypingImport("numpy", "", source);
-        }
+        addRuntimeImport("numpy", "", source);
     }
     else if (directive == "python:array.array")
     {
-        // Import array for using it in the field factory.
-        if (isField)
-        {
-            addRuntimeImport("array", "array", source);
-        }
-        else
-        {
-            addTypingImport("array", "array", source);
-        }
+        addRuntimeImport("array", "array", source);
     }
     else if (directive == "python:memoryview")
     {
-        auto arguments = metadata ? metadata->arguments() : "";
-        auto [factory, typeHint] = splitMemoryviewArguments(arguments);
-
-        // Import factory for using it in the field factory.
-        if (isField)
-        {
-            auto [factoryPackage, factoryFunction] = splitFQN(factory);
-            addRuntimeImport(factoryPackage, factoryFunction, source);
-        }
-
-        if (typeHint)
-        {
-            auto [typeHintPackage, typeHintName] = splitFQN(*typeHint);
-            addTypingImport(typeHintPackage, typeHintName, source);
-        }
-        else
-        {
-            // Otherwise, we have no idea what the type is so we just Any
-            addTypingImport("typing", "Any", source);
-        }
+        auto [factory, _] = splitMemoryviewArguments(metadata->arguments());
+        auto [factoryPackage, factoryFunction] = splitFQN(factory);
+        addRuntimeImport(factoryPackage, factoryFunction, source);
     }
-    else
-    {
-        // This is required to import the sequence element type in case it is not a built-in type.
-        addTypingImport(sequence, source, true);
-    }
+
+    // The field's type hint is in the unmarshaling direction.
+    addTypingImport(sequence, source, false, localMetadata);
 }
 
 void
@@ -986,7 +925,8 @@ void
 Slice::Python::ImportVisitor::addTypingImport(
     const SyntaxTreeBasePtr& definition,
     const ContainedPtr& source,
-    bool forMarshaling)
+    bool forMarshaling,
+    const MetadataList& localMetadata)
 {
     if (auto builtin = dynamic_pointer_cast<Builtin>(definition))
     {
@@ -1001,10 +941,60 @@ Slice::Python::ImportVisitor::addTypingImport(
     }
     else if (auto sequence = dynamic_pointer_cast<Sequence>(definition))
     {
+        auto metadata = getSequenceMetadata(sequence, localMetadata);
+        const string directive = metadata ? metadata->directive() : "";
+        auto elementType = dynamic_pointer_cast<Builtin>(sequence->type());
+        const bool isNumericSequence = elementType && elementType->kind() <= Builtin::KindDouble;
+        const bool isBoolSequence = elementType && elementType->kind() == Builtin::KindBool;
+
+        if (forMarshaling)
+        {
+            // Marshaling-direction hints accept any Sequence, and additionally any Buffer for numeric sequences.
+            addTypingImport("collections.abc", "Sequence", source);
+            if (isNumericSequence)
+            {
+                addTypingImport("collections.abc", "Buffer", source);
+            }
+        }
+
+        if (directive == "python:numpy.ndarray")
+        {
+            addTypingImport("numpy", "", source);
+        }
+        else if (directive == "python:array.array")
+        {
+            // In the marshaling direction, the hint only mentions array.array for boolean sequences; the numeric
+            // ones are already covered by Buffer.
+            if (!forMarshaling || isBoolSequence)
+            {
+                addTypingImport("array", "array", source);
+            }
+        }
+        else if (directive == "python:memoryview")
+        {
+            auto [_, typeHint] = splitMemoryviewArguments(metadata->arguments());
+            if (typeHint)
+            {
+                auto [typeHintPackage, typeHintName] = splitFQN(*typeHint);
+                addTypingImport(typeHintPackage, typeHintName, source);
+            }
+            else if (!forMarshaling)
+            {
+                // Without a type hint in the metadata we have no idea what the unmarshaled type is, so the hint
+                // uses Any.
+                addTypingImport("typing", "Any", source);
+            }
+        }
+
         addTypingImport(sequence->type(), source, forMarshaling);
     }
     else if (auto dictionary = dynamic_pointer_cast<Dictionary>(definition))
     {
+        if (forMarshaling)
+        {
+            // Marshaling-direction hints accept any Mapping.
+            addTypingImport("collections.abc", "Mapping", source);
+        }
         addTypingImport(dictionary->keyType(), source, forMarshaling);
         addTypingImport(dictionary->valueType(), source, forMarshaling);
     }
@@ -2691,17 +2681,13 @@ namespace
         bool hasTypingImports = false;
         for (const auto& [moduleName, moduleImports] : typingImports)
         {
-            if (moduleImports.imported)
+            if (moduleImports.imported &&
+                allImports.insert(moduleImports.moduleAlias.empty() ? moduleName : moduleImports.moduleAlias).second)
             {
                 outT << nl << "import " << moduleName;
-                if (moduleImports.moduleAlias.empty())
-                {
-                    allImports.insert(moduleName);
-                }
-                else
+                if (!moduleImports.moduleAlias.empty())
                 {
                     outT << " as " << moduleImports.moduleAlias;
-                    allImports.insert(moduleImports.moduleAlias);
                 }
                 hasTypingImports = true;
             }
