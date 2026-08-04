@@ -567,6 +567,36 @@ def twoways(helper: TestHelper, p: Test.MyInterfacePrx) -> None:
     test(rso[4] - 1.11 < 0.001)
 
     #
+    # opFloatDoubleS (float range checks)
+    #
+    # Sequence elements are subject to the same range check as scalar float values: the float boundary
+    # values, infinity, and NaN all marshal successfully, while finite values outside the float range
+    # raise ValueError.
+    rso, fso, dso = p.opFloatDoubleS((3.402823466e38, -3.402823466e38), ())
+    test(len(fso) == 2)
+
+    rso, fso, dso = p.opFloatDoubleS((float("inf"), float("-inf")), ())
+    test(math.isinf(fso[0]) and math.isinf(fso[1]))
+
+    rso, fso, dso = p.opFloatDoubleS((float("nan"),), ())
+    test(math.isnan(fso[0]))
+
+    try:
+        p.opFloatDoubleS((3.402823466e38 * 2,), ())
+        test(False)
+    except ValueError:
+        pass
+
+    try:
+        p.opFloatDoubleS((-3.402823466e38 * 2,), ())
+        test(False)
+    except ValueError:
+        pass
+
+    # The connection must still be usable.
+    p.ice_ping()
+
+    #
     # opStringS
     #
     ssi1 = ("abc", "de", "fghi")

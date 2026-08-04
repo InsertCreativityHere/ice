@@ -201,6 +201,7 @@ def allTests(helper: TestHelper, communicator: Ice.Communicator):
     tcpinfo = getTCPConnectionInfo(info)
     test(not info.incoming)
     test(len(info.adapterName) == 0)
+    test(info.connectionId == "")
     test(tcpinfo.remotePort == port)
     if defaultHost == "127.0.0.1":
         test(tcpinfo.remoteAddress == defaultHost)
@@ -239,6 +240,14 @@ def allTests(helper: TestHelper, communicator: Ice.Communicator):
     elif connection.type() == "ssl":
         assert isinstance(info, Ice.SSLConnectionInfo)
         checkPeerCertificate(info.peerCertificate.encode())
+
+    # A connection established through a proxy configured with ice_connectionId reports that ID in its
+    # connection information, on the outermost info class and on the underlying transport info classes.
+    connection = base.ice_connectionId("my-connection").ice_getConnection()
+    assert connection is not None
+    info = connection.getInfo()
+    test(info.connectionId == "my-connection")
+    test(getTCPConnectionInfo(info).connectionId == "my-connection")
 
     connection = base.ice_datagram().ice_getConnection()
     assert connection is not None
