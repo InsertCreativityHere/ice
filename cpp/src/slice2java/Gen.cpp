@@ -83,6 +83,117 @@ namespace
 
         return "java.util.Optional.ofNullable";
     }
+
+    // The generated code must not trigger a deprecation warning when a Slice definition uses deprecated definitions
+    // correctly, and a definition can also reference a deprecated definition without being at fault (for example
+    // through a sequence that is missing the 'deprecated' metadata). So the generated code suppresses deprecation
+    // warnings wherever it references a deprecated definition. The Slice compiler already reports the incorrect uses.
+    // The functions below detect these references, to generate the suppression only where it is needed.
+
+    /// Returns true if the Java type mapped from @p type names a deprecated Slice definition.
+    /// A sequence or a dictionary maps to an array or to a collection, and never to a Java type of its own. So we only
+    /// check the types it holds, and not the sequence or dictionary itself.
+    bool namesDeprecatedDefinition(const TypePtr& type)
+    {
+        if (auto sequence = dynamic_pointer_cast<Sequence>(type))
+        {
+            return namesDeprecatedDefinition(sequence->type());
+        }
+        if (auto dictionary = dynamic_pointer_cast<Dictionary>(type))
+        {
+            return namesDeprecatedDefinition(dictionary->keyType()) ||
+                   namesDeprecatedDefinition(dictionary->valueType());
+        }
+        auto contained = dynamic_pointer_cast<Contained>(type);
+        return contained && contained->isDeprecated();
+    }
+
+    /// Returns true if the Java class generated for a Slice class, exception, or struct references a deprecated Slice
+    /// definition through its fields.
+    /// @param fields The fields defined by the class, exception, or struct.
+    /// @param allFields The fields in @p fields, plus the fields inherited from the base class or exception.
+    bool fieldsReferenceDeprecatedDefinition(const DataMemberList& fields, const DataMemberList& allFields)
+    {
+        // The generated constructors take all the fields as parameters, including the inherited fields.
+        for (const auto& field : allFields)
+        {
+            if (namesDeprecatedDefinition(field->type()))
+            {
+                return true;
+            }
+        }
+
+        // The generated class initializes the fields it defines with their default values.
+        for (const auto& field : fields)
+        {
+            if (field->defaultValue())
+            {
+                // The default value can be a constant or an enumerator.
+                auto defaultValue = dynamic_pointer_cast<Contained>(field->defaultValueType());
+                if (defaultValue && defaultValue->isDeprecated())
+                {
+                    return true;
+                }
+            }
+            else if (auto enumeration = dynamic_pointer_cast<Enum>(field->type()))
+            {
+                // Without a default value, a field with an enum type is initialized with the first enumerator.
+                if (enumeration->enumerators().front()->isDeprecated())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// Returns true if the signature of an operation of @p interfaceDef names a deprecated Slice definition.
+    bool operationsNameDeprecatedDefinition(const InterfaceDefPtr& interfaceDef)
+    {
+        for (const auto& operation : interfaceDef->operations())
+        {
+            if (namesDeprecatedDefinition(operation->returnType()))
+            {
+                return true;
+            }
+            for (const auto& parameter : operation->parameters())
+            {
+                if (namesDeprecatedDefinition(parameter->type()))
+                {
+                    return true;
+                }
+            }
+            for (const auto& exception : operation->throws())
+            {
+                if (exception->isDeprecated())
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /// Writes the 'SuppressWarnings' annotation for the Java class generated for a Slice class, exception, or struct.
+    /// This class is always serializable. It also suppresses deprecation warnings when it references a deprecated
+    /// definition, unless it is deprecated itself: Java does not report the use of a deprecated element within a
+    /// deprecated class.
+    void writeSuppressWarningsForFields(
+        Output& out,
+        const ContainedPtr& p,
+        const DataMemberList& fields,
+        const DataMemberList& allFields)
+    {
+        if (!p->isDeprecated() && fieldsReferenceDeprecatedDefinition(fields, allFields))
+        {
+            out << nl << R"(@SuppressWarnings({"deprecation", "serial"}))";
+        }
+        else
+        {
+            out << nl << R"(@SuppressWarnings("serial"))";
+        }
+    }
 }
 
 Slice::JavaVisitor::JavaVisitor(const string& dir) : JavaGenerator(dir) {}
@@ -2391,7 +2502,7 @@ Slice::TypesVisitor::visitClassDefStart(const ClassDefPtr& p)
     out << sp;
     writeDocComment(out, p, "class");
     writeDeprecatedAnnotation(out, p);
-    out << nl << R"(@SuppressWarnings("serial"))";
+    writeSuppressWarningsForFields(out, p, p->dataMembers(), p->allDataMembers());
 
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     if (p->compactId() != -1)
@@ -2678,7 +2789,7 @@ Slice::TypesVisitor::visitExceptionStart(const ExceptionPtr& p)
 
     writeDocComment(out, p, "exception class");
     writeDeprecatedAnnotation(out, p);
-    out << nl << R"(@SuppressWarnings("serial"))";
+    writeSuppressWarningsForFields(out, p, p->dataMembers(), p->allDataMembers());
 
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public class " << name << " extends ";
@@ -2945,7 +3056,7 @@ Slice::TypesVisitor::visitStructStart(const StructPtr& p)
 
     writeDocComment(out, p, "class");
     writeDeprecatedAnnotation(out, p);
-    out << nl << R"(@SuppressWarnings("serial"))";
+    writeSuppressWarningsForFields(out, p, p->dataMembers(), p->dataMembers());
 
     out << nl << "public final class " << p->mappedName() << " implements java.lang.Cloneable, java.io.Serializable";
     out << sb;
@@ -3714,7 +3825,11 @@ Slice::TypesVisitor::visitSequence(const SequencePtr& p)
 
     out << sp;
     writeDocComment(out, "Helper class for marshaling/unmarshaling " + name + ".");
-    out << nl << R"(@SuppressWarnings("deprecation"))";
+    if (namesDeprecatedDefinition(p))
+    {
+        // The helper class is never deprecated, even when the sequence is deprecated.
+        out << nl << R"(@SuppressWarnings("deprecation"))";
+    }
     out << nl << "public final class " << name << "Helper";
     out << sb;
 
@@ -3852,7 +3967,11 @@ Slice::TypesVisitor::visitDictionary(const DictionaryPtr& p)
 
     out << sp;
     writeDocComment(out, "Helper class for marshaling/unmarshaling " + name + ".");
-    out << nl << R"(@SuppressWarnings("deprecation"))";
+    if (namesDeprecatedDefinition(p))
+    {
+        // The helper class is never deprecated, even when the dictionary is deprecated.
+        out << nl << R"(@SuppressWarnings("deprecation"))";
+    }
     out << nl << "public final class " << name << "Helper";
     out << sb;
 
@@ -4005,6 +4124,12 @@ Slice::TypesVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 
     writeDocComment(out, p, "proxy interface");
     writeDeprecatedAnnotation(out, p);
+    if (!p->isDeprecated() && operationsNameDeprecatedDefinition(p))
+    {
+        // The public proxy methods generated for a deprecated operation are deprecated, but the internal code generated
+        // for this operation is not. And there is nothing to suppress when the proxy interface itself is deprecated.
+        out << nl << R"(@SuppressWarnings("deprecation"))";
+    }
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public interface " << p->mappedName() << "Prx extends ";
     if (bases.empty())
@@ -4289,7 +4414,12 @@ Slice::SkeletonVisitor::visitInterfaceDefStart(const InterfaceDefPtr& p)
 
     writeDocComment(out, p, "skeleton interface");
 
-    out << nl << R"(@SuppressWarnings("deprecation"))";
+    if (operationsNameDeprecatedDefinition(p))
+    {
+        // The skeleton interface and its methods are never deprecated, even when the Slice interface or operation is
+        // deprecated: implementing a deprecated interface or operation must not trigger a warning.
+        out << nl << R"(@SuppressWarnings("deprecation"))";
+    }
     out << nl << "@com.zeroc.Ice.SliceTypeId(value = \"" << p->scoped() << "\")";
     out << nl << "public interface " << name << " extends ";
     if (bases.empty())
